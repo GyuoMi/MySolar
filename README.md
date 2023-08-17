@@ -1,2 +1,2 @@
 # MySolar
-An application to 
+Recommendations for Your Solar setup
