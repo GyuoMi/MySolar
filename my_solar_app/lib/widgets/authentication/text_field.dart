@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 
-class AuthenticationTextField extends StatelessWidget{
+class LoginPageTextField extends StatelessWidget{
   final controller;
   final String hintText;
   final bool obscureText;
 
-  const AuthenticationTextField({
+  const LoginPageTextField({
     super.key,
     required this.controller,
     required this.hintText,

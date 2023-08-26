@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_solar_app/widgets/authentication/square_tile_images.dart';
 import 'package:my_solar_app/widgets/authentication/text_field.dart';
 
 class LoginPage extends StatelessWidget{
@@ -14,11 +15,15 @@ class LoginPage extends StatelessWidget{
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Image.asset('assets/images/my_solar_logo.png',scale: 3,),
             Text("Welcome back!"),
+            //shows user name and password text boxes
+            const SizedBox(height: 40),
+            LoginPageTextField(controller: usernameController, hintText: "Username", obscureText: false),
             const SizedBox(height: 20),
-            AuthenticationTextField(controller: usernameController, hintText: "Username", obscureText: false),
-            const SizedBox(height: 20),
-            AuthenticationTextField(controller: passwordController, hintText: 'Password', obscureText: true),
+            LoginPageTextField(controller: passwordController, hintText: 'Password', obscureText: true),
+
+            //aligns password to the right
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -26,6 +31,8 @@ class LoginPage extends StatelessWidget{
                   child: Text("Forgot Password?"))
                 ],),
             const SizedBox(height: 20),
+
+            //creates Sign In button
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -35,22 +42,45 @@ class LoginPage extends StatelessWidget{
                 borderRadius: BorderRadius.circular(10)),
                         minimumSize: Size(300,70)
                       ),
+                      //TODO: change this lambda function
                       onPressed: ()=> "this", child: Text("Sign In")),
         ]
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: 25),
+
+            //creates divider with text continue with
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-              Expanded(child: Divider(
-                thickness: 0.5
-              )),
                 Text("Or continue with"),
-                Expanded(child: Divider(
-                    thickness: 0.5
-                )),
             ],)
-            ]
+            ,
+          const SizedBox(height: 25,),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SquareImageTile(imagePath: 'assets/images/google.png'),
+              SizedBox(width: 40),
+              SquareImageTile(imagePath: 'assets/images/apple.png')
+            ],
+          ),
+            const SizedBox(height: 30,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Not a member? '
+                ),
+                Text(
+                  'Register now',
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontWeight: FontWeight.bold
+                  ),
+                )
+              ],
+            )
+          ]
           ,
 
         )
