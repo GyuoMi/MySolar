@@ -105,6 +105,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.5"
+  email_validator:
+    dependency: transitive
+    description:
+      name: email_validator
+      sha256: e9a90f27ab2b915a27d7f9c2a7ddda5dd752d6942616ee83529b686fc086221b
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.17"
   fake_async:
     dependency: transitive
     description:
@@ -152,6 +160,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  font_awesome_flutter:
+    dependency: transitive
+    description:
+      name: font_awesome_flutter
+      sha256: "5fb789145cae1f4c3245c58b3f8fb287d055c26323879eab57a7bf0cfd1e45f3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.5.0"
   frontend_server_client:
     dependency: transitive
     description:
@@ -412,10 +428,10 @@ packages:
     dependency: transitive
     description:
       name: realtime_client
-      sha256: "69187110a1930e8db2b121cad25a247283f384f078d213ab87072814be12b1a4"
+      sha256: b4b7bb293417dafc73943ed639209b2dcb796db8495e56bba29a4e26fadef5cd
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.0"
+    version: "1.2.1"
   retry:
     dependency: transitive
     description:
@@ -609,18 +625,26 @@ packages:
     dependency: transitive
     description:
       name: supabase
-      sha256: "2f274a29c28e0b0fe7642196c099efeba50a83a570aac6b86577389585a7da82"
+      sha256: c48671b62720f15067f6b31abe964950bf1405b7eec367a97f683dee25715a77
       url: "https://pub.dev"
     source: hosted
-    version: "1.11.0"
+    version: "1.11.1"
+  supabase_auth_ui:
+    dependency: "direct main"
+    description:
+      name: supabase_auth_ui
+      sha256: "619ff2a2c009192c5ada81e2b0a530cebad0c8d1868dc25fec8c57c182349e38"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.1"
   supabase_flutter:
     dependency: "direct main"
     description:
       name: supabase_flutter
-      sha256: "9dbd6f66fb95a1a5b37f0f4c79d8de8c34181e4012833289273d08d6ab61faa3"
+      sha256: a9070f578d8b21799b43d7145586b32838b7970c831a5637f67e91f3bd3ea287
       url: "https://pub.dev"
     source: hosted
-    version: "1.10.13"
+    version: "1.10.14"
   term_glyph:
     dependency: transitive
     description:
