@@ -1,9 +1,10 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'database_functions_interface.dart';
+import 'supabase_functions.dart';
 
-class Database {
-  static SupabaseClient supabase = Supabase.instance.client;
-
+class DatabaseApi {
   //column names
+  final IDatabaseFunctions database = SupabaseFunctions();
+
   final userTable = 'user_tbl',
       userId = 'user_id',
       userName = 'user_name',
@@ -39,195 +40,155 @@ class Database {
   //creating functions
   Future createUser(
       String name, int systemType, String password, String address) async {
-    final data = await supabase.from(userTable).insert({
+    final userData = {
       userName: name,
       systemId: systemType,
       userPassword: password,
       userAddress: address
-    }).select();
-
-    return data;
+    };
+    return database.createRecord(userTable, userData);
   }
 
   Future createDevice(int id, String name, bool usage, double wattage,
       double voltage, bool normalSetting, bool loadSheddingSetting) async {
-    final data = await supabase.from(deviceTable).insert({
+    final deviceData = {
       deviceName: name,
       deviceUsage: usage,
       deviceWattage: wattage,
       deviceVoltage: voltage,
       deviceNormalSetting: normalSetting,
       deviceLoadSheddingSetting: loadSheddingSetting
-    }).select();
-    await supabase
-        .from(setupTable)
-        .insert({userId: id, deviceId: data[0][deviceId]});
-    return data;
+    };
+    final returnedDeviceData =
+        await database.createRecord(deviceTable, deviceData);
+
+    final setupData = {userId: id, deviceId: returnedDeviceData[0][deviceId]};
+
+    database.createRecord(setupTable, setupData);
+    return returnedDeviceData;
   }
 
   Future createManualSystem(String name, double capacity, double maxProduction,
       int count, double dailyUsage) async {
-    final data = await supabase.from(manualTable).insert({
+    final manualData = {
       manualName: name,
       manualCapacity: capacity,
       manualMaxProduction: maxProduction,
       manualCount: count,
       manualDailyUsage: dailyUsage
-    });
-    return data;
+    };
+    return database.createRecord(manualTable, manualData);
   }
 
   Future createRecord(int id, String time, double minutes) async {
-    final data = await supabase
-        .from(recordsTable)
-        .insert({deviceId: id, recordsTime: time, recordsMinutesUsed: minutes});
-    return data;
+    final recordData = {
+      deviceId: id,
+      recordsTime: time,
+      recordsMinutesUsed: minutes
+    };
+    return database.createRecord(recordsTable, recordData);
   }
 
   //updating functions
   Future updateUserName(int id, String name) async {
-    final data = await supabase
-        .from(userTable)
-        .update({userName: name}).match({userId: id}).select();
-    return data;
+    return database.updateField(userTable, {userName: name}, {userId: id});
   }
 
   Future updateUserPassword(int id, String password) async {
-    final data = await supabase
-        .from(userTable)
-        .update({userPassword: password}).match({userId: id}).select();
-    return data;
+    return database
+        .updateField(userTable, {userPassword: password}, {userId: id});
   }
 
   Future updateUserAddress(int id, String address) async {
-    final data = await supabase
-        .from(userTable)
-        .update({userAddress: address}).match({userId: id}).select();
-    return data;
+    return database
+        .updateField(userTable, {userAddress: address}, {userId: id});
   }
 
   Future updateDeviceName(int id, String name) async {
-    final data = await supabase
-        .from(deviceTable)
-        .update({deviceName: name}).match({deviceId: id}).select();
-    return data;
+    return database
+        .updateField(deviceTable, {deviceName: name}, {deviceId: id});
   }
 
   Future updateDeviceUsage(int id, bool usage) async {
-    final data = await supabase
-        .from(deviceTable)
-        .update({deviceUsage: usage}).match({deviceId: id}).select();
-    return data;
+    return database
+        .updateField(deviceTable, {deviceUsage: usage}, {deviceId: id});
   }
 
   Future updateDeviceWattage(int id, double wattage) async {
-    final data = await supabase
-        .from(deviceTable)
-        .update({deviceWattage: wattage}).match({deviceId: id}).select();
-    return data;
+    return database
+        .updateField(deviceTable, {deviceWattage: wattage}, {deviceId: id});
   }
 
   Future updateDeviceVoltage(int id, double voltage) async {
-    final data = await supabase
-        .from(deviceTable)
-        .update({deviceVoltage: voltage}).match({deviceId: id}).select();
-    return data;
+    return database
+        .updateField(deviceTable, {deviceVoltage: voltage}, {deviceId: id});
   }
 
   Future updateDeviceNormalSetting(int id, bool normalSetting) async {
-    final data = await supabase.from(deviceTable).update(
-        {deviceNormalSetting: normalSetting}).match({deviceId: id}).select();
-    return data;
+    return database.updateField(
+        deviceTable, {deviceNormalSetting: normalSetting}, {deviceId: id});
   }
 
   Future updateDeviceLoadSheddingSetting(
       int id, bool loadSheddingSetting) async {
-    final data = await supabase
-        .from(deviceTable)
-        .update({deviceLoadSheddingSetting: loadSheddingSetting}).match(
-            {deviceId: id}).select();
-    return data;
+    return database.updateField(deviceTable,
+        {deviceLoadSheddingSetting: loadSheddingSetting}, {deviceId: id});
   }
 
   Future updateManualName(int id, String name) async {
-    final data = await supabase
-        .from(manualTable)
-        .update({manualName: name}).match({manualId: id}).select();
-    return data;
+    return database
+        .updateField(manualTable, {manualName: name}, {manualId: id});
   }
 
   Future updateManualCapacity(int id, double capacity) async {
-    final data = await supabase
-        .from(manualTable)
-        .update({manualCapacity: capacity}).match({manualId: id}).select();
-    return data;
+    return database
+        .updateField(manualTable, {manualCapacity: capacity}, {manualId: id});
   }
 
   Future updateManualMaxProduction(int id, String maxProduction) async {
-    final data = await supabase.from(manualTable).update(
-        {manualMaxProduction: maxProduction}).match({manualId: id}).select();
-    return data;
+    return database.updateField(
+        manualTable, {manualMaxProduction: maxProduction}, {manualId: id});
   }
 
   Future updateManualCount(int id, int count) async {
-    final data = await supabase
-        .from(manualTable)
-        .update({manualCount: count}).match({manualId: id}).select();
-    return data;
+    return database
+        .updateField(manualTable, {manualCount: count}, {manualId: id});
   }
 
   Future updateManualDailyUsage(int id, double dailyUsage) async {
-    final data = await supabase
-        .from(manualTable)
-        .update({manualDailyUsage: dailyUsage}).match({manualId: id}).select();
-    return data;
+    return database.updateField(
+        manualTable, {manualDailyUsage: dailyUsage}, {manualId: id});
   }
 
   //Reading functions
   Future getUserDetails(int id) async {
-    final data = await supabase.from(userTable).select().match({userId: id});
-    return data;
+    return database.readRecords(userTable, {userId: id});
   }
 
   Future getSystems() async {
-    final data = await supabase.from(systemsTable).select();
-    return data;
+    return database.readRecords(systemsTable, {});
   }
 
   Future getManualSystemDetails(int id) async {
-    final data = await supabase.from(manualTable).select().match({userId: id});
-    return data;
+    return database.readRecords(manualTable, {userId: id});
   }
 
   Future getUserDevices(int id) async {
-    final data = await supabase.from(setupTable).select().match({userId: id});
-    return data;
+    return database.readRecords(setupTable, {userId: id});
   }
 
   Future getDevice(int id, int singleDeviceId) async {
-    final data = await supabase
-        .from(setupTable)
-        .select()
-        .match({userId: id, deviceId: singleDeviceId});
-    return data;
+    return database
+        .readRecords(setupTable, {userId: id, deviceId: singleDeviceId});
   }
 
   //deleting functions
   Future deleteDevice(int id, int singleDeviceId) async {
-    await supabase
-        .from(setupTable)
-        .delete()
-        .match({userId: id, deviceId: singleDeviceId});
-    final data = await supabase
-        .from(deviceTable)
-        .delete()
-        .match({deviceId: singleDeviceId}).select();
-    return data;
+    database.deleteRecord(setupTable, {userId: id, deviceId: singleDeviceId});
+    return database.deleteRecord(deviceTable, {deviceId: singleDeviceId});
   }
 
   Future deleteManualUserSystem(int id) async {
-    final data =
-        await supabase.from(manualTable).delete().match({userId: id}).select();
-    return data;
+    return database.deleteRecord(manualTable, {userId: id});
   }
 }
