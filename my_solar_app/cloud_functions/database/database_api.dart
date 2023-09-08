@@ -1,7 +1,16 @@
-import 'database_functions_interface.dart';
+import 'interfaces/database_functions_interface.dart';
+import 'interfaces/device_persistence_interface.dart';
+import 'interfaces/manual_system_persistence_interface.dart';
+import 'interfaces/record_persistence_interface.dart';
+import 'interfaces/user_persistence_interface.dart';
 import 'supabase_functions.dart';
 
-class DatabaseApi {
+class DatabaseApi
+    implements
+        IUserPersistence,
+        IDevicePersistence,
+        IManualSystemPersistence,
+        IRecordPersistence {
   //column names
   final IDatabaseFunctions database = SupabaseFunctions();
 
@@ -38,6 +47,7 @@ class DatabaseApi {
   final setupTable = 'setup_tbl';
 
   //creating functions
+  @override
   Future createUser(
       String name, int systemType, String password, String address) async {
     final userData = {
@@ -49,6 +59,7 @@ class DatabaseApi {
     return database.createRecord(userTable, userData);
   }
 
+  @override
   Future createDevice(int id, String name, bool usage, double wattage,
       double voltage, bool normalSetting, bool loadSheddingSetting) async {
     final deviceData = {
@@ -68,6 +79,7 @@ class DatabaseApi {
     return returnedDeviceData;
   }
 
+  @override
   Future createManualSystem(String name, double capacity, double maxProduction,
       int count, double dailyUsage) async {
     final manualData = {
@@ -80,6 +92,7 @@ class DatabaseApi {
     return database.createRecord(manualTable, manualData);
   }
 
+  @override
   Future createRecord(int id, String time, double minutes) async {
     final recordData = {
       deviceId: id,
@@ -90,104 +103,125 @@ class DatabaseApi {
   }
 
   //updating functions
+  @override
   Future updateUserName(int id, String name) async {
     return database.updateField(userTable, {userName: name}, {userId: id});
   }
 
+  @override
   Future updateUserPassword(int id, String password) async {
     return database
         .updateField(userTable, {userPassword: password}, {userId: id});
   }
 
+  @override
   Future updateUserAddress(int id, String address) async {
     return database
         .updateField(userTable, {userAddress: address}, {userId: id});
   }
 
+  @override
   Future updateDeviceName(int id, String name) async {
     return database
         .updateField(deviceTable, {deviceName: name}, {deviceId: id});
   }
 
+  @override
   Future updateDeviceUsage(int id, bool usage) async {
     return database
         .updateField(deviceTable, {deviceUsage: usage}, {deviceId: id});
   }
 
+  @override
   Future updateDeviceWattage(int id, double wattage) async {
     return database
         .updateField(deviceTable, {deviceWattage: wattage}, {deviceId: id});
   }
 
+  @override
   Future updateDeviceVoltage(int id, double voltage) async {
     return database
         .updateField(deviceTable, {deviceVoltage: voltage}, {deviceId: id});
   }
 
+  @override
   Future updateDeviceNormalSetting(int id, bool normalSetting) async {
     return database.updateField(
         deviceTable, {deviceNormalSetting: normalSetting}, {deviceId: id});
   }
 
+  @override
   Future updateDeviceLoadSheddingSetting(
       int id, bool loadSheddingSetting) async {
     return database.updateField(deviceTable,
         {deviceLoadSheddingSetting: loadSheddingSetting}, {deviceId: id});
   }
 
+  @override
   Future updateManualName(int id, String name) async {
     return database
         .updateField(manualTable, {manualName: name}, {manualId: id});
   }
 
+  @override
   Future updateManualCapacity(int id, double capacity) async {
     return database
         .updateField(manualTable, {manualCapacity: capacity}, {manualId: id});
   }
 
+  @override
   Future updateManualMaxProduction(int id, String maxProduction) async {
     return database.updateField(
         manualTable, {manualMaxProduction: maxProduction}, {manualId: id});
   }
 
+  @override
   Future updateManualCount(int id, int count) async {
     return database
         .updateField(manualTable, {manualCount: count}, {manualId: id});
   }
 
+  @override
   Future updateManualDailyUsage(int id, double dailyUsage) async {
     return database.updateField(
         manualTable, {manualDailyUsage: dailyUsage}, {manualId: id});
   }
 
   //Reading functions
+  @override
   Future getUserDetails(int id) async {
-    return database.readRecords(userTable, {userId: id});
+    return database.readRecordsWhere(userTable, {userId: id});
   }
 
+  @override
   Future getSystems() async {
-    return database.readRecords(systemsTable, {});
+    return database.readRecords(systemsTable);
   }
 
+  @override
   Future getManualSystemDetails(int id) async {
-    return database.readRecords(manualTable, {userId: id});
+    return database.readRecordsWhere(manualTable, {userId: id});
   }
 
+  @override
   Future getUserDevices(int id) async {
-    return database.readRecords(setupTable, {userId: id});
+    return database.readRecordsWhere(setupTable, {userId: id});
   }
 
+  @override
   Future getDevice(int id, int singleDeviceId) async {
     return database
-        .readRecords(setupTable, {userId: id, deviceId: singleDeviceId});
+        .readRecordsWhere(setupTable, {userId: id, deviceId: singleDeviceId});
   }
 
   //deleting functions
+  @override
   Future deleteDevice(int id, int singleDeviceId) async {
     database.deleteRecord(setupTable, {userId: id, deviceId: singleDeviceId});
     return database.deleteRecord(deviceTable, {deviceId: singleDeviceId});
   }
 
+  @override
   Future deleteManualUserSystem(int id) async {
     return database.deleteRecord(manualTable, {userId: id});
   }

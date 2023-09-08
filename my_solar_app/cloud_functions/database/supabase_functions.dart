@@ -1,4 +1,4 @@
-import 'database_functions_interface.dart';
+import 'interfaces/database_functions_interface.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SupabaseFunctions implements IDatabaseFunctions {
@@ -23,8 +23,14 @@ class SupabaseFunctions implements IDatabaseFunctions {
   }
 
   @override
-  Future readRecords(String table, Map matchesFields) async {
+  Future readRecordsWhere(String table, Map matchesFields) async {
     final data = await supabase.from(table).select().match(matchesFields);
+    return data;
+  }
+
+  @override
+  Future readRecords(String table) async {
+    final data = await supabase.from(table).select();
     return data;
   }
 
