@@ -4,18 +4,59 @@ import 'package:based_battery_indicator/based_battery_indicator.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
+import 'package:weather_icons/weather_icons.dart';
+
 
 class MyCustomWidget extends StatelessWidget {
   final AnimationController controller;
 
   MyCustomWidget({required this.controller});
+  int weather=4;
   bool charging = true;
   bool houseDraw = true;
   bool solarDraw = true;
   bool gridDraw = false;
   int batteryPer = 45;
+  Widget getWeatherIcon(int weatherCode) {
+    IconData iconData;
+    Color color;
+
+    switch (weatherCode) {
+      case 0:
+        iconData = WeatherIcons.day_sunny; // Sun
+        color = Colors.yellow;
+        break;
+      case 1:
+        iconData = WeatherIcons.day_cloudy; // Sun and cloud
+        color = Colors.lightBlueAccent;
+        break;
+      case 2:
+        iconData = WeatherIcons.cloud; // Cloud
+        color = Colors.blueGrey;
+        break;
+      case 3:
+        iconData = WeatherIcons.rain; // Rain (You can change this to a rain icon)
+        color = Colors.blueAccent;
+        break;
+      case 4:
+        iconData = WeatherIcons.stars; // Night
+        color = Colors.black;
+        break;
+      default:
+        iconData = WeatherIcons.day_haze; // Default icon for unknown weather code
+        color = Colors.black;
+    }
+
+    return BoxedIcon(
+      iconData,
+      color: color,
+      size: 60.0,
+
+    );
+  }
   @override
   Widget build(BuildContext context) {
+    Widget weatherIcon = getWeatherIcon(weather);
     return SingleChildScrollView(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -24,12 +65,7 @@ class MyCustomWidget extends StatelessWidget {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Icon(
-                Icons.sunny,
-                color: Colors.yellow,
-                size: 60.0,
-                semanticLabel: 'Text to announce in accessibility modes',
-              ),
+              weatherIcon,
               RotatedBox(
                 quarterTurns: 1,
                 child: SizedBox(
@@ -38,7 +74,7 @@ class MyCustomWidget extends StatelessWidget {
                   child: LinearProgressIndicator(
                     color: CupertinoColors.activeGreen,
                     value: solarDraw ? controller.value : 0,
-                    semanticsLabel: 'Linear progress indicator',
+
                   ),
                 ),
               ),
@@ -73,7 +109,7 @@ class MyCustomWidget extends StatelessWidget {
                     child: LinearProgressIndicator(
                       color: CupertinoColors.activeGreen,
                       value: controller.value,
-                      semanticsLabel: 'Linear progress indicator',
+
                     ),
                   ),
                 ),
@@ -90,7 +126,7 @@ class MyCustomWidget extends StatelessWidget {
                     child: LinearProgressIndicator(
                       color: CupertinoColors.activeGreen,
                       value: houseDraw ? controller.value : 0,
-                      semanticsLabel: 'Linear progress indicator',
+
                     ),
                   ),
                 ),
@@ -98,7 +134,7 @@ class MyCustomWidget extends StatelessWidget {
                   Icons.home,
                   color: Colors.blue,
                   size: 60.0,
-                  semanticLabel: 'Text to announce in accessibility modes',
+
                 ),
               ],
             ),
@@ -111,7 +147,7 @@ class MyCustomWidget extends StatelessWidget {
               child: LinearProgressIndicator(
                 color: CupertinoColors.activeGreen,
                 value: gridDraw ? controller.value : 0,
-                semanticsLabel: 'Linear progress indicator',
+
               ),
             ),
           ),
@@ -119,14 +155,14 @@ class MyCustomWidget extends StatelessWidget {
             Icons.electric_bolt,
             color: Colors.yellow,
             size: 60.0,
-            semanticLabel: 'Text to announce in accessibility modes',
+
           ),
         ],
       ),
     );
   }
 }
-
+PageController _pageController = PageController(initialPage: 0);
 class HOME extends StatefulWidget {
   HOME({Key? key, this.title}) : super(key: key);
   final String? title;
@@ -154,14 +190,33 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
     super.initState();
   }
 
-  List<ChartData> chartData = [
-    ChartData('Solar', 100), // Replace 100 with the actual solar usage in kWh
-    ChartData('Grid', 200), // Replace 200 with the actual grid usage in kWh
-    ChartData('Battery', 50), // Replace 50 with the actual battery usage in kWh
+  List<ChartData> dailyChartData = [
+    ChartData('Solar', 50),   // Example data for the weekly view
+    ChartData('Grid', 75),    // Example data for the weekly view
+    ChartData('Battery', 30), // Example data for the weekly view
+  ];
+
+  List<ChartData> weeklyChartData = [
+    ChartData('Solar', 70),   // Example data for the weekly view
+    ChartData('Grid', 160),    // Example data for the weekly view
+    ChartData('Battery', 70), // Example data for the weekly view
+  ];
+
+  List<ChartData> monthlyChartData = [
+    ChartData('Solar', 300),   // Example data for the monthly view
+    ChartData('Grid', 500),    // Example data for the monthly view
+    ChartData('Battery', 150), // Example data for the monthly view
+  ];
+
+  List<ChartData> totalChartData = [
+    ChartData('Solar', 1000),   // Example data for the total view
+    ChartData('Grid', 1500),    // Example data for the total view
+    ChartData('Battery', 500),  // Example data for the total view
   ];
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -194,6 +249,7 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                       });
                     },
                   ),
+
                   Container(
                     height: MediaQuery.of(context).size.height *
                         0.4, // Adjust the height as needed
@@ -203,66 +259,258 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                         Center(child: Text('Loadshedding Content')),
 
                         // Usage tab content
-                        SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Padding(
-                                padding:
-                                EdgeInsets.all(0), // Set padding to zero
-                                child: Text(
-                                  'Energy Usage',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
+                      PageView(
+                        controller: _pageController,
+                        scrollDirection: Axis.horizontal,
+                        children: [
+                          ///daily usage
+                          SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Padding(
+                                  padding:
+                                  EdgeInsets.all(0), // Set padding to zero
+                                  child: Text(
+                                    'Daily Energy Usage',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Padding(
-                                padding:
-                                EdgeInsets.all(0), // Set padding to zero
-                                child: SfCircularChart(
-                                  legend: Legend(
-                                      isVisible: true), // Show the legend
-                                  series: <CircularSeries>[
-                                    DoughnutSeries<ChartData, String>(
-                                      dataSource: chartData,
-                                      xValueMapper: (ChartData data, _) =>
-                                      data.x,
-                                      yValueMapper: (ChartData data, _) =>
-                                      data.y,
-                                      // Radius of doughnut
-                                      radius: '50%',
-                                      // Customize segment colors
-                                      pointColorMapper: (ChartData data, _) {
-                                        switch (data.x) {
-                                          case 'Solar':
-                                            return Colors.yellow;
-                                          case 'Grid':
-                                            return Colors.blue;
-                                          case 'Battery':
-                                            return Colors.green;
-                                          default:
-                                            return Colors.transparent;
-                                        }
-                                      },
-                                      dataLabelMapper: (ChartData data, _) =>
-                                      '${data.y} kWh',
-                                      dataLabelSettings: DataLabelSettings(
-                                        isVisible: true,
-                                        labelPosition:
-                                        ChartDataLabelPosition.outside,
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              )
-                            ],
+                                Padding(
+                                  padding:
+                                  EdgeInsets.all(0), // Set padding to zero
+                                  child: SfCircularChart(
+                                    legend: Legend(
+                                        isVisible: true), // Show the legend
+                                    series: <CircularSeries>[
+                                      DoughnutSeries<ChartData, String>(
+                                        dataSource: dailyChartData,
+                                        xValueMapper: (ChartData data, _) =>
+                                        data.x,
+                                        yValueMapper: (ChartData data, _) =>
+                                        data.y,
+                                        // Radius of doughnut
+                                        radius: '50%',
+                                        // Customize segment colors
+                                        pointColorMapper: (ChartData data, _) {
+                                          switch (data.x) {
+                                            case 'Solar':
+                                              return Colors.yellow;
+                                            case 'Grid':
+                                              return Colors.blue;
+                                            case 'Battery':
+                                              return Colors.green;
+                                            default:
+                                              return Colors.transparent;
+                                          }
+                                        },
+                                        dataLabelMapper: (ChartData data, _) =>
+                                        '${data.y} kWh',
+                                        dataLabelSettings: DataLabelSettings(
+                                          isVisible: true,
+                                          labelPosition:
+                                          ChartDataLabelPosition.outside,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
-                        ),
+                          ///weekly usage
+                          SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Padding(
+                                  padding:
+                                  EdgeInsets.all(0), // Set padding to zero
+                                  child: Text(
+                                    'Weekly Energy Usage',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding:
+                                  EdgeInsets.all(0), // Set padding to zero
+                                  child: SfCircularChart(
+                                    legend: Legend(
+                                        isVisible: true), // Show the legend
+                                    series: <CircularSeries>[
+                                      DoughnutSeries<ChartData, String>(
+                                        dataSource: weeklyChartData,
+                                        xValueMapper: (ChartData data, _) =>
+                                        data.x,
+                                        yValueMapper: (ChartData data, _) =>
+                                        data.y,
+                                        // Radius of doughnut
+                                        radius: '50%',
+                                        // Customize segment colors
+                                        pointColorMapper: (ChartData data, _) {
+                                          switch (data.x) {
+                                            case 'Solar':
+                                              return Colors.yellow;
+                                            case 'Grid':
+                                              return Colors.blue;
+                                            case 'Battery':
+                                              return Colors.green;
+                                            default:
+                                              return Colors.transparent;
+                                          }
+                                        },
+                                        dataLabelMapper: (ChartData data, _) =>
+                                        '${data.y} kWh',
+                                        dataLabelSettings: DataLabelSettings(
+                                          isVisible: true,
+                                          labelPosition:
+                                          ChartDataLabelPosition.outside,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+
+                          ///monthly data
+                          SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Padding(
+                                  padding:
+                                  EdgeInsets.all(0), // Set padding to zero
+                                  child: Text(
+                                    'Monthly Energy Usage',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding:
+                                  EdgeInsets.all(0), // Set padding to zero
+                                  child: SfCircularChart(
+                                    legend: Legend(
+                                        isVisible: true), // Show the legend
+                                    series: <CircularSeries>[
+                                      DoughnutSeries<ChartData, String>(
+                                        dataSource: monthlyChartData,
+                                        xValueMapper: (ChartData data, _) =>
+                                        data.x,
+                                        yValueMapper: (ChartData data, _) =>
+                                        data.y,
+                                        // Radius of doughnut
+                                        radius: '50%',
+                                        // Customize segment colors
+                                        pointColorMapper: (ChartData data, _) {
+                                          switch (data.x) {
+                                            case 'Solar':
+                                              return Colors.yellow;
+                                            case 'Grid':
+                                              return Colors.blue;
+                                            case 'Battery':
+                                              return Colors.green;
+                                            default:
+                                              return Colors.transparent;
+                                          }
+                                        },
+                                        dataLabelMapper: (ChartData data, _) =>
+                                        '${data.y} kWh',
+                                        dataLabelSettings: DataLabelSettings(
+                                          isVisible: true,
+                                          labelPosition:
+                                          ChartDataLabelPosition.outside,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+
+                          ///total data
+                          SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Padding(
+                                  padding:
+                                  EdgeInsets.all(0), // Set padding to zero
+                                  child: Text(
+                                    'Total Energy Usage',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding:
+                                  EdgeInsets.all(0), // Set padding to zero
+                                  child: SfCircularChart(
+                                    legend: Legend(
+                                        isVisible: true), // Show the legend
+                                    series: <CircularSeries>[
+                                      DoughnutSeries<ChartData, String>(
+                                        dataSource: totalChartData,
+                                        xValueMapper: (ChartData data, _) =>
+                                        data.x,
+                                        yValueMapper: (ChartData data, _) =>
+                                        data.y,
+                                        // Radius of doughnut
+                                        radius: '50%',
+                                        // Customize segment colors
+                                        pointColorMapper: (ChartData data, _) {
+                                          switch (data.x) {
+                                            case 'Solar':
+                                              return Colors.yellow;
+                                            case 'Grid':
+                                              return Colors.blue;
+                                            case 'Battery':
+                                              return Colors.green;
+                                            default:
+                                              return Colors.transparent;
+                                          }
+                                        },
+                                        dataLabelMapper: (ChartData data, _) =>
+                                        '${data.y} kWh',
+                                        dataLabelSettings: DataLabelSettings(
+                                          isVisible: true,
+                                          labelPosition:
+                                          ChartDataLabelPosition.outside,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
 
                         // Statistics tab content
                         Center(child: Text('Statistics Content')),

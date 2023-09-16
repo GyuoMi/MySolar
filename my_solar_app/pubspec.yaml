@@ -43,6 +43,8 @@ dependencies:
   syncfusion_flutter_charts: ^22.2.12
   loading_animation_widget: ^1.2.0+4
   syncfusion_flutter_gauges: ^22.2.12
+  weather_icons: ^3.0.0
+
 
 dev_dependencies:
   flutter_test:
