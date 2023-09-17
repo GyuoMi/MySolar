@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:based_battery_indicator/based_battery_indicator.dart';
@@ -8,14 +10,16 @@ import 'package:weather_icons/weather_icons.dart';
 
 
 class MyCustomWidget extends StatelessWidget {
-  final AnimationController controller;
+  final AnimationController controller1;
+  final AnimationController controller2;
 
-  MyCustomWidget({required this.controller});
-  int weather=4;
-  bool charging = true;
+
+  MyCustomWidget({required this.controller1,required this.controller2});
+  int weather=0;
+  bool charging = false;
   bool houseDraw = true;
   bool solarDraw = true;
-  bool gridDraw = false;
+  bool gridDraw = true;
   int batteryPer = 45;
   Widget getWeatherIcon(int weatherCode) {
     IconData iconData;
@@ -73,7 +77,7 @@ class MyCustomWidget extends StatelessWidget {
                   height: 10,
                   child: LinearProgressIndicator(
                     color: CupertinoColors.activeGreen,
-                    value: solarDraw ? controller.value : 0,
+                    value: solarDraw ? controller1.value : 0,
 
                   ),
                 ),
@@ -108,7 +112,7 @@ class MyCustomWidget extends StatelessWidget {
                     height: 10,
                     child: LinearProgressIndicator(
                       color: CupertinoColors.activeGreen,
-                      value: controller.value,
+                      value: charging ? controller2.value :controller1.value,
 
                     ),
                   ),
@@ -125,7 +129,7 @@ class MyCustomWidget extends StatelessWidget {
                     height: 10,
                     child: LinearProgressIndicator(
                       color: CupertinoColors.activeGreen,
-                      value: houseDraw ? controller.value : 0,
+                      value: houseDraw ? controller2.value : 0,
 
                     ),
                   ),
@@ -146,7 +150,7 @@ class MyCustomWidget extends StatelessWidget {
               height: 10,
               child: LinearProgressIndicator(
                 color: CupertinoColors.activeGreen,
-                value: gridDraw ? controller.value : 0,
+                value: gridDraw ? controller1.value : 0,
 
               ),
             ),
@@ -174,20 +178,60 @@ class HOME extends StatefulWidget {
 class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
   final controller = PageController();
   int tabIndex = 0;
-  late AnimationController animateController;
+  late AnimationController controller1;
+  late AnimationController controller2;
 
+
+  void startAnimation1() {
+    controller1.forward().then((_) {
+      // Wait for 2 seconds
+      controller1.reset();
+
+    }).then((_) {
+      // Reset the first animation to zero and start the second animation
+
+      startAnimation2();
+    });
+  }
+
+  void startAnimation2() {
+    controller2.forward().then((_) {
+      // Wait for 2 seconds
+      controller2.reset();
+
+    }).then((_) {
+      // Reset the first animation to zero and start the second animation
+
+      startAnimation1();
+    });
+  }
+
+  @override
   void initState() {
-    ///needed to animate loading bars
-    animateController = AnimationController(
-      /// [AnimationController]s can be created with `vsync: this` because of
-      /// [TickerProviderStateMixin].
-
-      duration: const Duration(seconds: 2), vsync: this,
-    )..addListener(() {
+    super.initState();
+    controller1 = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    );
+    controller2 = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    );
+    controller1.addListener(() {
       setState(() {});
     });
-    animateController.repeat();
-    super.initState();
+    controller2.addListener(() {
+      setState(() {});
+    });
+
+    // Start the first animation
+    startAnimation1();
+  }
+  @override
+  void dispose() {
+    controller1.dispose();
+    controller2.dispose();
+    super.dispose();
   }
 
   List<ChartData> dailyChartData = [
@@ -228,7 +272,7 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
             // Title widget
 
             // Your existing widget here
-            MyCustomWidget(controller: animateController),
+            MyCustomWidget(controller1: controller1,controller2: controller2,),
             // Replace with your custom widget
 
             // Tabs
@@ -271,9 +315,9 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                                 SizedBox(
                                   height: 10,
                                 ),
-                                Padding(
-                                  padding:
-                                  EdgeInsets.all(0), // Set padding to zero
+                                Container(
+                                  margin:
+                                  EdgeInsets.all( 0), // Set padding to zero
                                   child: Text(
                                     'Daily Energy Usage',
                                     style: TextStyle(
@@ -282,9 +326,9 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                                     ),
                                   ),
                                 ),
-                                Padding(
-                                  padding:
-                                  EdgeInsets.all(0), // Set padding to zero
+                                Align(
+                                  alignment:
+                                  Alignment.topCenter, // Set padding to zero
                                   child: SfCircularChart(
                                     legend: Legend(
                                         isVisible: true), // Show the legend
