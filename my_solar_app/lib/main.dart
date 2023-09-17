@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_solar_app/screens/login_page.dart';
-import 'package:my_solar_app/screens/homePage.dart';
+import 'package:my_solar_app/screens/Homepage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
