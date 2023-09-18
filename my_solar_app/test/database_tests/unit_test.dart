@@ -1,4 +1,4 @@
-import '../../cloud_functions/database/database_api.dart';
+import 'package:my_solar_app/cloud_functions/database/database_api.dart';
 import 'package:test/test.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
