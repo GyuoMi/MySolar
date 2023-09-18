@@ -1,0 +1,24 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+class WeatherService {
+  final String apiKey; // Your WeatherAPI.com API key
+
+  WeatherService(this.apiKey);
+
+  Future<Map<String, dynamic>> getWeather(String location) async {
+    final String apiUrl = 'https://api.weatherapi.com/v1/current.json';
+
+    final response = await http.get(
+      Uri.parse('$apiUrl?key=$apiKey&q=$location'),
+    );
+
+    if (response.statusCode == 200) {
+      // If the server returns a 200 OK response, parse the JSON
+      return jsonDecode(response.body);
+    } else {
+      // If the server did not return a 200 OK response, throw an exception.
+      throw Exception('Failed to fetch weather data');
+    }
+  }
+}
