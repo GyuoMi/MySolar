@@ -1,4 +1,13 @@
 abstract class IDevicePersistence {
+  covariant String? deviceTable,
+      deviceId,
+      deviceName,
+      deviceUsage,
+      deviceWattage,
+      deviceVoltage,
+      deviceNormalSetting,
+      deviceLoadSheddingSetting;
+
   Future createDevice(int userId, String name, bool usage, double wattage,
       double voltage, bool normalSetting, bool loadSheddingSetting);
   Future updateDeviceName(int deviceId, String name);

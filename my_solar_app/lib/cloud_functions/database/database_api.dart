@@ -1,3 +1,5 @@
+import 'package:my_solar_app/cloud_functions/database/interfaces/system_persistence_interface.dart';
+
 import 'interfaces/database_functions_interface.dart';
 import 'interfaces/device_persistence_interface.dart';
 import 'interfaces/manual_system_persistence_interface.dart';
@@ -10,18 +12,21 @@ class DatabaseApi
         IUserPersistence,
         IDevicePersistence,
         IManualSystemPersistence,
-        IRecordPersistence {
+        IRecordPersistence,
+        ISystemPersistence {
   //column names
   final IDatabaseFunctions database = SupabaseFunctions();
 
-  final userTable = 'user_tbl',
+  @override
+  String userTable = 'user_tbl',
       userId = 'user_id',
       userName = 'user_name',
       userPassword = 'user_password',
       userAddress = 'user_address',
       systemId = 'system_id';
 
-  final deviceTable = 'device_tbl',
+  @override
+  String deviceTable = 'device_tbl',
       deviceId = 'device_id',
       deviceName = 'device_name',
       deviceUsage = 'device_usage',
@@ -30,7 +35,8 @@ class DatabaseApi
       deviceNormalSetting = 'device_normal',
       deviceLoadSheddingSetting = 'device_loadshedding';
 
-  final manualTable = 'manual_tbl',
+  @override
+  String manualTable = 'manual_tbl',
       manualId = 'manual_id',
       manualName = 'manual_name',
       manualCapacity = 'manual_capacity',
@@ -38,11 +44,13 @@ class DatabaseApi
       manualCount = 'manual_count',
       manualDailyUsage = 'manual_daily_usage';
 
-  final recordsTable = 'records_tbl',
+  @override
+  String recordsTable = 'records_tbl',
       recordsTime = 'records_time',
       recordsMinutesUsed = 'records_minutes';
 
-  final systemsTable = 'systems_tbl';
+  @override
+  String systemsTable = 'systems_tbl';
 
   final setupTable = 'setup_tbl';
 

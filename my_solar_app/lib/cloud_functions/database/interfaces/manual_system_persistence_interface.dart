@@ -1,4 +1,12 @@
 abstract class IManualSystemPersistence {
+  covariant String? manualTable,
+      manualId,
+      manualName,
+      manualCapacity,
+      manualMaxProduction,
+      manualCount,
+      manualDailyUsage;
+
   Future createManualSystem(String name, double capacity, double maxProduction,
       int count, double dailyUsage);
   Future deleteManualUserSystem(int userId);
