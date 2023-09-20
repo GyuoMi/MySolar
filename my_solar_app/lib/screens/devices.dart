@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:supabase/supabase.dart';
 
-final supabaseProvider = Provider<SupabaseClient>((ref) {
+final supabaseProvider = FutureProvider<SupabaseClient>((ref) {
   return SupabaseClient(
      'https://fsirbhoucrjtnkvchwuf.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzaXJiaG91Y3JqdG5rdmNod3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTIzNzYxNTAsImV4cCI6MjAwNzk1MjE1MH0.Bb3OZyxku8_7c_aIQe5GlMsup0SODK-5pPa92tzkNFM'
@@ -18,14 +18,13 @@ final userDevicesProvider = FutureProvider<List<Map<String, dynamic>>>((ref) asy
   if (response.error != null) {
     throw Exception('Failed to fetch user devices: ${response.error}');
   }
-  return response.data as List<Map<String, dynamic>>;
-});
+
 
 
 class UserDeviceList extends ConsumerWidget {
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
-    final userDevices = watch(userDevicesProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userDevices = ref(getDevice(61, 1));
 
     return Scaffold(
       appBar: AppBar(
