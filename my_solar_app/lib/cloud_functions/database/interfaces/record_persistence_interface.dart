@@ -1,3 +1,3 @@
 abstract class IRecordPersistence {
-  Future createRecord(int id, String time, double minutes);
+  Future createRecord(int userId, String time, double minutes);
 }
