@@ -1,3 +1,4 @@
 abstract class IRecordPersistence {
-  Future createRecord(int id, String time, double minutes);
+  covariant String? recordsTable, recordsTime, recordsMinutesUsed;
+  Future createRecord(int userId, String time, double minutes);
 }
