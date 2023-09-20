@@ -203,20 +203,19 @@ class DatabaseApi
   }
 
   @override
-  Future getUserDevices(int id) async {
-    return database.readRecordsWhere(setupTable, {userId: id});
+  Future getUserDeviceIds(int userId) async {
+    return database.readRecordsWhere(setupTable, {userId: userId});
   }
 
   @override
-  Future getDevice(int id, int singleDeviceId) async {
-    return database
-        .readRecordsWhere(setupTable, {userId: id, deviceId: singleDeviceId});
+  Future getDevice(int singleDeviceId) async {
+    return database.readRecordsWhere(deviceTable, {deviceId: singleDeviceId});
   }
 
   //deleting functions
   @override
-  Future deleteDevice(int id, int singleDeviceId) async {
-    database.deleteRecord(setupTable, {userId: id, deviceId: singleDeviceId});
+  Future deleteDevice(int singleDeviceId) async {
+    database.deleteRecord(setupTable, {deviceId: singleDeviceId});
     return database.deleteRecord(deviceTable, {deviceId: singleDeviceId});
   }
 
