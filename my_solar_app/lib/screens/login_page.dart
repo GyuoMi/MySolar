@@ -1,13 +1,44 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:my_solar_app/cloud_functions/authentication/auth_repository.dart';
 import 'package:my_solar_app/widgets/authentication/square_tile_images.dart';
 import 'package:my_solar_app/widgets/authentication/text_field.dart';
 import 'package:my_solar_app/cloud_functions/authentication/interfaces/auth_repository_interface.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-class LoginPage extends StatelessWidget {
-  LoginPage({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
-  final usernameController = TextEditingController();
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final IAuthRepository authentication = AuthRepository();
+  final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final supabase = Supabase.instance.client;
+  late final StreamSubscription<AuthState> _authSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _authSubscription = supabase.auth.onAuthStateChange.listen((event) {
+      final session = event.session;
+      if (session != null) {
+        Navigator.of(context).pushReplacementNamed('/home_page');
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    _authSubscription.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,9 +55,7 @@ class LoginPage extends StatelessWidget {
         //shows user name and password text boxes
         const SizedBox(height: 40),
         LoginPageTextField(
-            controller: usernameController,
-            hintText: "Username",
-            obscureText: false),
+            controller: emailController, hintText: "Email", obscureText: false),
         const SizedBox(height: 20),
         LoginPageTextField(
             controller: passwordController,
@@ -52,7 +81,17 @@ class LoginPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10)),
                   minimumSize: const Size(300, 70)),
               //TODO: change this lambda function
-              onPressed: () => "this",
+              onPressed: () async {
+                final email = emailController.text.trim();
+                final password = passwordController.text.trim();
+                try {
+                  authentication.signInEmailAndPassword(email, password);
+                } on AuthException catch (error) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(error.message),
+                  ));
+                }
+              },
               child: const Text("Sign In")),
         ]),
         const SizedBox(height: 25),
