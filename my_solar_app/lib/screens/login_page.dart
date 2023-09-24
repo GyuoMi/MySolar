@@ -27,7 +27,8 @@ class _LoginPageState extends State<LoginPage> {
     _authSubscription = supabase.auth.onAuthStateChange.listen((event) {
       final session = event.session;
       if (session != null) {
-        Navigator.of(context).pushReplacementNamed('/home_page');
+        //goes to the main page
+        Navigator.of(context).pushReplacementNamed('/');
       }
     });
   }
@@ -80,16 +81,20 @@ class _LoginPageState extends State<LoginPage> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                   minimumSize: const Size(300, 70)),
-              //TODO: change this lambda function
               onPressed: () async {
                 final email = emailController.text.trim();
                 final password = passwordController.text.trim();
                 try {
-                  authentication.signInEmailAndPassword(email, password);
+                  await authentication.signInEmailAndPassword(email, password);
                 } on AuthException catch (error) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(error.message),
+                    backgroundColor: Theme.of(context).colorScheme.error,
                   ));
+                } catch (error) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text("Error occured please try again"),
+                      backgroundColor: Theme.of(context).colorScheme.error));
                 }
               },
               child: const Text("Sign In")),

@@ -38,9 +38,10 @@ class MyApp extends StatelessWidget {
           colorScheme: const ColorScheme.light(),
           useMaterial3: true,
         ),
-        initialRoute: Supabase.instance.client.auth.currentSession != null
-            ? '/login'
-            : '/',
+        // initialRoute: Supabase.instance.client.auth.currentSession != null
+        //     ? '/login'
+        //     : '/',
+        initialRoute: '/login',
         routes: {
           '/': (context) => const MyHomePage(title: 'Home Page'),
           '/login': (context) => const LoginPage(),
