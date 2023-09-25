@@ -1,25 +1,26 @@
-import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:based_battery_indicator/based_battery_indicator.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
+
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:weather_icons/weather_icons.dart';
+
+import '../../API\'s/WeatherApi.dart';
 
 
 class MyCustomWidget extends StatelessWidget {
-  final AnimationController controller1;
+ final AnimationController controller1;
   final AnimationController controller2;
+ final WeatherService weatherService= WeatherService('fbf149b715cc45e8972112241232509');
+
 
 
   MyCustomWidget({required this.controller1,required this.controller2});
-  int weather=0;
-  bool charging = false;
+  int weather=1;
+  bool charging = true;
   bool houseDraw = true;
   bool solarDraw = true;
-  bool gridDraw = true;
+  bool gridDraw = false;
   int batteryPer = 45;
   Widget getWeatherIcon(int weatherCode) {
     IconData iconData;
@@ -85,7 +86,7 @@ class MyCustomWidget extends StatelessWidget {
             ],
           ),
           Padding(
-            padding: EdgeInsets.only(left: 18.0),
+            padding: const EdgeInsets.only(left: 18.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
@@ -117,7 +118,7 @@ class MyCustomWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-                Icon(
+                const Icon(
                   Icons.add_box,
                   color: Colors.black,
                   size: 60.0,
@@ -134,7 +135,7 @@ class MyCustomWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-                Icon(
+                const Icon(
                   Icons.home,
                   color: Colors.blue,
                   size: 60.0,
@@ -155,7 +156,7 @@ class MyCustomWidget extends StatelessWidget {
               ),
             ),
           ),
-          Icon(
+          const Icon(
             Icons.electric_bolt,
             color: Colors.yellow,
             size: 60.0,
@@ -168,7 +169,7 @@ class MyCustomWidget extends StatelessWidget {
 }
 PageController _pageController = PageController(initialPage: 0);
 class HOME extends StatefulWidget {
-  HOME({Key? key, this.title}) : super(key: key);
+  const HOME({Key? key, this.title}) : super(key: key);
   final String? title;
 
   @override
@@ -282,7 +283,7 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
               child: Column(
                 children: <Widget>[
                   TabBar(
-                    tabs: [
+                    tabs: const [
                       Tab(text: 'Loadshedding'),
                       Tab(text: 'Usage'),
                       Tab(text: 'Statistics'),
@@ -294,13 +295,13 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                     },
                   ),
 
-                  Container(
+                  SizedBox(
                     height: MediaQuery.of(context).size.height *
                         0.4, // Adjust the height as needed
                     child: TabBarView(
                       children: [
                         // Loadshedding tab content
-                        Center(child: Text('Loadshedding Content')),
+                        const Center(child: Text('Loadshedding Content')),
 
                         // Usage tab content
                       PageView(
@@ -312,13 +313,13 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                SizedBox(
+                                const SizedBox(
                                   height: 10,
                                 ),
                                 Container(
                                   margin:
-                                  EdgeInsets.all( 0), // Set padding to zero
-                                  child: Text(
+                                  const EdgeInsets.all( 0), // Set padding to zero
+                                  child: const Text(
                                     'Daily Energy Usage',
                                     style: TextStyle(
                                       fontSize: 20,
@@ -330,7 +331,7 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                                   alignment:
                                   Alignment.topCenter, // Set padding to zero
                                   child: SfCircularChart(
-                                    legend: Legend(
+                                    legend: const Legend(
                                         isVisible: true), // Show the legend
                                     series: <CircularSeries>[
                                       DoughnutSeries<ChartData, String>(
@@ -356,7 +357,7 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                                         },
                                         dataLabelMapper: (ChartData data, _) =>
                                         '${data.y} kWh',
-                                        dataLabelSettings: DataLabelSettings(
+                                        dataLabelSettings: const DataLabelSettings(
                                           isVisible: true,
                                           labelPosition:
                                           ChartDataLabelPosition.outside,
@@ -373,10 +374,10 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                SizedBox(
+                                const SizedBox(
                                   height: 10,
                                 ),
-                                Padding(
+                                const Padding(
                                   padding:
                                   EdgeInsets.all(0), // Set padding to zero
                                   child: Text(
@@ -391,7 +392,7 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                                   padding:
                                   EdgeInsets.all(0), // Set padding to zero
                                   child: SfCircularChart(
-                                    legend: Legend(
+                                    legend: const Legend(
                                         isVisible: true), // Show the legend
                                     series: <CircularSeries>[
                                       DoughnutSeries<ChartData, String>(
@@ -417,7 +418,7 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                                         },
                                         dataLabelMapper: (ChartData data, _) =>
                                         '${data.y} kWh',
-                                        dataLabelSettings: DataLabelSettings(
+                                        dataLabelSettings: const DataLabelSettings(
                                           isVisible: true,
                                           labelPosition:
                                           ChartDataLabelPosition.outside,
@@ -435,10 +436,10 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                SizedBox(
+                                const SizedBox(
                                   height: 10,
                                 ),
-                                Padding(
+                                const Padding(
                                   padding:
                                   EdgeInsets.all(0), // Set padding to zero
                                   child: Text(
@@ -453,7 +454,7 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                                   padding:
                                   EdgeInsets.all(0), // Set padding to zero
                                   child: SfCircularChart(
-                                    legend: Legend(
+                                    legend: const Legend(
                                         isVisible: true), // Show the legend
                                     series: <CircularSeries>[
                                       DoughnutSeries<ChartData, String>(
@@ -479,7 +480,7 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                                         },
                                         dataLabelMapper: (ChartData data, _) =>
                                         '${data.y} kWh',
-                                        dataLabelSettings: DataLabelSettings(
+                                        dataLabelSettings: const DataLabelSettings(
                                           isVisible: true,
                                           labelPosition:
                                           ChartDataLabelPosition.outside,
@@ -497,10 +498,10 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                SizedBox(
+                                const SizedBox(
                                   height: 10,
                                 ),
-                                Padding(
+                                const Padding(
                                   padding:
                                   EdgeInsets.all(0), // Set padding to zero
                                   child: Text(
@@ -513,9 +514,9 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                                 ),
                                 Padding(
                                   padding:
-                                  EdgeInsets.all(0), // Set padding to zero
+                                  const EdgeInsets.all(0), // Set padding to zero
                                   child: SfCircularChart(
-                                    legend: Legend(
+                                    legend: const Legend(
                                         isVisible: true), // Show the legend
                                     series: <CircularSeries>[
                                       DoughnutSeries<ChartData, String>(
@@ -541,7 +542,7 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                                         },
                                         dataLabelMapper: (ChartData data, _) =>
                                         '${data.y} kWh',
-                                        dataLabelSettings: DataLabelSettings(
+                                        dataLabelSettings: const DataLabelSettings(
                                           isVisible: true,
                                           labelPosition:
                                           ChartDataLabelPosition.outside,
@@ -557,7 +558,7 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                       ),
 
                         // Statistics tab content
-                        Center(child: Text('Statistics Content')),
+                        const Center(child: Text('Statistics Content')),
                       ],
                     ),
                   ),

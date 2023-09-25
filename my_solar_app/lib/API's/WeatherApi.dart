@@ -20,6 +20,9 @@ class WeatherService {
     // Extract the desired information
     final double temperatureCelsius = weatherData['current']['temp_c'];
     final String conditionText = weatherData['current']['condition']['text'];
+    final String conditionICON = weatherData['current']['condition']['icon'];
+
+
     final int cloudCoverPercentage = weatherData['current']['cloud'];
 
     // Create a map to hold the extracted information
@@ -27,6 +30,7 @@ class WeatherService {
       'Temperature in Celsius': temperatureCelsius,
       'Condition': conditionText,
       'Cloud Cover Percentage': cloudCoverPercentage,
+      "ConditionICON": conditionICON,
     };
 
     return extractedInfo;
