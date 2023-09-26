@@ -13,16 +13,18 @@ class MyCustomWidget extends StatelessWidget {
   final WeatherService weatherService =
       WeatherService('fbf149b715cc45e8972112241232509');
     Future<String?> getWeather() async {
+      //print(weatherInfo);
   try {
     Map<String, dynamic> extractedInfo = await weatherService.getWeather("Johannesburg");
     
     // Extract the relevant weather information from extractedInfo
    // String location = extractedInfo['location']; // Replace with the actual key for location
    // String temperature = extractedInfo['temperature']; // Replace with the actual key for temperature
-    String conditioncode = extractedInfo['conditioncode']; // Replace with the actual key for condition
+    String conditionICON = extractedInfo['ConditionICON']; // Replace with the actual key for condition
 
     // Create a formatted string with the weather information
-    String weatherInfo =conditioncode ;
+    String weatherInfo ="https:$conditionICON";
+     print(weatherInfo);
 
     return weatherInfo;
   } catch (e) {
@@ -46,13 +48,7 @@ class MyCustomWidget extends StatelessWidget {
       IconData iconData;
       Color color;
 
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        // While fetching data, you can show a loading indicator or default icon
-        return CircularProgressIndicator();
-      } else if (snapshot.hasError) {
-        // If there's an error fetching data, you can show an error icon or message
-        return Icon(Icons.error, color: Colors.red);
-      } else if (snapshot.hasData) {
+      
         // If data is successfully fetched, you can display the weather icon
         String conditionCode = snapshot.data!; // The URL obtained from getWeather
 
@@ -61,13 +57,11 @@ class MyCustomWidget extends StatelessWidget {
           height: 64, // Set the desired height
           child: Image.network(
             conditionCode, // Use the URL obtained from getWeather
-            color: Colors.blue,
+          //  color: Colors.blue,
           ),
         );
-      } else {
-        // Handle other cases here (e.g., no data available)
-        return Icon(Icons.cloud, color: Colors.grey);
-      }
+      
+      
     },
   );
 }
