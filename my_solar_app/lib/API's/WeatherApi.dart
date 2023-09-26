@@ -7,11 +7,11 @@ class WeatherService {
   WeatherService(this.apiKey);
 
  Future<Map<String, dynamic>> getWeather(String location) async {
-  final String apiUrl = 'https://api.weatherapi.com/v1/current.json';
+ final String apiUrl = 'https://api.weatherapi.com/v1/current.json';
 
   final response = await http.get(
-    Uri.parse('$apiUrl?key=$apiKey&q=$location'),
-  );
+      Uri.parse('$apiUrl?key=$apiKey&q=$location'),
+    );
 
   if (response.statusCode == 200) {
     // If the server returns a 200 OK response, parse the JSON
