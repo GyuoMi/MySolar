@@ -21,6 +21,7 @@ class WeatherService {
     final double temperatureCelsius = weatherData['current']['temp_c'];
     final String conditionText = weatherData['current']['condition']['text'];
     final String conditionICON = weatherData['current']['condition']['icon'];
+  final String conditioncode= weatherData['current']['condition']['code'];
 
 
     final int cloudCoverPercentage = weatherData['current']['cloud'];
@@ -31,6 +32,7 @@ class WeatherService {
       'Condition': conditionText,
       'Cloud Cover Percentage': cloudCoverPercentage,
       "ConditionICON": conditionICON,
+      "conditioncode":conditioncode,
     };
 
     return extractedInfo;
