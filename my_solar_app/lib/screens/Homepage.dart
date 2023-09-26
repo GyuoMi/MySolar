@@ -12,6 +12,25 @@ class MyCustomWidget extends StatelessWidget {
   final AnimationController controller2;
   final WeatherService weatherService =
       WeatherService('fbf149b715cc45e8972112241232509');
+    Future<String?> getWeather() async {
+  try {
+    Map<String, dynamic> extractedInfo = await weatherService.getWeather("Johannesburg");
+    
+    // Extract the relevant weather information from extractedInfo
+   // String location = extractedInfo['location']; // Replace with the actual key for location
+   // String temperature = extractedInfo['temperature']; // Replace with the actual key for temperature
+    String conditioncode = extractedInfo['conditioncode']; // Replace with the actual key for condition
+
+    // Create a formatted string with the weather information
+    String weatherInfo =conditioncode ;
+
+    return weatherInfo;
+  } catch (e) {
+    // Handle any potential errors here
+    print("Error fetching weather: $e");
+    return null;
+  }
+}
 
   MyCustomWidget({required this.controller1, required this.controller2});
   int weather = 1;
@@ -20,48 +39,46 @@ class MyCustomWidget extends StatelessWidget {
   bool solarDraw = true;
   bool gridDraw = false;
   int batteryPer = 45;
-  Widget getWeatherIcon(int weatherCode) {
-    IconData iconData;
-    Color color;
+  FutureBuilder<String?> getWeatherIcon() {
+  return FutureBuilder<String?>(
+    future: getWeather(), // Call the getWeather function to fetch weather information
+    builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+      IconData iconData;
+      Color color;
 
-    switch (weatherCode) {
-      case 0:
-        iconData = WeatherIcons.day_sunny; // Sun
-        color = Colors.yellow;
-        break;
-      case 1:
-        iconData = WeatherIcons.day_cloudy; // Sun and cloud
-        color = Colors.lightBlueAccent;
-        break;
-      case 2:
-        iconData = WeatherIcons.cloud; // Cloud
-        color = Colors.blueGrey;
-        break;
-      case 3:
-        iconData =
-            WeatherIcons.rain; // Rain (You can change this to a rain icon)
-        color = Colors.blueAccent;
-        break;
-      case 4:
-        iconData = WeatherIcons.stars; // Night
-        color = Colors.black;
-        break;
-      default:
-        iconData =
-            WeatherIcons.day_haze; // Default icon for unknown weather code
-        color = Colors.black;
-    }
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        // While fetching data, you can show a loading indicator or default icon
+        return CircularProgressIndicator();
+      } else if (snapshot.hasError) {
+        // If there's an error fetching data, you can show an error icon or message
+        return Icon(Icons.error, color: Colors.red);
+      } else if (snapshot.hasData) {
+        // If data is successfully fetched, you can display the weather icon
+        String conditionCode = snapshot.data!; // The URL obtained from getWeather
 
-    return BoxedIcon(
-      iconData,
-      color: color,
-      size: 60.0,
-    );
-  }
+        return Container(
+          width: 64, // Set the desired width
+          height: 64, // Set the desired height
+          child: Image.network(
+            conditionCode, // Use the URL obtained from getWeather
+            color: Colors.blue,
+          ),
+        );
+      } else {
+        // Handle other cases here (e.g., no data available)
+        return Icon(Icons.cloud, color: Colors.grey);
+      }
+    },
+  );
+}
+
+
+  
+
 
   @override
   Widget build(BuildContext context) {
-    Widget weatherIcon = getWeatherIcon(weather);
+    Widget weatherIcon = getWeatherIcon();
     return SingleChildScrollView(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
