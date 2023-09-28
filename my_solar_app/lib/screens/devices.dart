@@ -1,61 +1,85 @@
 import 'package:flutter/material.dart';
+import 'package:my_solar_app/cloud_functions/database/database_api.dart';
+import 'package:my_solar_app/cloud_functions/database/interfaces/database_functions_interface.dart';
+import 'package:my_solar_app/cloud_functions/database/supabase_functions.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:supabase/supabase.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../cloud_functions/database/interfaces/device_persistence_interface.dart';
 
-final supabaseProvider = FutureProvider<SupabaseClient>((ref) {
-  return SupabaseClient(
-     'https://fsirbhoucrjtnkvchwuf.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzaXJiaG91Y3JqdG5rdmNod3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTIzNzYxNTAsImV4cCI6MjAwNzk1MjE1MH0.Bb3OZyxku8_7c_aIQe5GlMsup0SODK-5pPa92tzkNFM'
-  );
-});
+IDatabaseFunctions database = SupabaseFunctions();
 
+class DevicesPage extends StatelessWidget {
+IDevicePersistence devicePersistence = DatabaseApi();
+  
+  final List<Device> devices = [
+    Device(name: 'Device 1', wattage: 100),
+    Device(name: 'Device 2', wattage: 200),
+    // Add more devices here as needed
+  ];
 
-final userDevicesProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  final supabase = ref.read(supabaseProvider);
-  final response = await supabase.from('setup_tbl')
-      .select('device_name, device_wattage')
-      .execute();
-  if (response.error != null) {
-    throw Exception('Failed to fetch user devices: ${response.error}');
-  }
-
-
-
-class UserDeviceList extends ConsumerWidget {
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final userDevices = ref(getDevice(61, 1));
-
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('User Devices'),
+        title: Text('Devices'),
       ),
-      body: userDevices.when(
-        data: (devices) {
-          return ListView.builder(
-            itemCount: devices.length,
-            itemBuilder: (context, index) {
-              final device = devices[index];
-              final deviceName = device['device_name'] as String;
-              final deviceWattage = device['device_wattage'] as String;
-
-              return ListTile(
-                title: Text(deviceName),
-                subtitle: Text('Wattage: $deviceWattage'),
-                onTap: () {
-                  // popup for device settings is here
-                },
-              );
-            },
-          );
+      body: DeviceList(devices: devices), // Pass the devices list here
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Handle adding a new device here
         },
-        loading: () => CircularProgressIndicator(),
-        error: (error, stackTrace) {
-          return Center(
-            child: Text('Error: $error'),
-          );
-        },
+        child: Icon(Icons.add),
       ),
     );
   }
 }
+
+
+class Device {
+  final String name;
+  final double wattage;
+  
+  Device({required this.name, required this.wattage});
+}
+
+class DeviceList extends StatelessWidget {
+  final List<Device> devices;
+
+  DeviceList({required this.devices});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: devices.length,
+      itemBuilder: (context, index) {
+        final device = devices[index];
+
+        return FutureBuilder(
+          future: devicePersistence.getDevice(61), // Replace 61 with the actual user ID
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator(); // Display loading indicator while fetching data
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              final deviceData = snapshot.data;
+
+              return ListTile(
+                onTap: () {
+                  // Handle the click on the device here
+                },
+                title: Text(device.name),
+                subtitle: Text('${device.wattage} watts'),
+                trailing: Icon(Icons.arrow_forward),
+              );
+            }
+          },
+        );
+      },
+    );
+  }
+}
+
+
+
