@@ -9,8 +9,8 @@ import '../cloud_functions/database/interfaces/device_persistence_interface.dart
 
 IDatabaseFunctions database = SupabaseFunctions();
 
-class DevicesPage extends StatelessWidget {
 IDevicePersistence devicePersistence = DatabaseApi();
+class DevicesPage extends StatelessWidget {
   
   final List<Device> devices = [
     Device(name: 'Device 1', wattage: 100),
@@ -48,6 +48,14 @@ class DeviceList extends StatelessWidget {
 
   DeviceList({required this.devices});
 
+  void _showDeviceEditDialog(BuildContext context, Device device) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return DeviceEditDialog(device: device);
+      },
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
