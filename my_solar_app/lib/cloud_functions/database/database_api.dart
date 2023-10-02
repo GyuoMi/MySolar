@@ -211,8 +211,8 @@ class DatabaseApi
   }
 
   @override
-  Future getUserDeviceIds(int userId) async {
-    return database.readRecordsWhere(setupTable, {userId: userId});
+  Future getUserDeviceIds(int id) async {
+    return database.readRecordsWhere(setupTable, {userId: id});
   }
 
   @override
