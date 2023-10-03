@@ -36,7 +36,10 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   supabase_auth_ui: ^0.2.1
-
+  # testing http requests using dio
+  dio: ^5.3.2
+  # allows sharing data across application, helps with reactivity and consistency in the app
+  riverpod: ^2.4.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
