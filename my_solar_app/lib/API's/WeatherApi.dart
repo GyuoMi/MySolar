@@ -25,7 +25,7 @@ class WeatherService {
 
 
      var cloudCoverPercentage = weatherData['current']['cloud'];
-    print("before map");
+
     // Create a map to hold the extracted information
     final Map<String, dynamic> extractedInfo = {
       'Temperature in Celsius': temperatureCelsius,
@@ -34,7 +34,7 @@ class WeatherService {
       "ConditionICON": conditionICON,
       "conditioncode":conditioncode,
     };
-    print(extractedInfo);
+
     return extractedInfo;
   } else {
     // If the server did not return a 200 OK response, throw an exception.

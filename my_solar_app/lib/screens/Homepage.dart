@@ -7,27 +7,45 @@ import 'package:weather_icons/weather_icons.dart';
 
 import '../../API\'s/WeatherApi.dart';
 
-class MyCustomWidget extends StatelessWidget {
+class MyCustomWidget extends StatefulWidget {
+  const MyCustomWidget({
+    Key? key,
+    required this.controller1,
+    required this.controller2,
+  }) : super(key: key);
+
   final AnimationController controller1;
   final AnimationController controller2;
 
+  @override
+  _MyCustomWidgetState createState() => _MyCustomWidgetState();
+}
+
+class _MyCustomWidgetState extends State<MyCustomWidget> {
+
+
+
   final WeatherService weatherService =
       WeatherService('93ff5e1b86ec4bddaa5194216230310');
-    Future<String?> getWeather() async {
+
+  Future<String?> getWeather() async {
       //print(weatherInfo);
   try {
-    print("Trying to get weather");
+
     Map<String, dynamic> extractedInfo = await weatherService.getWeather("Johannesburg");
-    print("After Map");
+
     // Extract the relevant weather information from extractedInfo
    // String location = extractedInfo['location']; // Replace with the actual key for location
    // String temperature = extractedInfo['temperature']; // Replace with the actual key for temperature
     String conditionICON = extractedInfo['ConditionICON']; // Replace with the actual key for condition
-    print("After conditionICON");
+
     // Create a formatted string with the weather information
     String weatherInfo ="https:$conditionICON";
      print(weatherInfo);
-    print(conditionICON);
+
+    setState(() {
+      url = weatherInfo;
+    });
     return weatherInfo;
   } catch (e) {
     // Handle any potential errors here
@@ -37,55 +55,33 @@ class MyCustomWidget extends StatelessWidget {
   }
 }
 
-  MyCustomWidget({required this.controller1, required this.controller2});
-  int weather = 1;
+  @override
+  void initState() {
+    super.initState();
+    // Call getWeatherIcon when the widget initializes to fetch the weather icon
+    getWeatherIcon();
+  }
+
   bool charging = true;
   bool houseDraw = true;
   bool solarDraw = true;
   bool gridDraw = false;
   int batteryPer = 45;
-  FutureBuilder<String?> getWeatherIcon() {
-    return FutureBuilder<String?>(
-      future: getWeather(), // Call the getWeather function to fetch weather information
-      builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
-        // Define variables to hold icon data and color
-        IconData iconData;
-        Color color;
-        if (snapshot.hasData) {
-          print("snapshot has data");
-        }else{
-          print("snapshot does not have data");
-        }
-        // Check if data is successfully fetched
-        while(!snapshot.hasData){
-          print("waiting");
-        }
-        if (snapshot.hasData) {
-          // If data is available, set the condition code obtained from getWeather
-          String conditionCode = snapshot.data!; // The URL obtained from getWeather
+  String url = "";
 
-          // Return a container with an Image widget displaying the weather icon
-          return Container(
-            width: 64, // Set the desired width
-            height: 64, // Set the desired height
-            child: Image.network(
-              conditionCode, // Use the URL obtained from getWeather
-            ),
-          );
-        } else {
-          // If data is not yet available, return a loading indicator or fallback widget
-          return CircularProgressIndicator(); // Example: Show a loading indicator
-        }
-      },
-    );
+  Future<void> getWeatherIcon() async {
+    final weatherInfo = await getWeather(); // Get the weather info
+
+    // When you have the weatherInfo, update the URL and trigger a UI update
+    setState(() {
+      url = weatherInfo!;
+    });
   }
-
-
 
 
   @override
   Widget build(BuildContext context) {
-    Widget weatherIcon = getWeatherIcon();
+
     return SingleChildScrollView(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -94,7 +90,13 @@ class MyCustomWidget extends StatelessWidget {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              weatherIcon,
+          (url.isNotEmpty)
+          ? Container(
+        width: 64,
+        height: 64,
+        child: Image.network(url),
+      )
+          : CircularProgressIndicator(),
               RotatedBox(
                 quarterTurns: 1,
                 child: SizedBox(
@@ -102,7 +104,7 @@ class MyCustomWidget extends StatelessWidget {
                   height: 10,
                   child: LinearProgressIndicator(
                     color: CupertinoColors.activeGreen,
-                    value: solarDraw ? controller1.value : 0,
+                    value: solarDraw ? widget.controller1.value : 0,
                   ),
                 ),
               ),
@@ -136,7 +138,7 @@ class MyCustomWidget extends StatelessWidget {
                     height: 10,
                     child: LinearProgressIndicator(
                       color: CupertinoColors.activeGreen,
-                      value: charging ? controller2.value : controller1.value,
+                      value: charging ? widget.controller2.value : widget.controller1.value,
                     ),
                   ),
                 ),
@@ -152,7 +154,7 @@ class MyCustomWidget extends StatelessWidget {
                     height: 10,
                     child: LinearProgressIndicator(
                       color: CupertinoColors.activeGreen,
-                      value: houseDraw ? controller2.value : 0,
+                      value: houseDraw ? widget.controller2.value : 0,
                     ),
                   ),
                 ),
@@ -171,7 +173,7 @@ class MyCustomWidget extends StatelessWidget {
               height: 10,
               child: LinearProgressIndicator(
                 color: CupertinoColors.activeGreen,
-                value: gridDraw ? controller1.value : 0,
+                value: gridDraw ? widget.controller1.value : 0,
               ),
             ),
           ),
