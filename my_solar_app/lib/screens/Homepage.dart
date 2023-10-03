@@ -6,34 +6,37 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:weather_icons/weather_icons.dart';
 
 import '../../API\'s/WeatherApi.dart';
+import 'dart:async';
 
 class MyCustomWidget extends StatelessWidget {
   final AnimationController controller1;
   final AnimationController controller2;
   int count = 0;
   final WeatherService weatherService =
-  WeatherService('fbf149b715cc45e8972112241232509');
+      WeatherService('fbf149b715cc45e8972112241232509');
   Future<String?> getWeather() async {
     //print(weatherInfo);
     try {
-      Map<String, dynamic> extractedInfo = await weatherService.getWeather("Johannesburg");
+      Map<String, dynamic> extractedInfo =
+          await weatherService.getWeather("Johannesburg");
 
       // Extract the relevant weather information from extractedInfo
       // String location = extractedInfo['location']; // Replace with the actual key for location
       // String temperature = extractedInfo['temperature']; // Replace with the actual key for temperature
-      String conditionICON = extractedInfo['ConditionICON']; // Replace with the actual key for condition
+      String conditionICON = extractedInfo[
+          'ConditionICON']; // Replace with the actual key for condition
 
       // Create a formatted string with the weather information
-      String weatherInfo ="https:$conditionICON";
-      count ++;
+      String weatherInfo = "https:$conditionICON";
+      count++;
       //print(weatherInfo);
 
       return weatherInfo;
-     } catch (e) {
-    //   // Handle any potential errors here
-    //   print("Error fetching weather: $e");
-    //   return null;
-     }
+    } catch (e) {
+      //   // Handle any potential errors here
+      //   print("Error fetching weather: $e");
+      //   return null;
+    }
   }
 
   MyCustomWidget({required this.controller1, required this.controller2});
@@ -59,7 +62,8 @@ class MyCustomWidget extends StatelessWidget {
             return Icon(iconData, color: color); // Display a default error icon
           } else {
             // Data fetched successfully, display the weather icon
-            String conditionCode = snapshot.data!; // The URL obtained from getWeather
+            String conditionCode =
+                snapshot.data!; // The URL obtained from getWeather
             return Container(
               width: 64,
               height: 64,
@@ -76,9 +80,6 @@ class MyCustomWidget extends StatelessWidget {
       },
     );
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -194,6 +195,8 @@ class HOME extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
+  String currentTime = "";
+  //List<LineGraphData> LGData = [];
   final controller = PageController();
   int tabIndex = 0;
   late AnimationController controller1;
@@ -221,6 +224,36 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
     });
   }
 
+  //function to recalculate graph values every hour
+  calcTimer() {
+    Timer mytimer = Timer.periodic(Duration(seconds: 10), (timer) {
+      //Gets current time
+      DateTime now = new DateTime.now();
+      int hour = now.hour;
+      currentTime = now.hour.toString() + ":" + now.minute.toString();
+      //print(currentTime);
+
+      //if (sunny){int lastSunnyDate == now.day; int lastSunnyHour == now.day;}
+
+      //Production
+      int production = 0;
+      if (hour > 19 && hour < 4) {
+        production = 0;
+      }
+      //if((rainy || overcast) && (lastSunnyDate == now.day)){productionDecrease = (hour - lastSunnyHour) * 5}
+      //if (hour > 11 && hour < 16 && sunny) {MANUAL_MAX_PRODUCTION*0.9}
+      //if (rainy || overcast) {MANUAL_MAX_PRODUCTION*0.35}
+
+      //Consumption
+      //Summation of devices
+
+      //Battery
+      //Prev_Battery_Power + (production - consumption)
+
+      //LGData.add(LineGraphData(currentTime, production, consumption, battery));
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -241,6 +274,9 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
 
     // Start the first animation
     startAnimation1();
+
+    //recalculates every hour
+    calcTimer();
   }
 
   @override
@@ -365,9 +401,9 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                                         DoughnutSeries<ChartData, String>(
                                           dataSource: dailyChartData,
                                           xValueMapper: (ChartData data, _) =>
-                                          data.x,
+                                              data.x,
                                           yValueMapper: (ChartData data, _) =>
-                                          data.y,
+                                              data.y,
                                           // Radius of doughnut
                                           radius: '50%',
                                           // Customize segment colors
@@ -386,12 +422,12 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                                           },
                                           dataLabelMapper:
                                               (ChartData data, _) =>
-                                          '${data.y} kWh',
+                                                  '${data.y} kWh',
                                           dataLabelSettings:
-                                          const DataLabelSettings(
+                                              const DataLabelSettings(
                                             isVisible: true,
                                             labelPosition:
-                                            ChartDataLabelPosition.outside,
+                                                ChartDataLabelPosition.outside,
                                           ),
                                         )
                                       ],
@@ -430,9 +466,9 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                                         DoughnutSeries<ChartData, String>(
                                           dataSource: weeklyChartData,
                                           xValueMapper: (ChartData data, _) =>
-                                          data.x,
+                                              data.x,
                                           yValueMapper: (ChartData data, _) =>
-                                          data.y,
+                                              data.y,
                                           // Radius of doughnut
                                           radius: '50%',
                                           // Customize segment colors
@@ -451,12 +487,12 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                                           },
                                           dataLabelMapper:
                                               (ChartData data, _) =>
-                                          '${data.y} kWh',
+                                                  '${data.y} kWh',
                                           dataLabelSettings:
-                                          const DataLabelSettings(
+                                              const DataLabelSettings(
                                             isVisible: true,
                                             labelPosition:
-                                            ChartDataLabelPosition.outside,
+                                                ChartDataLabelPosition.outside,
                                           ),
                                         )
                                       ],
@@ -495,9 +531,9 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                                         DoughnutSeries<ChartData, String>(
                                           dataSource: monthlyChartData,
                                           xValueMapper: (ChartData data, _) =>
-                                          data.x,
+                                              data.x,
                                           yValueMapper: (ChartData data, _) =>
-                                          data.y,
+                                              data.y,
                                           // Radius of doughnut
                                           radius: '50%',
                                           // Customize segment colors
@@ -516,12 +552,12 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                                           },
                                           dataLabelMapper:
                                               (ChartData data, _) =>
-                                          '${data.y} kWh',
+                                                  '${data.y} kWh',
                                           dataLabelSettings:
-                                          const DataLabelSettings(
+                                              const DataLabelSettings(
                                             isVisible: true,
                                             labelPosition:
-                                            ChartDataLabelPosition.outside,
+                                                ChartDataLabelPosition.outside,
                                           ),
                                         )
                                       ],
@@ -560,9 +596,9 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                                         DoughnutSeries<ChartData, String>(
                                           dataSource: totalChartData,
                                           xValueMapper: (ChartData data, _) =>
-                                          data.x,
+                                              data.x,
                                           yValueMapper: (ChartData data, _) =>
-                                          data.y,
+                                              data.y,
                                           // Radius of doughnut
                                           radius: '50%',
                                           // Customize segment colors
@@ -581,12 +617,12 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                                           },
                                           dataLabelMapper:
                                               (ChartData data, _) =>
-                                          '${data.y} kWh',
+                                                  '${data.y} kWh',
                                           dataLabelSettings:
-                                          const DataLabelSettings(
+                                              const DataLabelSettings(
                                             isVisible: true,
                                             labelPosition:
-                                            ChartDataLabelPosition.outside,
+                                                ChartDataLabelPosition.outside,
                                           ),
                                         )
                                       ],
@@ -608,7 +644,7 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                               ),
                               Align(
                                 alignment:
-                                Alignment.topCenter, // Set padding to zero
+                                    Alignment.topCenter, // Set padding to zero
                                 child: SfCartesianChart(
                                   plotAreaBorderWidth: 0,
                                   primaryXAxis: CategoryAxis(
@@ -627,9 +663,9 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                                     StackedLineSeries<LineGraphData, String>(
                                       dataSource: LGData,
                                       xValueMapper: (LineGraphData power, _) =>
-                                      power.LGx,
+                                          power.LGx,
                                       yValueMapper: (LineGraphData power, _) =>
-                                      power.LGy,
+                                          power.LGy,
                                       name: " Production",
                                       color: Colors.blue,
                                       width: 3,
@@ -638,9 +674,9 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                                     StackedLineSeries<LineGraphData, String>(
                                       dataSource: LGData,
                                       xValueMapper: (LineGraphData power, _) =>
-                                      power.LGx,
+                                          power.LGx,
                                       yValueMapper: (LineGraphData power, _) =>
-                                      power.LGy2,
+                                          power.LGy2,
                                       name: " Consumption",
                                       color: Colors.red,
                                       width: 3,
@@ -649,9 +685,9 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                                     StackedLineSeries<LineGraphData, String>(
                                       dataSource: LGData,
                                       xValueMapper: (LineGraphData power, _) =>
-                                      power.LGx,
+                                          power.LGx,
                                       yValueMapper: (LineGraphData power, _) =>
-                                      power.LGy3,
+                                          power.LGy3,
                                       name: " Battery",
                                       color: Colors.green,
                                       width: 3,
