@@ -18,14 +18,14 @@ class WeatherService {
     final Map<String, dynamic> weatherData = jsonDecode(response.body);
 
     // Extract the desired information
-    final double temperatureCelsius = weatherData['current']['temp_c'];
-    final String conditionText = weatherData['current']['condition']['text'];
-    final String conditionICON = weatherData['current']['condition']['icon'];
-  final String conditioncode= weatherData['current']['condition']['code'];
+     var temperatureCelsius = weatherData['current']['temp_c'];
+     var conditionText = weatherData['current']['condition']['text'];
+     var conditionICON = weatherData['current']['condition']['icon'];
+   var conditioncode= weatherData['current']['condition']['code'];
 
 
-    final int cloudCoverPercentage = weatherData['current']['cloud'];
-
+     var cloudCoverPercentage = weatherData['current']['cloud'];
+    print("before map");
     // Create a map to hold the extracted information
     final Map<String, dynamic> extractedInfo = {
       'Temperature in Celsius': temperatureCelsius,
@@ -34,7 +34,7 @@ class WeatherService {
       "ConditionICON": conditionICON,
       "conditioncode":conditioncode,
     };
-
+    print(extractedInfo);
     return extractedInfo;
   } else {
     // If the server did not return a 200 OK response, throw an exception.

@@ -10,25 +10,28 @@ import '../../API\'s/WeatherApi.dart';
 class MyCustomWidget extends StatelessWidget {
   final AnimationController controller1;
   final AnimationController controller2;
+
   final WeatherService weatherService =
-      WeatherService('fbf149b715cc45e8972112241232509');
+      WeatherService('93ff5e1b86ec4bddaa5194216230310');
     Future<String?> getWeather() async {
       //print(weatherInfo);
   try {
+    print("Trying to get weather");
     Map<String, dynamic> extractedInfo = await weatherService.getWeather("Johannesburg");
-    
+    print("After Map");
     // Extract the relevant weather information from extractedInfo
    // String location = extractedInfo['location']; // Replace with the actual key for location
    // String temperature = extractedInfo['temperature']; // Replace with the actual key for temperature
     String conditionICON = extractedInfo['ConditionICON']; // Replace with the actual key for condition
-
+    print("After conditionICON");
     // Create a formatted string with the weather information
     String weatherInfo ="https:$conditionICON";
      print(weatherInfo);
-
+    print(conditionICON);
     return weatherInfo;
   } catch (e) {
     // Handle any potential errors here
+
     print("Error fetching weather: $e");
     return null;
   }
@@ -42,32 +45,42 @@ class MyCustomWidget extends StatelessWidget {
   bool gridDraw = false;
   int batteryPer = 45;
   FutureBuilder<String?> getWeatherIcon() {
-  return FutureBuilder<String?>(
-    future: getWeather(), // Call the getWeather function to fetch weather information
-    builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
-      IconData iconData;
-      Color color;
+    return FutureBuilder<String?>(
+      future: getWeather(), // Call the getWeather function to fetch weather information
+      builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+        // Define variables to hold icon data and color
+        IconData iconData;
+        Color color;
+        if (snapshot.hasData) {
+          print("snapshot has data");
+        }else{
+          print("snapshot does not have data");
+        }
+        // Check if data is successfully fetched
+        while(!snapshot.hasData){
+          print("waiting");
+        }
+        if (snapshot.hasData) {
+          // If data is available, set the condition code obtained from getWeather
+          String conditionCode = snapshot.data!; // The URL obtained from getWeather
 
-      
-        // If data is successfully fetched, you can display the weather icon
-        String conditionCode = snapshot.data!; // The URL obtained from getWeather
-
-        return Container(
-          width: 64, // Set the desired width
-          height: 64, // Set the desired height
-          child: Image.network(
-            conditionCode, // Use the URL obtained from getWeather
-          //  color: Colors.blue,
-          ),
-        );
-      
-      
-    },
-  );
-}
+          // Return a container with an Image widget displaying the weather icon
+          return Container(
+            width: 64, // Set the desired width
+            height: 64, // Set the desired height
+            child: Image.network(
+              conditionCode, // Use the URL obtained from getWeather
+            ),
+          );
+        } else {
+          // If data is not yet available, return a loading indicator or fallback widget
+          return CircularProgressIndicator(); // Example: Show a loading indicator
+        }
+      },
+    );
+  }
 
 
-  
 
 
   @override
