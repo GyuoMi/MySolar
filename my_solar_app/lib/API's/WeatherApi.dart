@@ -7,11 +7,11 @@ class WeatherService {
   WeatherService(this.apiKey);
 
  Future<Map<String, dynamic>> getWeather(String location) async {
-  final String apiUrl = 'https://api.weatherapi.com/v1/current.json';
+ final String apiUrl = 'https://api.weatherapi.com/v1/current.json';
 
   final response = await http.get(
-    Uri.parse('$apiUrl?key=$apiKey&q=$location'),
-  );
+      Uri.parse('$apiUrl?key=$apiKey&q=$location'),
+    );
 
   if (response.statusCode == 200) {
     // If the server returns a 200 OK response, parse the JSON
@@ -21,6 +21,7 @@ class WeatherService {
     final double temperatureCelsius = weatherData['current']['temp_c'];
     final String conditionText = weatherData['current']['condition']['text'];
     final String conditionICON = weatherData['current']['condition']['icon'];
+  final String conditioncode= weatherData['current']['condition']['code'];
 
 
     final int cloudCoverPercentage = weatherData['current']['cloud'];
@@ -31,6 +32,7 @@ class WeatherService {
       'Condition': conditionText,
       'Cloud Cover Percentage': cloudCoverPercentage,
       "ConditionICON": conditionICON,
+      "conditioncode":conditioncode,
     };
 
     return extractedInfo;
