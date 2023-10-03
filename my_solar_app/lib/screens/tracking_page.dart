@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:my_solar_app/cloud_functions/database/database_api.dart';
 import 'package:my_solar_app/screens/devices.dart';
 import 'package:my_solar_app/screens/login_page.dart';
 import 'package:my_solar_app/widgets/authentication/square_tile_images.dart';
 import 'package:my_solar_app/widgets/authentication/text_field.dart';
 import 'package:my_solar_app/cloud_functions/authentication/interfaces/auth_repository_interface.dart';
+import 'package:my_solar_app/cloud_functions/database/interfaces/device_persistence_interface.dart';
+
+IDevicePersistence devicePersistence = DatabaseApi();
+final DeviceList = devicePersistence.getUserDeviceIds(20);
 
 class TrackingPage extends StatelessWidget {
   TrackingPage({super.key});
@@ -13,7 +18,7 @@ class TrackingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Tracking'),
+          title: const Text('Tracking'),
         ),
         body: Center(
             child: Column(
@@ -40,7 +45,6 @@ class TrackingPage extends StatelessWidget {
                             borderRadius: BorderRadius.circular(10)),
                         minimumSize: const Size(300, 70)),
                     onPressed: () {
-                      //TODO: change LoginPage to devices page
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => DevicesPage()));
                     },
@@ -54,7 +58,8 @@ class TrackingPage extends StatelessWidget {
                     Expanded(
                         flex: 3,
                         child: Padding(
-                          padding: EdgeInsets.only(left: 10),
+                          padding:
+                              EdgeInsets.only(left: 10, bottom: 10, top: 10),
                           child: Text(
                             "Devices",
                             style: TextStyle(fontWeight: FontWeight.bold),
@@ -64,7 +69,8 @@ class TrackingPage extends StatelessWidget {
                     Expanded(
                         flex: 1,
                         child: Padding(
-                          padding: EdgeInsets.only(right: 10),
+                          padding:
+                              EdgeInsets.only(right: 10, bottom: 10, top: 10),
                           child: Text(
                             "Minutes",
                             style: TextStyle(fontWeight: FontWeight.bold),
@@ -81,7 +87,7 @@ class TrackingPage extends StatelessWidget {
                   itemCount: 10,
                   itemBuilder: (context, index) {
                     _controllers!.add(TextEditingController());
-                    _controllers![index].text = "gg";
+                    _controllers![index].text = "00";
                     return Row(children: [
                       const Expanded(
                           flex: 3,
