@@ -1,48 +1,34 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:my_solar_app/cloud_functions/authentication/auth_repository.dart';
-import 'package:my_solar_app/widgets/authentication/square_tile_images.dart';
 import 'package:my_solar_app/widgets/authentication/text_field.dart';
 import 'package:my_solar_app/cloud_functions/authentication/interfaces/auth_repository_interface.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
-
+class RegisterPage extends StatefulWidget {
+  RegisterPage({super.key});
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   final IAuthRepository authentication = AuthRepository();
+  final Iauthentication = AuthRepository();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  ColorLabel? systemType;
+
   final supabase = Supabase.instance.client;
-  late final StreamSubscription<AuthState> _authSubscription;
-
-  @override
-  void initState() {
-    super.initState();
-    _authSubscription = supabase.auth.onAuthStateChange.listen((event) {
-      final session = event.session;
-      if (session != null) {
-        //goes to the main page
-        Navigator.of(context).pushReplacementNamed('/');
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
-    _authSubscription.cancel();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
+    final TextEditingController colorController = TextEditingController();
+    final List<DropdownMenuEntry<ColorLabel>> colorEntries =
+        <DropdownMenuEntry<ColorLabel>>[];
+    for (final ColorLabel color in ColorLabel.values) {
+      colorEntries.add(
+        DropdownMenuEntry<ColorLabel>(
+            value: color, label: color.label, enabled: color.label != 'Grey'),
+      );
+    }
     return Scaffold(
         body: Center(
             child: Column(
@@ -52,9 +38,28 @@ class _LoginPageState extends State<LoginPage> {
           'assets/images/my_solar_logo.png',
           scale: 3,
         ),
-        const Text("Welcome back!"),
+        /* const Text("Register"), */
         //shows user name and password text boxes
         const SizedBox(height: 40),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                DropdownMenu<ColorLabel>(
+                    width: 300,
+                    initialSelection: ColorLabel.manual,
+                    controller: colorController,
+                    label: const Text('System Type'),
+                    dropdownMenuEntries: colorEntries,
+                    onSelected: (ColorLabel? color) {
+                      setState(() {
+                        systemType = color;
+                      });
+                    }),
+              ]),
+        ),
+
         LoginPageTextField(
           controller: emailController,
           hintText: "Email",
@@ -70,14 +75,14 @@ class _LoginPageState extends State<LoginPage> {
         ),
 
         //aligns password to the right
-        const Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Padding(
-                padding: EdgeInsets.fromLTRB(0, 5, 50, 0),
-                child: Text("Forgot Password?"))
-          ],
-        ),
+        // const Row(
+        //   mainAxisAlignment: MainAxisAlignment.end,
+        //   children: [
+        //     Padding(
+        //         padding: EdgeInsets.fromLTRB(0, 5, 50, 0),
+        //         child: Text("Forgot Password?"))
+        //   ],
+        // ),
         const SizedBox(height: 20),
 
         //creates Sign In button
@@ -90,8 +95,11 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: () async {
                 final email = emailController.text.trim();
                 final password = passwordController.text.trim();
+                //TODO also upload user to our database and upload their solarsystem setup
                 try {
-                  await authentication.signInEmailAndPassword(email, password);
+                  await authentication.signUpEmailAndPassword(email, password);
+                  Navigator.of(context)
+                      .pushReplacementNamed('/register_system');
                 } on AuthException catch (error) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(error.message),
@@ -103,37 +111,37 @@ class _LoginPageState extends State<LoginPage> {
                       backgroundColor: Theme.of(context).colorScheme.error));
                 }
               },
-              child: const Text("Sign In")),
+              child: const Text("Next")),
         ]),
         const SizedBox(height: 25),
 
         //creates divider with text continue with
-        const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("Or continue with"),
-          ],
-        ),
-        const SizedBox(
-          height: 25,
-        ),
-        const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SquareImageTile(imagePath: 'assets/images/google.png'),
-            SizedBox(width: 40),
-            SquareImageTile(imagePath: 'assets/images/apple.png')
-          ],
-        ),
+        // const Row(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: [
+        //     Text("Or continue with"),
+        //   ],
+        // ),
+        // const SizedBox(
+        //   height: 25,
+        // ),
+        // const Row(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: [
+        //     SquareImageTile(imagePath: 'assets/images/google.png'),
+        //     SizedBox(width: 40),
+        //     SquareImageTile(imagePath: 'assets/images/apple.png')
+        //   ],
+        // ),
         const SizedBox(
           height: 30,
         ),
         const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Not a member? '),
+            Text('already have an account? '),
             Text(
-              'Register now',
+              'Login now',
               style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
             )
           ],
@@ -141,4 +149,13 @@ class _LoginPageState extends State<LoginPage> {
       ],
     )));
   }
+}
+
+enum ColorLabel {
+  manual('Manual', 0),
+  solarman('SolarMan', 1);
+
+  const ColorLabel(this.label, this.type);
+  final String label;
+  final int type;
 }
