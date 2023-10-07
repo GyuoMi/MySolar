@@ -43,20 +43,20 @@ class DevicesPage extends StatelessWidget {
     final deviceIdsResponse = await devicePersistence.getUserDeviceIds(userId);
 
     // Step 2: Extract device IDs from the response
-    final deviceIds = (deviceIdsResponse as List<dynamic>)
+    var deviceIds = (deviceIdsResponse as List<dynamic>)
         .map((item) => item['device_id'] as int) // Extract device_id
         .toList();
 
     // Step 3: Initialize an empty list to store devices
-    final List<Device> devices = [];
+    List<Device> devices = [];
 
     // Step 4: Loop through the device IDs and fetch device details for each ID
-    for (final deviceId in deviceIds) {
-      final deviceData = await devicePersistence.getDevice(deviceId);
+    for (var deviceId in deviceIds) {
+      var deviceData = await devicePersistence.getDevice(deviceId);
       print(deviceData);
 
       // Create a Device object from deviceData and add it to the list
-      final device = Device(
+      var device = Device(
         name: deviceData[0]['device_name'] as String,
         usage: deviceData[0]['device_usage'] as bool,
         wattage: deviceData[0]['device_wattage'] as double,
