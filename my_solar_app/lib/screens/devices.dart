@@ -25,7 +25,7 @@ class DevicesPage extends StatelessWidget {
             );
           } else {
             final List<Device> devices = snapshot.data!;
-            return DeviceList(devices: devices);
+            return DeviceList(devices: devices, showEditDeviceDialog: _showEditDeviceDialog);
           }
         },
       ),
@@ -44,7 +44,8 @@ class DevicesPage extends StatelessWidget {
 
     // Step 2: Extract device IDs from the response
     var deviceIds = (deviceIdsResponse as List<dynamic>)
-        .map((item) => item['device_id'] as int) // Extract device_id
+        .map((item) =>
+            item[devicePersistence.deviceId] as int) // Extract device_id
         .toList();
 
     // Step 3: Initialize an empty list to store devices
@@ -53,16 +54,16 @@ class DevicesPage extends StatelessWidget {
     // Step 4: Loop through the device IDs and fetch device details for each ID
     for (var deviceId in deviceIds) {
       var deviceData = await devicePersistence.getDevice(deviceId);
-      print(deviceData);
 
       // Create a Device object from deviceData and add it to the list
       var device = Device(
-        name: deviceData[0]['device_name'] as String,
-        usage: deviceData[0]['device_usage'] as bool,
-        wattage: deviceData[0]['device_wattage'] as double,
-        voltage: deviceData[0]['device_voltage'] as double,
-        loadshedding: deviceData[0]['device_loadshedding'] as bool,
-        normal: deviceData[0]['device_normal'] as bool,
+        name: deviceData[0][devicePersistence.deviceName] as String,
+        usage: deviceData[0][devicePersistence.deviceUsage] as bool,
+        wattage: deviceData[0][devicePersistence.deviceWattage] as dynamic,
+        voltage: deviceData[0][devicePersistence.deviceVoltage] as dynamic,
+        loadshedding:
+            deviceData[0][devicePersistence.deviceLoadSheddingSetting] as bool,
+        normal: deviceData[0][devicePersistence.deviceNormalSetting] as bool,
       );
 
       devices.add(device);
@@ -71,15 +72,107 @@ class DevicesPage extends StatelessWidget {
     // Step 6: Return the list of devices
     return devices;
   }
+
+  Future<void> _showEditDeviceDialog(BuildContext context, Device device) async {
+  bool isProducer = device.usage;
+
+  await showDialog(
+    context: context, // Pass the context here
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Edit Device'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Text Form Field for Device Name
+            TextFormField(
+              initialValue: device.name,
+              decoration: InputDecoration(labelText: 'Device name'),
+              onChanged: (value) {
+                // Update the device name
+                device.name = value;
+              },
+            ),
+
+            // Switch for Device Usage (Producer/Consumer)
+            SwitchListTile(
+              title: Text('Device Usage'),
+              value: isProducer,
+              onChanged: (value) {
+                isProducer = value;
+                device.usage = value ? true : false; // Update device.usage accordingly
+                // Trigger a rebuild of the widget
+              },
+              secondary: isProducer ? Text('Producer') : Text('Consumer'),
+            ),
+
+            // Text Form Field for Device Voltage
+            TextFormField(
+              initialValue: device.voltage.toString(),
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Device voltage'),
+              onChanged: (value) {
+                // Update the device voltage
+                device.voltage = double.tryParse(value) ?? 0.0;
+              },
+            ),
+
+            // Text Form Field for Device Wattage
+            TextFormField(
+              initialValue: device.wattage.toString(),
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Device wattage'),
+              onChanged: (value) {
+                // Update the device wattage
+                device.wattage = double.tryParse(value) ?? 0.0;
+              },
+            ),
+
+            // Switch for Loadshedding
+            SwitchListTile(
+              title: Text('Loadshedding'),
+              value: device.loadshedding,
+              onChanged: (value) {
+                // Update the device loadshedding setting
+                device.loadshedding = value;
+              },
+            ),
+
+            // Switch for Normal
+            SwitchListTile(
+              title: Text('Normal'),
+              value: device.normal,
+              onChanged: (value) {
+                // Update the device normal setting
+                device.normal = value;
+              },
+            ),
+          ],
+        ),
+        actions: <Widget>[
+          // Done button...
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+            child: Text('Done'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+
 }
 
 class Device {
-  final String name;
-  final bool usage;
-  final double wattage;
-  final double voltage;
-  final bool loadshedding;
-  final bool normal;
+  String name;
+  bool usage;
+  dynamic wattage;
+  dynamic voltage;
+  bool loadshedding;
+  bool normal;
 
   Device({
     required this.name,
@@ -93,8 +186,9 @@ class Device {
 
 class DeviceList extends StatelessWidget {
   final List<Device> devices;
+  final Function(BuildContext, Device) showEditDeviceDialog;
 
-  DeviceList({required this.devices});
+  DeviceList({required this.devices, required this.showEditDeviceDialog});
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +199,7 @@ class DeviceList extends StatelessWidget {
 
         return ListTile(
           onTap: () {
-            // Handle tapping on a device
+            showEditDeviceDialog(context,device);
           },
           title: Text(device.name),
           subtitle: Text('${device.wattage} watts'),
