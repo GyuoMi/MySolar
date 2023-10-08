@@ -94,15 +94,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     }),
               ]),
         ),
-        //aligns password to the right
-        // const Row(
-        //   mainAxisAlignment: MainAxisAlignment.end,
-        //   children: [
-        //     Padding(
-        //         padding: EdgeInsets.fromLTRB(0, 5, 50, 0),
-        //         child: Text("Forgot Password?"))
-        //   ],
-        // ),
+
         const SizedBox(height: 20),
 
         //creates Sign In button
@@ -138,25 +130,6 @@ class _RegisterPageState extends State<RegisterPage> {
               child: const Text("Next")),
         ]),
         const SizedBox(height: 25),
-
-        //creates divider with text continue with
-        // const Row(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   children: [
-        //     Text("Or continue with"),
-        //   ],
-        // ),
-        // const SizedBox(
-        //   height: 25,
-        // ),
-        // const Row(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   children: [
-        //     SquareImageTile(imagePath: 'assets/images/google.png'),
-        //     SizedBox(width: 40),
-        //     SquareImageTile(imagePath: 'assets/images/apple.png')
-        //   ],
-        // ),
         const SizedBox(
           height: 30,
         ),
@@ -172,14 +145,6 @@ class _RegisterPageState extends State<RegisterPage> {
         )
       ],
     )));
-  }
-}
-
-convertSystemEnumToValue(ColorLabel color) {
-  if (color == ColorLabel.manual) {
-    return 0;
-  } else if (ColorLabel.solarman == color) {
-    return 1;
   }
 }
 
