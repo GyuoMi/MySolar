@@ -57,12 +57,12 @@ class DevicesPage extends StatelessWidget {
 
       // Create a Device object from deviceData and add it to the list
       var device = Device(
+        id: deviceData[0][devicePersistence.deviceId] as dynamic,
         name: deviceData[0][devicePersistence.deviceName] as String,
         usage: deviceData[0][devicePersistence.deviceUsage] as bool,
-        wattage: deviceData[0][devicePersistence.deviceWattage] as dynamic,
-        voltage: deviceData[0][devicePersistence.deviceVoltage] as dynamic,
-        loadshedding:
-            deviceData[0][devicePersistence.deviceLoadSheddingSetting] as bool,
+        wattage: deviceData[0][devicePersistence.deviceWattage] + 0.0 as dynamic,
+        voltage: deviceData[0][devicePersistence.deviceVoltage] + 0.0 as dynamic,
+        loadshedding: deviceData[0][devicePersistence.deviceLoadSheddingSetting] as bool,
         normal: deviceData[0][devicePersistence.deviceNormalSetting] as bool,
       );
 
@@ -84,6 +84,7 @@ class DevicesPage extends StatelessWidget {
 }
 
 class Device {
+  dynamic id;
   String name;
   bool usage;
   dynamic wattage;
@@ -92,6 +93,7 @@ class Device {
   bool normal;
 
   Device({
+    required this.id,
     required this.name,
     required this.usage,
     required this.wattage,
@@ -208,8 +210,7 @@ class _EditDeviceDialogState extends State<EditDeviceDialog> {
             onChanged: (value) {
               setState(() {
                 isLoadshedding = value;
-                widget.device.loadshedding =
-                    value; // Update device.loadshedding accordingly
+                widget.device.loadshedding = value;
               });
             },
           ),
@@ -232,6 +233,17 @@ class _EditDeviceDialogState extends State<EditDeviceDialog> {
         // Done button...
         TextButton(
           onPressed: () {
+            // double vD = widget.device.voltage as double;
+            // double wD = widget.device.wattage as double;
+            // vD += 0.0;
+            // wD += 0.0;
+            devicePersistence.updateDeviceName(widget.device.id, widget.device.name);
+            devicePersistence.updateDeviceUsage(widget.device.id, widget.device.usage);
+            devicePersistence.updateDeviceNormalSetting(widget.device.id, widget.device.normal);
+            devicePersistence.updateDeviceVoltage(widget.device.id, widget.device.voltage);
+            devicePersistence.updateDeviceWattage(widget.device.id, widget.device.wattage);
+            devicePersistence.updateDeviceLoadSheddingSetting(widget.device.id, widget.device.loadshedding);
+
             Navigator.of(context).pop(); // Close the dialog
           },
           child: Text('Done'),
