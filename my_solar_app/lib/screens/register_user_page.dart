@@ -25,12 +25,10 @@ class _RegisterPageState extends State<RegisterPage> {
     final TextEditingController colorController = TextEditingController();
     final List<DropdownMenuEntry<ColorLabel>> colorEntries =
         <DropdownMenuEntry<ColorLabel>>[];
-    for (ColorLabel color in ColorLabel.values) {
+    for (final ColorLabel color in ColorLabel.values) {
       colorEntries.add(
         DropdownMenuEntry<ColorLabel>(
-          value: color,
-          label: color.toString(),
-        ),
+            value: color, label: color.label, enabled: color.label != 'Grey'),
       );
     }
     return Scaffold(
@@ -77,7 +75,25 @@ class _RegisterPageState extends State<RegisterPage> {
           obscureText: true,
           textType: TextInputType.text,
         ),
-
+        //TODO add address widget
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                DropdownMenu<ColorLabel>(
+                    width: 300,
+                    initialSelection: ColorLabel.manual,
+                    controller: colorController,
+                    label: const Text('Location'),
+                    dropdownMenuEntries: colorEntries,
+                    onSelected: (ColorLabel? color) {
+                      setState(() {
+                        systemType = color!;
+                      });
+                    }),
+              ]),
+        ),
         //aligns password to the right
         // const Row(
         //   mainAxisAlignment: MainAxisAlignment.end,
@@ -99,16 +115,13 @@ class _RegisterPageState extends State<RegisterPage> {
               onPressed: () async {
                 final email = emailController.text.trim();
                 final password = passwordController.text.trim();
-                //TODO also upload user to our database and upload their solarsystem setup
                 try {
                   await authentication.signUpEmailAndPassword(email, password);
                   //uploads user to database
                   //final convertSystem = convertSystemEnumToValue(systemType);
-                  //TODO figure out what the fuck is happening here
-                  //code is unreadable
-                  //I am losing my mind
+                  //TODO change 'something' address to an actual address
                   await userPersistence.createUser(
-                      email, 1, password, 'something');
+                      email, systemType.type, password, 'something');
                   Navigator.of(context)
                       .pushReplacementNamed('/register_system');
                 } on AuthException catch (error) {
@@ -171,6 +184,10 @@ convertSystemEnumToValue(ColorLabel color) {
 }
 
 enum ColorLabel {
-  manual,
-  solarman;
+  manual('Manual', 0),
+  solarman('SolarMan', 1);
+
+  const ColorLabel(this.label, this.type);
+  final String label;
+  final int type;
 }
