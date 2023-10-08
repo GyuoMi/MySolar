@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_solar_app/screens/login_page.dart';
-import 'package:my_solar_app/screens/register_page.dart';
 import 'package:my_solar_app/screens/register_system_page.dart';
+import 'package:my_solar_app/screens/register_user_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
         // initialRoute: Supabase.instance.client.auth.currentSession != null
         //     ? '/login'
         //     : '/',
-        initialRoute: '/register_system',
+        initialRoute: '/register_user',
         routes: {
           '/': (context) => const MyHomePage(title: 'Home Page'),
           '/login': (context) => const LoginPage(),

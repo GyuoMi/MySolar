@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:my_solar_app/cloud_functions/authentication/auth_repository.dart';
+import 'package:my_solar_app/cloud_functions/database/database_api.dart';
+import 'package:my_solar_app/cloud_functions/database/interfaces/user_persistence_interface.dart';
 import 'package:my_solar_app/widgets/authentication/text_field.dart';
 import 'package:my_solar_app/cloud_functions/authentication/interfaces/auth_repository_interface.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class RegisterPage extends StatefulWidget {
-  RegisterPage({super.key});
+  const RegisterPage({super.key});
   @override
   State<RegisterPage> createState() => _RegisterPageState();
 }
 
 class _RegisterPageState extends State<RegisterPage> {
   final IAuthRepository authentication = AuthRepository();
-  final Iauthentication = AuthRepository();
+  final IUserPersistence userPersistence = DatabaseApi();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  ColorLabel? systemType;
+  ColorLabel systemType = ColorLabel.manual;
 
   final supabase = Supabase.instance.client;
   @override
@@ -23,10 +25,12 @@ class _RegisterPageState extends State<RegisterPage> {
     final TextEditingController colorController = TextEditingController();
     final List<DropdownMenuEntry<ColorLabel>> colorEntries =
         <DropdownMenuEntry<ColorLabel>>[];
-    for (final ColorLabel color in ColorLabel.values) {
+    for (ColorLabel color in ColorLabel.values) {
       colorEntries.add(
         DropdownMenuEntry<ColorLabel>(
-            value: color, label: color.label, enabled: color.label != 'Grey'),
+          value: color,
+          label: color.toString(),
+        ),
       );
     }
     return Scaffold(
@@ -54,7 +58,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     dropdownMenuEntries: colorEntries,
                     onSelected: (ColorLabel? color) {
                       setState(() {
-                        systemType = color;
+                        systemType = color!;
                       });
                     }),
               ]),
@@ -98,6 +102,13 @@ class _RegisterPageState extends State<RegisterPage> {
                 //TODO also upload user to our database and upload their solarsystem setup
                 try {
                   await authentication.signUpEmailAndPassword(email, password);
+                  //uploads user to database
+                  //final convertSystem = convertSystemEnumToValue(systemType);
+                  //TODO figure out what the fuck is happening here
+                  //code is unreadable
+                  //I am losing my mind
+                  await userPersistence.createUser(
+                      email, 1, password, 'something');
                   Navigator.of(context)
                       .pushReplacementNamed('/register_system');
                 } on AuthException catch (error) {
@@ -107,7 +118,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ));
                 } catch (error) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text("Error occured please try again"),
+                      content: const Text("Error occured please try again"),
                       backgroundColor: Theme.of(context).colorScheme.error));
                 }
               },
@@ -151,11 +162,15 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 }
 
-enum ColorLabel {
-  manual('Manual', 0),
-  solarman('SolarMan', 1);
+convertSystemEnumToValue(ColorLabel color) {
+  if (color == ColorLabel.manual) {
+    return 0;
+  } else if (ColorLabel.solarman == color) {
+    return 1;
+  }
+}
 
-  const ColorLabel(this.label, this.type);
-  final String label;
-  final int type;
+enum ColorLabel {
+  manual,
+  solarman;
 }
