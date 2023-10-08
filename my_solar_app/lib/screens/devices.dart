@@ -74,96 +74,13 @@ class DevicesPage extends StatelessWidget {
   }
 
   Future<void> _showEditDeviceDialog(BuildContext context, Device device) async {
-  bool isProducer = device.usage;
-
-  await showDialog(
-    context: context, // Pass the context here
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Edit Device'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Text Form Field for Device Name
-            TextFormField(
-              initialValue: device.name,
-              decoration: InputDecoration(labelText: 'Device name'),
-              onChanged: (value) {
-                // Update the device name
-                device.name = value;
-              },
-            ),
-
-            // Switch for Device Usage (Producer/Consumer)
-            SwitchListTile(
-              title: Text('Device Usage'),
-              value: isProducer,
-              onChanged: (value) {
-                isProducer = value;
-                device.usage = value ? true : false; // Update device.usage accordingly
-                // Trigger a rebuild of the widget
-              },
-              secondary: isProducer ? Text('Producer') : Text('Consumer'),
-            ),
-
-            // Text Form Field for Device Voltage
-            TextFormField(
-              initialValue: device.voltage.toString(),
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: 'Device voltage'),
-              onChanged: (value) {
-                // Update the device voltage
-                device.voltage = double.tryParse(value) ?? 0.0;
-              },
-            ),
-
-            // Text Form Field for Device Wattage
-            TextFormField(
-              initialValue: device.wattage.toString(),
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: 'Device wattage'),
-              onChanged: (value) {
-                // Update the device wattage
-                device.wattage = double.tryParse(value) ?? 0.0;
-              },
-            ),
-
-            // Switch for Loadshedding
-            SwitchListTile(
-              title: Text('Loadshedding'),
-              value: device.loadshedding,
-              onChanged: (value) {
-                // Update the device loadshedding setting
-                device.loadshedding = value;
-              },
-            ),
-
-            // Switch for Normal
-            SwitchListTile(
-              title: Text('Normal'),
-              value: device.normal,
-              onChanged: (value) {
-                // Update the device normal setting
-                device.normal = value;
-              },
-            ),
-          ],
-        ),
-        actions: <Widget>[
-          // Done button...
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(); // Close the dialog
-            },
-            child: Text('Done'),
-          ),
-        ],
-      );
-    },
-  );
-}
-
-
+    await showDialog(
+      context: context, // Pass the context here
+      builder: (BuildContext context) {
+        return EditDeviceDialog(device: device);
+      },
+    );
+  }
 }
 
 class Device {
@@ -186,6 +103,7 @@ class Device {
 
 class DeviceList extends StatelessWidget {
   final List<Device> devices;
+
   final Function(BuildContext, Device) showEditDeviceDialog;
 
   DeviceList({required this.devices, required this.showEditDeviceDialog});
@@ -199,13 +117,126 @@ class DeviceList extends StatelessWidget {
 
         return ListTile(
           onTap: () {
-            showEditDeviceDialog(context,device);
+            showEditDeviceDialog(context, device);
           },
           title: Text(device.name),
           subtitle: Text('${device.wattage} watts'),
           trailing: Icon(Icons.arrow_forward),
         );
       },
+    );
+  }
+}
+
+class EditDeviceDialog extends StatefulWidget {
+  final Device device;
+
+  EditDeviceDialog({required this.device});
+
+  @override
+  _EditDeviceDialogState createState() => _EditDeviceDialogState();
+}
+
+class _EditDeviceDialogState extends State<EditDeviceDialog> {
+  late bool isProducer;
+  late bool isLoadshedding;
+  late bool isNormal;
+
+  @override
+  void initState() {
+    super.initState();
+    isProducer = widget.device.usage;
+    isLoadshedding = widget.device.loadshedding;
+    isNormal = widget.device.normal;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Edit Device'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Text Form Field for Device Name
+          TextFormField(
+            initialValue: widget.device.name,
+            decoration: InputDecoration(labelText: 'Device name'),
+            onChanged: (value) {
+              // Update the device name
+              widget.device.name = value;
+            },
+          ),
+
+          // Switch for Device Usage (Producer/Consumer)
+          SwitchListTile(
+            title: Text('Device Usage'),
+            value: isProducer,
+            onChanged: (value) {
+              setState(() {
+                isProducer = value;
+                widget.device.usage = value; // Update device.usage accordingly
+              });
+            },
+            secondary: isProducer ? Text('Producer') : Text('Consumer'),
+          ),
+           // Text Form Field for Device Voltage
+            TextFormField(
+              initialValue: widget.device.voltage.toString(),
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Device voltage'),
+              onChanged: (value) {
+                // Update the device voltage
+                widget.device.voltage = double.tryParse(value) ?? 0.0;
+              },
+            ),
+
+            // Text Form Field for Device Wattage
+            TextFormField(
+              initialValue: widget.device.wattage.toString(),
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Device wattage'),
+              onChanged: (value) {
+                // Update the device wattage
+                widget.device.wattage = double.tryParse(value) ?? 0.0;
+              },
+            ),
+
+            // Switch for Loadshedding
+            SwitchListTile(
+            title: Text('Loadshedding'),
+            value: isLoadshedding,
+            onChanged: (value) {
+              setState(() {
+                isLoadshedding = value;
+                widget.device.loadshedding =
+                    value; // Update device.loadshedding accordingly
+              });
+            },
+          ),
+
+          // Switch for Normal
+            SwitchListTile(
+              title: Text('Normal'),
+            value: isNormal,
+            onChanged: (value) {
+              setState(() {
+                isNormal = value;
+                widget.device.normal =
+                    value; // Update device.normal accordingly
+              });
+            },
+          ),
+        ],
+      ),
+      actions: <Widget>[
+        // Done button...
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop(); // Close the dialog
+          },
+          child: Text('Done'),
+        ),
+      ],
     );
   }
 }
