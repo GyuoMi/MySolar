@@ -1,6 +1,6 @@
 class LoggedInUser {
-  static int userId = 0, systemId = 0;
-  static String userEmail = "", userPassword = "", userAddress = "";
+  static var userId = 0, systemId = 0;
+  static var userEmail = "", userPassword = "", userAddress = "";
 
   static setUser(
       int id, int sysId, String email, String password, String address) {

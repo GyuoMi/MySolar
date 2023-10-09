@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:my_solar_app/cloud_functions/authentication/auth_repository.dart';
+import 'package:my_solar_app/cloud_functions/database/database_api.dart';
+import 'package:my_solar_app/cloud_functions/database/interfaces/manual_system_persistence_interface.dart';
+import 'package:my_solar_app/models/logged_in_user.dart';
 import 'package:my_solar_app/widgets/authentication/text_field.dart';
 import 'package:my_solar_app/cloud_functions/authentication/interfaces/auth_repository_interface.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -12,6 +15,7 @@ class RegisterSystemPage extends StatefulWidget {
 
 class _RegisterSystemPage extends State<RegisterSystemPage> {
   final IAuthRepository authentication = AuthRepository();
+  final IManualSystemPersistence manualPersistence = DatabaseApi();
   final systemNameController = TextEditingController();
   final solarPanelCountController = TextEditingController();
   final solarPanelProductionController = TextEditingController();
@@ -51,7 +55,7 @@ class _RegisterSystemPage extends State<RegisterSystemPage> {
         const SizedBox(height: 20),
         LoginPageTextField(
           controller: solarPanelCountController,
-          hintText: "Solar Panel Count",
+          hintText: "Amount of solar panels",
           obscureText: false,
           textType:
               TextInputType.numberWithOptions(signed: false, decimal: false),
@@ -60,7 +64,7 @@ class _RegisterSystemPage extends State<RegisterSystemPage> {
 
         LoginPageTextField(
           controller: solarPanelProductionController,
-          hintText: 'Solar Panel Production',
+          hintText: 'Production of a single solar panel in watts',
           obscureText: false,
           textType:
               TextInputType.numberWithOptions(signed: false, decimal: true),
@@ -69,7 +73,7 @@ class _RegisterSystemPage extends State<RegisterSystemPage> {
 
         LoginPageTextField(
           controller: batteryCapacityController,
-          hintText: 'Battery Capacity',
+          hintText: 'Battery Capacity in watts',
           obscureText: false,
           textType:
               TextInputType.numberWithOptions(signed: false, decimal: true),
@@ -93,14 +97,20 @@ class _RegisterSystemPage extends State<RegisterSystemPage> {
                       borderRadius: BorderRadius.circular(10)),
                   minimumSize: const Size(300, 70)),
               onPressed: () async {
+                //gets variables from textfields
                 final systemName = systemNameController.text.trim();
-                final panelCount = solarPanelCountController.text.trim();
-                final productinCount =
-                    solarPanelProductionController.text.trim();
-                final batteryCapacity = batteryCapacityController.text.trim();
+                final panelCount =
+                    toInt(solarPanelCountController.text.trim()) ?? 0;
+                final productionCount =
+                    toDouble(solarPanelProductionController.text.trim()) ?? 0;
+                final batteryCapacity =
+                    toInt(batteryCapacityController.text.trim()) ?? 0;
 
-                //TODO upload to database
                 try {
+                  //TODO figure out what to put for daily usage '0'
+                  final userId = LoggedInUser.getuserId() as int;
+                  await manualPersistence.createManualSystem(userId, systemName,
+                      batteryCapacity, productionCount, panelCount, 0);
                   Navigator.of(context).pushReplacementNamed('/');
                 } on AuthException catch (error) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
