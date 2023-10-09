@@ -88,9 +88,10 @@ class DatabaseApi
   }
 
   @override
-  Future createManualSystem(String name, double capacity, double maxProduction,
-      int count, double dailyUsage) async {
+  Future createManualSystem(int id, String name, double capacity,
+      double maxProduction, int count, double dailyUsage) async {
     final manualData = {
+      userId: id,
       manualName: name,
       manualCapacity: capacity,
       manualMaxProduction: maxProduction,

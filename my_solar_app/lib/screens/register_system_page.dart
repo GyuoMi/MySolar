@@ -12,7 +12,6 @@ class RegisterSystemPage extends StatefulWidget {
 
 class _RegisterSystemPage extends State<RegisterSystemPage> {
   final IAuthRepository authentication = AuthRepository();
-  final Iauthentication = AuthRepository();
   final systemNameController = TextEditingController();
   final solarPanelCountController = TextEditingController();
   final solarPanelProductionController = TextEditingController();
