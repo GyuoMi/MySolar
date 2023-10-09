@@ -5,6 +5,7 @@ import 'package:my_solar_app/cloud_functions/database/interfaces/user_persistenc
 import 'package:my_solar_app/widgets/authentication/text_field.dart';
 import 'package:my_solar_app/cloud_functions/authentication/interfaces/auth_repository_interface.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:my_solar_app/models/logged_in_user.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -112,8 +113,16 @@ class _RegisterPageState extends State<RegisterPage> {
                   //uploads user to database
                   //final convertSystem = convertSystemEnumToValue(systemType);
                   //TODO change 'something' address to an actual address
-                  await userPersistence.createUser(
+                  final dataReturn = await userPersistence.createUser(
                       email, systemType.type, password, 'something');
+
+                  //TODO change this address also
+                  //sets user class with details
+                  final userId = dataReturn[0][userPersistence.userId] as int;
+                  LoggedInUser.setUser(
+                      userId, systemType.type, email, password, 'something');
+
+                  //navigates to new page
                   Navigator.of(context)
                       .pushReplacementNamed('/register_system');
                 } on AuthException catch (error) {
