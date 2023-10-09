@@ -56,12 +56,18 @@ class _LoginPageState extends State<LoginPage> {
         //shows user name and password text boxes
         const SizedBox(height: 40),
         LoginPageTextField(
-            controller: emailController, hintText: "Email", obscureText: false),
+          controller: emailController,
+          hintText: "Email",
+          obscureText: false,
+          textType: TextInputType.emailAddress,
+        ),
         const SizedBox(height: 20),
         LoginPageTextField(
-            controller: passwordController,
-            hintText: 'Password',
-            obscureText: true),
+          controller: passwordController,
+          hintText: 'Password',
+          obscureText: true,
+          textType: TextInputType.text,
+        ),
 
         //aligns password to the right
         const Row(
