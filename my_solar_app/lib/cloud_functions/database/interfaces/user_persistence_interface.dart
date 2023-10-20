@@ -6,7 +6,7 @@ abstract class IUserPersistence {
       userAddress,
       systemId;
   Future createUser(
-      String name, int systemType, String password, String address);
+      String email, int systemType, String password, String address);
   Future getUserDetails(int userId);
   Future updateUserAddress(int userId, String address);
   Future updateUserPassword(int userId, String password);

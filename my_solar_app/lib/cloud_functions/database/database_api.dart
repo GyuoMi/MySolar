@@ -36,7 +36,7 @@ class DatabaseApi
       deviceLoadSheddingSetting = 'device_loadshedding';
 
   @override
-  String manualTable = 'manual_tbl',
+  String manualTable = 'manual_user_system_tbl',
       manualId = 'manual_id',
       manualName = 'manual_name',
       manualCapacity = 'manual_capacity',
@@ -88,9 +88,10 @@ class DatabaseApi
   }
 
   @override
-  Future createManualSystem(String name, double capacity, double maxProduction,
-      int count, double dailyUsage) async {
+  Future createManualSystem(int id, String name, int capacity,
+      double maxProduction, int count, double dailyUsage) async {
     final manualData = {
+      userId: id,
       manualName: name,
       manualCapacity: capacity,
       manualMaxProduction: maxProduction,
@@ -201,6 +202,7 @@ class DatabaseApi
     return database.readRecordsWhere(userTable, {userId: id});
   }
 
+  @override
   Future getSystems() async {
     return database.readRecords(systemsTable);
   }
