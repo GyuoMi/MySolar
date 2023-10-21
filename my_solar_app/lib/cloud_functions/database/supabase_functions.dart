@@ -40,4 +40,11 @@ class SupabaseFunctions implements IDatabaseFunctions {
         await supabase.from(table).delete().match(matchesFields).select();
     return data;
   }
+
+  @override
+  Future databaseFunction(
+      String functionName, Map<String, dynamic> matchesFields) async {
+    final data = await supabase.rpc(functionName, params: matchesFields);
+    return data;
+  }
 }

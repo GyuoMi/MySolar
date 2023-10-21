@@ -233,4 +233,8 @@ class DatabaseApi
   Future deleteManualUserSystem(int id) async {
     return database.deleteRecord(manualTable, {userId: id});
   }
+
+  Future calculateAllTimeTotals(int id) async {
+    return database.databaseFunction('calculate_all_time_totals', {'id': id});
+  }
 }
