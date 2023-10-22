@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:my_solar_app/cloud_functions/authentication/auth_repository.dart';
 import 'package:my_solar_app/cloud_functions/database/database_api.dart';
@@ -142,14 +143,19 @@ class _RegisterPageState extends State<RegisterPage> {
         const SizedBox(
           height: 30,
         ),
-        const Row(
+        Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text('already have an account? '),
-            Text(
-              'Login now',
-              style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
-            )
+            RichText(
+              text: TextSpan(
+                  text: 'Login now',
+                  style: TextStyle(
+                      color: Colors.blue, fontWeight: FontWeight.bold),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () =>
+                        Navigator.of(context).pushReplacementNamed('/login')),
+            ),
           ],
         )
       ],

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:my_solar_app/cloud_functions/authentication/auth_repository.dart';
 import 'package:my_solar_app/widgets/authentication/square_tile_images.dart';
@@ -70,14 +71,14 @@ class _LoginPageState extends State<LoginPage> {
         ),
 
         //aligns password to the right
-        const Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Padding(
-                padding: EdgeInsets.fromLTRB(0, 5, 50, 0),
-                child: Text("Forgot Password?"))
-          ],
-        ),
+        // const Row(
+        //   mainAxisAlignment: MainAxisAlignment.end,
+        //   children: [
+        //     Padding(
+        //         padding: EdgeInsets.fromLTRB(0, 5, 50, 0),
+        //         child: Text("Forgot Password?"))
+        //   ],
+        // ),
         const SizedBox(height: 20),
 
         //creates Sign In button
@@ -108,33 +109,38 @@ class _LoginPageState extends State<LoginPage> {
         const SizedBox(height: 25),
 
         //creates divider with text continue with
-        const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("Or continue with"),
-          ],
-        ),
-        const SizedBox(
-          height: 25,
-        ),
-        const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SquareImageTile(imagePath: 'assets/images/google.png'),
-            SizedBox(width: 40),
-            SquareImageTile(imagePath: 'assets/images/apple.png')
-          ],
-        ),
+        // const Row(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: [
+        //     Text("Or continue with"),
+        //   ],
+        // ),
+        // const SizedBox(
+        //   height: 25,
+        // ),
+        // const Row(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: [
+        //     SquareImageTile(imagePath: 'assets/images/google.png'),
+        //     SizedBox(width: 40),
+        //     SquareImageTile(imagePath: 'assets/images/apple.png')
+        //   ],
+        // ),
         const SizedBox(
           height: 30,
         ),
-        const Row(
+        Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text('Not a member? '),
-            Text(
-              'Register now',
-              style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+            RichText(
+              text: TextSpan(
+                  text: 'Register now',
+                  style: TextStyle(
+                      color: Colors.blue, fontWeight: FontWeight.bold),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () => Navigator.of(context)
+                        .pushReplacementNamed('/register_user')),
             )
           ],
         )

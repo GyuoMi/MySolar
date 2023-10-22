@@ -1,7 +1,7 @@
-import 'interfaces/database_functions_interface.dart';
+import 'interfaces/crud_functions_interface.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class SupabaseFunctions implements IDatabaseFunctions {
+class SupabaseFunctions implements ICRUDFunctions {
   static SupabaseClient supabase = SupabaseClient(
       'https://fsirbhoucrjtnkvchwuf.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzaXJiaG91Y3JqdG5rdmNod3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTIzNzYxNTAsImV4cCI6MjAwNzk1MjE1MH0.Bb3OZyxku8_7c_aIQe5GlMsup0SODK-5pPa92tzkNFM');
@@ -38,6 +38,13 @@ class SupabaseFunctions implements IDatabaseFunctions {
   Future deleteRecord(String table, Map matchesFields) async {
     final data =
         await supabase.from(table).delete().match(matchesFields).select();
+    return data;
+  }
+
+  @override
+  Future databaseFunction(
+      String functionName, Map<String, dynamic> matchesFields) async {
+    final data = await supabase.rpc(functionName, params: matchesFields);
     return data;
   }
 }

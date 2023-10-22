@@ -1,5 +1,6 @@
 import 'package:my_solar_app/cloud_functions/database/interfaces/system_persistence_interface.dart';
 
+import 'interfaces/crud_functions_interface.dart';
 import 'interfaces/database_functions_interface.dart';
 import 'interfaces/device_persistence_interface.dart';
 import 'interfaces/manual_system_persistence_interface.dart';
@@ -13,9 +14,10 @@ class DatabaseApi
         IDevicePersistence,
         IManualSystemPersistence,
         IRecordPersistence,
-        ISystemPersistence {
+        ISystemPersistence,
+        IDatabaseFunctions {
   //column names
-  final IDatabaseFunctions database = SupabaseFunctions();
+  final ICRUDFunctions database = SupabaseFunctions();
 
   @override
   String userTable = 'user_tbl',
@@ -232,5 +234,10 @@ class DatabaseApi
   @override
   Future deleteManualUserSystem(int id) async {
     return database.deleteRecord(manualTable, {userId: id});
+  }
+
+  @override
+  Future calculateAllTimeTotals(int id) async {
+    return database.databaseFunction('calculate_all_time_totals', {'id': id});
   }
 }
