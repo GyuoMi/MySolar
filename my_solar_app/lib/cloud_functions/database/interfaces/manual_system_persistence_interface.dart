@@ -7,8 +7,8 @@ abstract class IManualSystemPersistence {
       manualCount,
       manualDailyUsage;
 
-  Future createManualSystem(String name, double capacity, double maxProduction,
-      int count, double dailyUsage);
+  Future createManualSystem(int userId, String name, int capacity,
+      double maxProduction, int count, double dailyUsage);
   Future deleteManualUserSystem(int userId);
   Future getManualSystemDetails(int userId);
   Future updateManualDailyUsage(int userId, double dailyUsage);

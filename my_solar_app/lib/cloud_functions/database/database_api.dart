@@ -1,5 +1,6 @@
 import 'package:my_solar_app/cloud_functions/database/interfaces/system_persistence_interface.dart';
 
+import 'interfaces/crud_functions_interface.dart';
 import 'interfaces/database_functions_interface.dart';
 import 'interfaces/device_persistence_interface.dart';
 import 'interfaces/manual_system_persistence_interface.dart';
@@ -13,9 +14,10 @@ class DatabaseApi
         IDevicePersistence,
         IManualSystemPersistence,
         IRecordPersistence,
-        ISystemPersistence {
+        ISystemPersistence,
+        IDatabaseFunctions {
   //column names
-  final IDatabaseFunctions database = SupabaseFunctions();
+  final ICRUDFunctions database = SupabaseFunctions();
 
   @override
   String userTable = 'user_tbl',
@@ -36,7 +38,7 @@ class DatabaseApi
       deviceLoadSheddingSetting = 'device_loadshedding';
 
   @override
-  String manualTable = 'manual_tbl',
+  String manualTable = 'manual_user_system_tbl',
       manualId = 'manual_id',
       manualName = 'manual_name',
       manualCapacity = 'manual_capacity',
@@ -88,9 +90,10 @@ class DatabaseApi
   }
 
   @override
-  Future createManualSystem(String name, double capacity, double maxProduction,
-      int count, double dailyUsage) async {
+  Future createManualSystem(int id, String name, int capacity,
+      double maxProduction, int count, double dailyUsage) async {
     final manualData = {
+      userId: id,
       manualName: name,
       manualCapacity: capacity,
       manualMaxProduction: maxProduction,
@@ -201,6 +204,7 @@ class DatabaseApi
     return database.readRecordsWhere(userTable, {userId: id});
   }
 
+  @override
   Future getSystems() async {
     return database.readRecords(systemsTable);
   }
@@ -230,5 +234,10 @@ class DatabaseApi
   @override
   Future deleteManualUserSystem(int id) async {
     return database.deleteRecord(manualTable, {userId: id});
+  }
+
+  @override
+  Future calculateAllTimeTotals(int id) async {
+    return database.databaseFunction('calculate_all_time_totals', {'id': id});
   }
 }

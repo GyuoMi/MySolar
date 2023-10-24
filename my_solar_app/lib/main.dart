@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_solar_app/screens/login_page.dart';
+import 'package:my_solar_app/screens/register_system_page.dart';
+import 'package:my_solar_app/screens/register_user_page.dart';
 import 'package:my_solar_app/screens/Homepage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:my_solar_app/screens/devices.dart';
@@ -9,8 +11,8 @@ Future<void> main() async {
 
   await Supabase.initialize(
     url: 'https://fsirbhoucrjtnkvchwuf.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzaXJiaG91Y3JqdG5rdmNod3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTIzNzYxNTAsImV4cCI6MjAwNzk1MjE1MH0.Bb3OZyxku8_7c_aIQe5GlMsup0SODK-5pPa92tzkNFM',
-
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzaXJiaG91Y3JqdG5rdmNod3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTIzNzYxNTAsImV4cCI6MjAwNzk1MjE1MH0.Bb3OZyxku8_7c_aIQe5GlMsup0SODK-5pPa92tzkNFM',
   );
   runApp(MyApp());
 }
@@ -25,8 +27,7 @@ class MyApp extends StatelessWidget {
           // This is the theme of your application.
           //
           // TRY THIS: Try running your application with "flutter run". You'll see
-          // the application has a blue toolbar. Then, without quitting the app,
-          // try changing the seedColor in the colorScheme below to Colors.green
+          // the application has a blue toolbar. Then, without quitting the app, try changing the seedColor in the colorScheme below to Colors.green
           // and then invoke "hot reload" (save your changes or press the "hot
           // reload" button in a Flutter-supported IDE, or press "r" if you used
           // the command line to start the app).
@@ -47,6 +48,8 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (context) => const MyHomePage(title: 'Home Page'),
           '/login': (context) => const LoginPage(),
+          '/register_user': (context) => RegisterPage(),
+          '/register_system': (context) => RegisterSystemPage(),
           '/devices':  (context) =>  DevicesPage(),
         });
   }
