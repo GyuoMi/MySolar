@@ -11,7 +11,7 @@ class LoggedInUser {
     userAddress = address;
   }
 
-  static getUserId() {
+  static getuserId() {
     return userId;
   }
 
