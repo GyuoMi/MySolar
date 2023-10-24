@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:my_solar_app/cloud_functions/database/database_api.dart';
 import 'package:my_solar_app/cloud_functions/database/interfaces/device_persistence_interface.dart';
-
+import 'package:my_solar_app/models/logged_in_user.dart';
 // Define your database and device persistence instances
 IDevicePersistence devicePersistence = DatabaseApi();
-
+int userId = LoggedInUser.userId;
 class DevicesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,7 @@ class DevicesPage extends StatelessWidget {
         title: Text('Devices'),
       ),
       body: FutureBuilder<List<Device>>(
-        future: createDevicesList(61), // Replace 61 with the actual user ID
+        future: createDevicesList(userId), // Replace 61 with the actual user ID
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return CircularProgressIndicator();
@@ -31,7 +31,7 @@ class DevicesPage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Handle adding a new device here
+          _showAddDeviceDialog(context);
         },
         child: Icon(Icons.add),
       ),
@@ -81,6 +81,27 @@ class DevicesPage extends StatelessWidget {
       },
     );
   }
+
+  Future<void> _showAddDeviceDialog(BuildContext context) async {
+  // Create a new Device object for adding a device
+  var newDevice = Device(
+    id: 0, // Assign a temporary ID (or any default value)
+    name: "", // Provide default values or empty strings
+    usage: false, // Provide default values
+    wattage: 0.0, // Provide default values
+    voltage: 0.0, // Provide default values
+    loadshedding: false, // Provide default values
+    normal: false, // Provide default values
+  );
+
+  await showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return EditDeviceDialog(device: newDevice, isAdding: true); // Pass an additional flag to indicate it's for adding
+    },
+  );
+}
+
 }
 
 class Device {
@@ -132,8 +153,8 @@ class DeviceList extends StatelessWidget {
 
 class EditDeviceDialog extends StatefulWidget {
   final Device device;
-
-  EditDeviceDialog({required this.device});
+  final bool isAdding;
+  EditDeviceDialog({required this.device, required this.isAdding});
 
   @override
   _EditDeviceDialogState createState() => _EditDeviceDialogState();
@@ -233,17 +254,25 @@ class _EditDeviceDialogState extends State<EditDeviceDialog> {
         // Done button...
         TextButton(
           onPressed: () {
-            // double vD = widget.device.voltage as double;
-            // double wD = widget.device.wattage as double;
-            // vD += 0.0;
-            // wD += 0.0;
-            devicePersistence.updateDeviceName(widget.device.id, widget.device.name);
-            devicePersistence.updateDeviceUsage(widget.device.id, widget.device.usage);
-            devicePersistence.updateDeviceNormalSetting(widget.device.id, widget.device.normal);
-            devicePersistence.updateDeviceVoltage(widget.device.id, widget.device.voltage);
-            devicePersistence.updateDeviceWattage(widget.device.id, widget.device.wattage);
-            devicePersistence.updateDeviceLoadSheddingSetting(widget.device.id, widget.device.loadshedding);
-
+            if (widget.isAdding) {
+                devicePersistence.createDevice(
+                  userId, // Use the appropriate user ID here
+                  widget.device.name,
+                  widget.device.usage,
+                  widget.device.wattage,
+                  widget.device.voltage,
+                  widget.device.normal,
+                  widget.device.loadshedding,
+                );
+              } 
+              else {
+                devicePersistence.updateDeviceName(widget.device.id, widget.device.name);
+                devicePersistence.updateDeviceUsage(widget.device.id, widget.device.usage);
+                devicePersistence.updateDeviceNormalSetting(widget.device.id, widget.device.normal);
+                devicePersistence.updateDeviceVoltage(widget.device.id, widget.device.voltage);
+                devicePersistence.updateDeviceWattage(widget.device.id, widget.device.wattage);
+                devicePersistence.updateDeviceLoadSheddingSetting(widget.device.id, widget.device.loadshedding);
+              }
             Navigator.of(context).pop(); // Close the dialog
           },
           child: Text('Done'),
