@@ -77,7 +77,7 @@ class DevicesPage extends StatelessWidget {
     await showDialog(
       context: context, // Pass the context here
       builder: (BuildContext context) {
-        return EditDeviceDialog(device: device);
+        return EditDeviceDialog(device: device, isAdding: false,);
       },
     );
   }
