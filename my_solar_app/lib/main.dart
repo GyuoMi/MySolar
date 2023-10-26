@@ -4,6 +4,7 @@ import 'package:my_solar_app/screens/register_system_page.dart';
 import 'package:my_solar_app/screens/register_user_page.dart';
 import 'package:my_solar_app/screens/Homepage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:my_solar_app/screens/devices.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,6 +50,7 @@ class MyApp extends StatelessWidget {
           '/login': (context) => const LoginPage(),
           '/register_user': (context) => RegisterPage(),
           '/register_system': (context) => RegisterSystemPage(),
+          '/devices':  (context) =>  DevicesPage(),
         });
   }
 }
