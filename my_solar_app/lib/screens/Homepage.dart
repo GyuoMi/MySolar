@@ -10,6 +10,9 @@ import '../../API\'s/LoadSheddingAPI.dart';
 
 
 
+// other pages
+import 'package:my_solar_app/screens/devices.dart';
+
 class MyCustomWidget extends StatefulWidget {
   const MyCustomWidget({
     Key? key,
@@ -167,10 +170,20 @@ class _MyCustomWidgetState extends State<MyCustomWidget> {
                     ),
                   ),
                 ),
-                const Icon(
-                  Icons.home,
-                  color: Colors.blue,
-                  size: 60.0,
+                InkWell(
+                  onTap: () {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            DevicesPage(), // Navigate to DevicesPage
+                      ),
+                    );
+                  },
+                  child: const Icon(
+                    Icons.home,
+                    color: Colors.blue,
+                    size: 60.0,
+                  ),
                 ),
               ],
             ),
