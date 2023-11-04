@@ -25,13 +25,13 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    _authSubscription = supabase.auth.onAuthStateChange.listen((event) {
-      final session = event.session;
-      if (session != null) {
-        //goes to the main page
-        Navigator.of(context).pushReplacementNamed('/');
-      }
-    });
+    // _authSubscription = supabase.auth.onAuthStateChange.listen((event) {
+    //   final session = event.session;
+    //   if (session != null) {
+    //     //goes to the main page
+    //     Navigator.of(context).pushReplacementNamed('/');
+    //   }
+    // });
   }
 
   @override
