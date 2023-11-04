@@ -3,6 +3,10 @@ import 'dart:async';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:my_solar_app/cloud_functions/authentication/auth_repository.dart';
+import 'package:my_solar_app/cloud_functions/database/database_api.dart';
+import 'package:my_solar_app/cloud_functions/database/interfaces/user_persistence_interface.dart';
+import 'package:my_solar_app/main.dart';
+import 'package:my_solar_app/models/logged_in_user.dart';
 import 'package:my_solar_app/widgets/authentication/square_tile_images.dart';
 import 'package:my_solar_app/widgets/authentication/text_field.dart';
 import 'package:my_solar_app/cloud_functions/authentication/interfaces/auth_repository_interface.dart';
@@ -89,10 +93,25 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: BorderRadius.circular(10)),
                   minimumSize: const Size(300, 70)),
               onPressed: () async {
-                final email = emailController.text.trim();
+                final name = emailController.text.trim();
                 final password = passwordController.text.trim();
                 try {
-                  await authentication.signInEmailAndPassword(email, password);
+                  //check to see if user is in database
+                  await authentication.signInEmailAndPassword(name, password);
+
+                  //get user details
+                  IUserPersistence userPersistence = DatabaseApi();
+                  var userData = await userPersistence.getUserDetails(name);
+                  int id = userData[0][userPersistence.userId] as int;
+                  int sysId = userData[0][userPersistence.systemId] as int;
+                  String address =
+                      userData[0][userPersistence.userAddress] as String;
+
+                  //set up logged in user
+                  LoggedInUser.setUser(id, sysId, name, password, address);
+
+                  //navigate to new homepage
+                  Navigator.of(context).pushReplacementNamed('/');
                 } on AuthException catch (error) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(error.message),

@@ -50,7 +50,7 @@ class MyApp extends StatelessWidget {
           '/login': (context) => const LoginPage(),
           '/register_user': (context) => RegisterPage(),
           '/register_system': (context) => RegisterSystemPage(),
-          '/devices':  (context) =>  DevicesPage(),
+          '/devices': (context) => DevicesPage(),
         });
   }
 }
