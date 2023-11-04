@@ -2,14 +2,29 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:based_battery_indicator/based_battery_indicator.dart';
 
+
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:weather_icons/weather_icons.dart';
 
 import '../../API\'s/WeatherApi.dart';
+import '../../API\'s/EskomsePushApi.dart';
 
 class MyCustomWidget extends StatelessWidget {
   final AnimationController controller1;
   final AnimationController controller2;
+  EskomSePushApiService apiService = EskomSePushApiService();
+  Future<void> fetchLoadsheddingSchedule() async {
+  try {
+    print(1);
+    Map<String, dynamic> areaInfo =
+        await apiService.getAreaInfoBySearchText('fourways');
+    print(2);
+    // Handle the areaInfo data here
+    print('Loadshedding Schedule: $areaInfo');
+  } catch (error) {
+    print('Error fetching loadshedding schedule: $error');
+  }
+}
   final WeatherService weatherService =
       WeatherService('fbf149b715cc45e8972112241232509');
     Future<String?> getWeather() async {
@@ -72,7 +87,8 @@ class MyCustomWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget weatherIcon = getWeatherIcon();
+   // Widget weatherIcon = getWeatherIcon();
+   fetchLoadsheddingSchedule();
     return SingleChildScrollView(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -81,7 +97,7 @@ class MyCustomWidget extends StatelessWidget {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              weatherIcon,
+             // weatherIcon,
               RotatedBox(
                 quarterTurns: 1,
                 child: SizedBox(
