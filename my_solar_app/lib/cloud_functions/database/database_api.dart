@@ -200,8 +200,8 @@ class DatabaseApi
 
   //Reading functions
   @override
-  Future getUserDetails(int id) async {
-    return database.readRecordsWhere(userTable, {userId: id});
+  Future getUserDetails(String name) async {
+    return database.readRecordsWhere(userTable, {userName: name});
   }
 
   @override
