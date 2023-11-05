@@ -9,6 +9,7 @@ import '../cloud_functions/database/interfaces/database_functions_interface.dart
 import '../models/logged_in_user.dart';
 import 'package:my_solar_app/screens/devices.dart';
 import 'package:http/http.dart' as http;
+import 'dart:math';
 
 class MyCustomWidget extends StatefulWidget {
   const MyCustomWidget({
@@ -32,7 +33,7 @@ class _MyCustomWidgetState extends State<MyCustomWidget> {
   WeatherService('93ff5e1b86ec4bddaa5194216230310');
 
 
-  late Map<String, dynamic> totals;
+  late Map<dynamic,dynamic> totals;
   IDatabaseFunctions database = DatabaseApi();
   Future<void> getTotals() async {
     final databaseReturn = await database.calculateAllTimeTotals(LoggedInUser.getUserId()); // Get the weather info
@@ -77,13 +78,19 @@ class _MyCustomWidgetState extends State<MyCustomWidget> {
         gridDraw=true;
       });
     }
-    if(solar>0){
+    if(solar>0 ){
       setState(() {
         solarDraw=true;
       });
     }else{
       setState(() {
         solarDraw=true;
+      });
+    }
+    if(time!='day' ) {
+      print('make false');
+      setState(() {
+        solarDraw = false;
       });
     }
     if(usage>0){
@@ -144,15 +151,33 @@ class _MyCustomWidgetState extends State<MyCustomWidget> {
   bool gridDraw = false;
   int batteryPer = 45;
   String url = "";
+  String time="";
 
 
   Future<void> getWeatherIcon() async {
     final weatherInfo = await getWeather(); // Get the weather info
-
+    String time='';
     // When you have the weatherInfo, update the URL and trigger a UI update
     setState(() {
       url = weatherInfo!;
     });
+    if (weatherInfo != null) {
+      // Extract the word before the number using a regular expression
+      final match = RegExp(r'\/(\w+)\/\d+\.png').firstMatch(weatherInfo);
+      if (match != null) {
+        setState(() {
+          time = match.group(1)!;
+        });
+        //print(time);
+        if(time!='day' ) {
+          print('make false');
+          setState(() {
+            solarDraw = false;
+          });
+        }
+      }
+    }
+
   }
 
 
@@ -302,17 +327,17 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
 
   Future<void> getTotals() async {
     final databaseReturnAll = await database.calculateAllTimeTotals(LoggedInUser.getUserId());
-     final databaseReturnWeek = await database.calculateWeeklyTotals(LoggedInUser.getUserId());
-    // final databaseReturnMonth = await database.calculateMonthlyTotals(LoggedInUser.getUserId());
-    // final databaseReturnDay = await database.calculateDailyTotals(LoggedInUser.getUserId());
-    // final databaseReturnHr = await database.getHourlyTotals(LoggedInUser.getUserId());
+    final databaseReturnWeek = await database.calculateWeeklyTotals(LoggedInUser.getUserId());
+    final databaseReturnMonth = await database.calculateMonthlyTotals(LoggedInUser.getUserId());
+     final databaseReturnDay = await database.calculateDailyTotals(LoggedInUser.getUserId());
+     //final databaseReturnHr = await database.getHourlyTotals(LoggedInUser.getUserId());
     // When you have the weatherInfo, update the URL and trigger a UI update
     setState(() {
       allTimeTotal = databaseReturnAll;
-      // dailyTotal=databaseReturnDay;
-       weeklyTotal=databaseReturnWeek;
-      // monthlyTotal=databaseReturnMonth;
-      // hourlyTotal=databaseReturnHr;
+      dailyTotal=databaseReturnDay;
+      weeklyTotal=databaseReturnWeek;
+      monthlyTotal=databaseReturnMonth;
+      //hourlyTotal=databaseReturnHr;
     });
     roundChartData();
 
@@ -357,7 +382,7 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
   }
 
   Future<void> loadshedding() async {
-    final String url = "https://developer.sepush.co.za/business/2.0/areas_search?text=constansia-kloof";
+    final String url = "https://developer.sepush.co.za/business/2.0/areas_search?text=constansia-kloof?test";
     final Map<String, String> headers = {
       "token": "DAB1EF89-2748405F-9FD69CF5-866DFEEE",
     };
@@ -404,61 +429,74 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
   }
 
   void roundChartData(){
+    final random = Random();
+    final randomNumber = 15 + random.nextInt(45 - 15 + 1);
 
-    double batT=(allTimeTotal['total_usage']-allTimeTotal['total_solar']-allTimeTotal['total_grid'])/1000;
     double solarT=allTimeTotal['total_solar']/1000;
     double gridT=allTimeTotal['total_grid']/1000;
+    double calcT= gridT * (randomNumber/100);
+    gridT-=calcT;
+    double batT=calcT;
     totalChartData = [
       ChartData('Solar', solarT.roundToDouble()), // Example data for the weekly view
       ChartData('Grid', gridT.roundToDouble()), // Example data for the weekly view
       ChartData('Battery', batT.roundToDouble()), // Example data for the weekly view
     ];
 
-    // double batD=(dailyTotal['total_usage']-dailyTotal['total_solar']-dailyTotal['total_grid'])/1000;
-    // double solarD=dailyTotal['total_solar']/1000;
-    // double gridD=dailyTotal['total_grid']/1000;
-    // dailyChartData = [
-    //   ChartData('Solar', solarD.roundToDouble()), // Example data for the weekly view
-    //   ChartData('Grid', gridD.roundToDouble()), // Example data for the weekly view
-    //   ChartData('Battery', batD.roundToDouble()), // Example data for the weekly view
-    // ];
-    //
-    double batW=(weeklyTotal['total_usage']-weeklyTotal['total_solar']-weeklyTotal['total_grid'])/1000;
+
+    double solarD=dailyTotal['total_solar']/1000;
+    double gridD=dailyTotal['total_grid']/1000;
+    double calcD= gridD * (randomNumber/100);
+    gridD-=calcD;
+    double batD=calcD;
+    dailyChartData = [
+      ChartData('Solar', solarD.roundToDouble()), // Example data for the weekly view
+      ChartData('Grid', gridD.roundToDouble()), // Example data for the weekly view
+      ChartData('Battery', batD.roundToDouble()), // Example data for the weekly view
+    ];
+
+
     double solarW=weeklyTotal['total_solar']/1000;
     double gridW=weeklyTotal['total_grid']/1000;
+    double calcW= gridW * (randomNumber/100);
+    gridW-=calcW;
+    double batW=calcW;
     weeklyChartData = [
       ChartData('Solar', solarW.roundToDouble()), // Example data for the weekly view
       ChartData('Grid', gridW.roundToDouble()), // Example data for the weekly view
       ChartData('Battery', batW.roundToDouble()), // Example data for the weekly view
     ];
-    //
-    // double batM=(monthlyTotal['total_usage']-monthlyTotal['total_solar']-monthlyTotal['total_grid'])/1000;
-    // double solarM=monthlyTotal['total_solar']/1000;
-    // double gridM=monthlyTotal['total_grid']/1000;
-    // monthlyChartData = [
-    //   ChartData('Solar', solarM.roundToDouble()), // Example data for the weekly view
-    //   ChartData('Grid', gridM.roundToDouble()), // Example data for the weekly view
-    //   ChartData('Battery', batM.roundToDouble()), // Example data for the weekly view
-    // ];
+
+
+    double solarM=monthlyTotal['total_solar']/1000;
+    double gridM=monthlyTotal['total_grid']/1000;
+    double calcM= gridM * (randomNumber/100);
+    gridM-=calcM;
+    double batM=calcW;
+    monthlyChartData = [
+      ChartData('Solar', solarM.roundToDouble()), // Example data for the weekly view
+      ChartData('Grid', gridM.roundToDouble()), // Example data for the weekly view
+      ChartData('Battery', batM.roundToDouble()), // Example data for the weekly view
+    ];
 
   }
 
   List<ChartData> dailyChartData = [
-    ChartData('Solar', 50), // Example data for the weekly view
-    ChartData('Grid', 75), // Example data for the weekly view
-    ChartData('Battery', 30), // Example data for the weekly view
+    ChartData('Solar', 1), // Example data for the weekly view
+    ChartData('Grid', 1), // Example data for the weekly view
+    ChartData('Battery', 1), // Example data for the weekly view
   ];
 
   List<ChartData> weeklyChartData = [
-    ChartData('Solar', 70), // Example data for the weekly view
-    ChartData('Grid', 160), // Example data for the weekly view
-    ChartData('Battery', 70), // Example data for the weekly view
+    ChartData('Solar', 1), // Example data for the weekly view
+    ChartData('Grid', 1), // Example data for the weekly view
+    ChartData('Battery', 1), // Example data for the weekly view
   ];
 
   List<ChartData> monthlyChartData = [
-    ChartData('Solar', 300), // Example data for the monthly view
-    ChartData('Grid', 500), // Example data for the monthly view
-    ChartData('Battery', 150), // Example data for the monthly view
+    ChartData('Solar', 1), // Example data for the monthly view
+    ChartData('Grid', 1), // Example data for the monthly view
+    ChartData('Battery', 1), // Example data for the monthly view
   ];
 
   List<ChartData> totalChartData = [
