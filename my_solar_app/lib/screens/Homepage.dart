@@ -8,6 +8,7 @@ import '../cloud_functions/database/database_api.dart';
 import '../cloud_functions/database/interfaces/database_functions_interface.dart';
 import '../models/logged_in_user.dart';
 import 'package:my_solar_app/screens/devices.dart';
+import 'package:http/http.dart' as http;
 
 class MyCustomWidget extends StatefulWidget {
   const MyCustomWidget({
@@ -34,7 +35,7 @@ class _MyCustomWidgetState extends State<MyCustomWidget> {
   late Map<String, dynamic> totals;
   IDatabaseFunctions database = DatabaseApi();
   Future<void> getTotals() async {
-    final databaseReturn = await database.calculateAllTimeTotals(LoggedInUser.getuserId()); // Get the weather info
+    final databaseReturn = await database.calculateAllTimeTotals(LoggedInUser.getUserId()); // Get the weather info
 
     // When you have the weatherInfo, update the URL and trigger a UI update
     setState(() {
@@ -111,7 +112,7 @@ class _MyCustomWidgetState extends State<MyCustomWidget> {
 
       // Create a formatted string with the weather information
       String weatherInfo ="https:$conditionICON";
-      print(weatherInfo);
+
 
       setState(() {
         url = weatherInfo;
@@ -290,15 +291,28 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
   late AnimationController controller1;
   late AnimationController controller2;
   LoadSheddingService service = LoadSheddingService();
-  late Map<String, dynamic> totals;
+  late Map<String, dynamic> allTimeTotal;
+  late Map<String, dynamic> dailyTotal;
+  late Map<String, dynamic> weeklyTotal;
+  late Map<String, dynamic> monthlyTotal;
+  late Map<String, dynamic> hourlyTotal;
   IDatabaseFunctions database = DatabaseApi();
 
-  Future<void> getTotals() async {
-    final databaseReturn = await database.calculateAllTimeTotals(LoggedInUser.getuserId()); // Get the weather info
 
+
+  Future<void> getTotals() async {
+    final databaseReturnAll = await database.calculateAllTimeTotals(LoggedInUser.getUserId());
+     final databaseReturnWeek = await database.calculateWeeklyTotals(LoggedInUser.getUserId());
+    // final databaseReturnMonth = await database.calculateMonthlyTotals(LoggedInUser.getUserId());
+    // final databaseReturnDay = await database.calculateDailyTotals(LoggedInUser.getUserId());
+    // final databaseReturnHr = await database.getHourlyTotals(LoggedInUser.getUserId());
     // When you have the weatherInfo, update the URL and trigger a UI update
     setState(() {
-      totals = databaseReturn;
+      allTimeTotal = databaseReturnAll;
+      // dailyTotal=databaseReturnDay;
+       weeklyTotal=databaseReturnWeek;
+      // monthlyTotal=databaseReturnMonth;
+      // hourlyTotal=databaseReturnHr;
     });
     roundChartData();
 
@@ -341,11 +355,28 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
       loadSheddingStatus = loadshedding-1;
     });
   }
+
+  Future<void> loadshedding() async {
+    final String url = "https://developer.sepush.co.za/business/2.0/areas_search?text=constansia-kloof";
+    final Map<String, String> headers = {
+      "token": "DAB1EF89-2748405F-9FD69CF5-866DFEEE",
+    };
+
+    final response = await http.get(Uri.parse(url), headers: headers);
+
+    if (response.statusCode == 200) {
+
+    } else {
+      print("Request failed with status: ${response.statusCode}");
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     getLoadshedding();
     getTotals();
+    loadshedding();
     controller1 = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
@@ -373,14 +404,42 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
   }
 
   void roundChartData(){
-    double bat=(totals['total_usage']-totals['total_solar']-totals['total_grid'])/1000;
-    double solar=totals['total_solar']/1000;
-    double grid=totals['total_grid']/1000;
+
+    double batT=(allTimeTotal['total_usage']-allTimeTotal['total_solar']-allTimeTotal['total_grid'])/1000;
+    double solarT=allTimeTotal['total_solar']/1000;
+    double gridT=allTimeTotal['total_grid']/1000;
     totalChartData = [
-      ChartData('Solar', solar.roundToDouble()), // Example data for the weekly view
-      ChartData('Grid', grid.roundToDouble()), // Example data for the weekly view
-      ChartData('Battery', bat.roundToDouble()), // Example data for the weekly view
+      ChartData('Solar', solarT.roundToDouble()), // Example data for the weekly view
+      ChartData('Grid', gridT.roundToDouble()), // Example data for the weekly view
+      ChartData('Battery', batT.roundToDouble()), // Example data for the weekly view
     ];
+
+    // double batD=(dailyTotal['total_usage']-dailyTotal['total_solar']-dailyTotal['total_grid'])/1000;
+    // double solarD=dailyTotal['total_solar']/1000;
+    // double gridD=dailyTotal['total_grid']/1000;
+    // dailyChartData = [
+    //   ChartData('Solar', solarD.roundToDouble()), // Example data for the weekly view
+    //   ChartData('Grid', gridD.roundToDouble()), // Example data for the weekly view
+    //   ChartData('Battery', batD.roundToDouble()), // Example data for the weekly view
+    // ];
+    //
+    double batW=(weeklyTotal['total_usage']-weeklyTotal['total_solar']-weeklyTotal['total_grid'])/1000;
+    double solarW=weeklyTotal['total_solar']/1000;
+    double gridW=weeklyTotal['total_grid']/1000;
+    weeklyChartData = [
+      ChartData('Solar', solarW.roundToDouble()), // Example data for the weekly view
+      ChartData('Grid', gridW.roundToDouble()), // Example data for the weekly view
+      ChartData('Battery', batW.roundToDouble()), // Example data for the weekly view
+    ];
+    //
+    // double batM=(monthlyTotal['total_usage']-monthlyTotal['total_solar']-monthlyTotal['total_grid'])/1000;
+    // double solarM=monthlyTotal['total_solar']/1000;
+    // double gridM=monthlyTotal['total_grid']/1000;
+    // monthlyChartData = [
+    //   ChartData('Solar', solarM.roundToDouble()), // Example data for the weekly view
+    //   ChartData('Grid', gridM.roundToDouble()), // Example data for the weekly view
+    //   ChartData('Battery', batM.roundToDouble()), // Example data for the weekly view
+    // ];
 
   }
 
@@ -465,9 +524,9 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                     },
                   ),
                   ListTile(
-                    title: Text('Profile'),
+                    title: Text('Devices'),
                     onTap: () {
-                      // Handle the Profile click
+                      Navigator.of(context).pushReplacementNamed('/devices');
                     },
                   ),
                 ],
