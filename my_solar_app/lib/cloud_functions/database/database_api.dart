@@ -56,6 +56,9 @@ class DatabaseApi
 
   final setupTable = 'setup_tbl';
 
+  //variables for database functions
+  String databaseFunctionId = 'id';
+
   //creating functions
   @override
   Future createUser(
@@ -236,8 +239,39 @@ class DatabaseApi
     return database.deleteRecord(manualTable, {userId: id});
   }
 
+//database functions
   @override
   Future calculateAllTimeTotals(int id) async {
-    return database.databaseFunction('calculate_all_time_totals', {'id': id});
+    return database.databaseFunction(
+        'calculate_all_time_totals', {databaseFunctionId: id});
+  }
+
+  @override
+  Future calculateDailyTotals(int id) async {
+    return database
+        .databaseFunction('calculate_daily_totals', {databaseFunctionId: id});
+  }
+
+  @override
+  Future calculateWeeklyTotals(int id) async {
+    return database
+        .databaseFunction('calculate_weekly_totals', {databaseFunctionId: id});
+  }
+
+  @override
+  Future calculateMontlyTotals(int id) async {
+    return database
+        .databaseFunction('calculate_montly_totals', {databaseFunctionId: id});
+  }
+
+  @override
+  Future getHourlyTotals(int id) async {
+    return database
+        .databaseFunction('get_hourly_totals', {databaseFunctionId: id});
+  }
+
+  @override
+  Future getTime(int id) async {
+    return database.databaseFunction('get_time', {databaseFunctionId: id});
   }
 }
