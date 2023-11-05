@@ -259,9 +259,9 @@ class DatabaseApi
   }
 
   @override
-  Future calculateMontlyTotals(int id) async {
+  Future calculateMonthlyTotals(int id) async {
     return database
-        .databaseFunction('calculate_montly_totals', {databaseFunctionId: id});
+        .databaseFunction('calculate_monthly_totals', {databaseFunctionId: id});
   }
 
   @override
