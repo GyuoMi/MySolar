@@ -1,19 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:based_battery_indicator/based_battery_indicator.dart';
-
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:weather_icons/weather_icons.dart';
-
 import '../../API\'s/WeatherApi.dart';
 import '../../API\'s/LoadSheddingAPI.dart';
 import '../cloud_functions/database/database_api.dart';
 import '../cloud_functions/database/interfaces/database_functions_interface.dart';
 import '../models/logged_in_user.dart';
-
-
-
-// other pages
 import 'package:my_solar_app/screens/devices.dart';
 
 class MyCustomWidget extends StatefulWidget {
@@ -435,6 +428,16 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
         title: Text('Dashboard'),
         centerTitle: true,
         automaticallyImplyLeading: false,
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: Icon(Icons.menu), // Hamburger menu icon
+              onPressed: () {
+                Scaffold.of(context).openDrawer(); // Open the drawer
+              },
+            );
+          },
+        ),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.logout),
@@ -444,6 +447,38 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
           ),
         ],
       ),
+
+      drawer: Padding(
+        padding: EdgeInsets.only(top: 80), // Add a buffer of 80 from the top
+        child: Align(
+          alignment: Alignment.topLeft, // Align with the top-left of the screen
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: 200, maxWidth: 150), // Adjust the height and width as needed
+            child: Drawer(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ListTile(
+                    title: Text('Settings'),
+                    onTap: () {
+                      // Handle the Settings click
+                    },
+                  ),
+                  ListTile(
+                    title: Text('Profile'),
+                    onTap: () {
+                      // Handle the Profile click
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+
+
+
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
