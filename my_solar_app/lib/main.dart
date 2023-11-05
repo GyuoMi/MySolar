@@ -3,6 +3,7 @@ import 'package:my_solar_app/screens/login_page.dart';
 import 'package:my_solar_app/screens/register_system_page.dart';
 import 'package:my_solar_app/screens/register_user_page.dart';
 import 'package:my_solar_app/screens/Homepage.dart';
+import 'package:my_solar_app/screens/settings_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:my_solar_app/screens/devices.dart';
 
@@ -44,13 +45,14 @@ class MyApp extends StatelessWidget {
         // initialRoute: Supabase.instance.client.auth.currentSession != null
         //     ? '/login'
         //     : '/',
-        initialRoute: '/login',
+        initialRoute: '/settings',
         routes: {
           '/': (context) => const MyHomePage(title: 'Home Page'),
           '/login': (context) => const LoginPage(),
           '/register_user': (context) => RegisterPage(),
           '/register_system': (context) => RegisterSystemPage(),
           '/devices': (context) => DevicesPage(),
+          '/settings': (context) => SettingsPage(),
         });
   }
 }
