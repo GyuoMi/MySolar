@@ -7,6 +7,9 @@ import 'package:weather_icons/weather_icons.dart';
 
 import '../../API\'s/WeatherApi.dart';
 import '../../API\'s/LoadSheddingAPI.dart';
+import '../cloud_functions/database/database_api.dart';
+import '../cloud_functions/database/interfaces/database_functions_interface.dart';
+import '../models/logged_in_user.dart';
 
 
 
@@ -33,6 +36,73 @@ class _MyCustomWidgetState extends State<MyCustomWidget> {
 
   final WeatherService weatherService =
   WeatherService('93ff5e1b86ec4bddaa5194216230310');
+
+
+  late Map<String, dynamic> totals;
+  IDatabaseFunctions database = DatabaseApi();
+  Future<void> getTotals() async {
+    final databaseReturn = await database.calculateAllTimeTotals(LoggedInUser.getuserId()); // Get the weather info
+
+    // When you have the weatherInfo, update the URL and trigger a UI update
+    setState(() {
+      totals = databaseReturn;
+    });
+    uiCalculations();
+
+  }
+
+  void uiCalculations(){
+
+    double grid=totals['total_grid'];
+    double usage=totals['total_usage'];
+    double solar= totals['total_solar'];
+    double produced= totals['total_production'];
+    double battery=usage - grid - solar;
+
+    if(usage<produced){
+      setState(() {
+        charging=true;
+      });
+
+    }else{
+      setState(() {
+        charging=false;
+      });
+    }
+    if(battery>0){
+      setState(() {
+        charging=false;
+      });
+    }
+    if(grid>0){
+      setState(() {
+        gridDraw=true;
+      });
+    }else{
+      setState(() {
+        gridDraw=true;
+      });
+    }
+    if(solar>0){
+      setState(() {
+        solarDraw=true;
+      });
+    }else{
+      setState(() {
+        solarDraw=true;
+      });
+    }
+    if(usage>0){
+      setState(() {
+        houseDraw=true;
+      });
+    }else{
+      setState(() {
+        houseDraw=true;
+      });
+    }
+  }
+
 
 
   Future<String?> getWeather() async {
@@ -67,15 +137,16 @@ class _MyCustomWidgetState extends State<MyCustomWidget> {
   @override
   void initState() {
     super.initState();
-    // Call getWeatherIcon when the widget initializes to fetch the weather icon
+    getTotals();
     getWeatherIcon();
+
     // loadSheddingStatus = fetchLoadSheddingStatus();
 
   }
 
-  bool charging = true;
-  bool houseDraw = true;
-  bool solarDraw = true;
+  bool charging = false;
+  bool houseDraw = false;
+  bool solarDraw = false;
   bool gridDraw = false;
   int batteryPer = 45;
   String url = "";
@@ -226,6 +297,19 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
   late AnimationController controller1;
   late AnimationController controller2;
   LoadSheddingService service = LoadSheddingService();
+  late Map<String, dynamic> totals;
+  IDatabaseFunctions database = DatabaseApi();
+
+  Future<void> getTotals() async {
+    final databaseReturn = await database.calculateAllTimeTotals(LoggedInUser.getuserId()); // Get the weather info
+
+    // When you have the weatherInfo, update the URL and trigger a UI update
+    setState(() {
+      totals = databaseReturn;
+    });
+    roundChartData();
+
+  }
 
   void startAnimation1() {
     controller1.forward().then((_) {
@@ -268,7 +352,7 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     getLoadshedding();
-
+    getTotals();
     controller1 = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
@@ -295,6 +379,18 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  void roundChartData(){
+    double bat=(totals['total_usage']-totals['total_solar']-totals['total_grid'])/1000;
+    double solar=totals['total_solar']/1000;
+    double grid=totals['total_grid']/1000;
+    totalChartData = [
+      ChartData('Solar', solar.roundToDouble()), // Example data for the weekly view
+      ChartData('Grid', grid.roundToDouble()), // Example data for the weekly view
+      ChartData('Battery', bat.roundToDouble()), // Example data for the weekly view
+    ];
+
+  }
+
   List<ChartData> dailyChartData = [
     ChartData('Solar', 50), // Example data for the weekly view
     ChartData('Grid', 75), // Example data for the weekly view
@@ -314,9 +410,9 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
   ];
 
   List<ChartData> totalChartData = [
-    ChartData('Solar', 1000), // Example data for the total view
-    ChartData('Grid', 1500), // Example data for the total view
-    ChartData('Battery', 500), // Example data for the total view
+    ChartData('Solar', 1), // Example data for the total view
+    ChartData('Grid', 1), // Example data for the total view
+    ChartData('Battery', 1), // Example data for the total view
   ];
 
   //example data for line graph
@@ -336,7 +432,17 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title ?? ''),
+        title: Text('Dashboard'),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () {
+              Navigator.of(context).pushReplacementNamed('/login');
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -376,9 +482,9 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                         // Loadshedding tab content
                         (loadSheddingStatus!=1000)
                             ? Center(child: (loadSheddingStatus == 0)
-                                ? Text('No Load Shedding Currently')
-                                : Text('Load Shedding Status: Stage $loadSheddingStatus'),
-                            )
+                            ? Text('No Load Shedding Currently')
+                            : Text('Load Shedding Status: Stage $loadSheddingStatus'),
+                        )
                             : CircularProgressIndicator(),
                         // Usage tab content
                         PageView(
