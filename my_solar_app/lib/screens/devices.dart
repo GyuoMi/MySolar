@@ -5,12 +5,23 @@ import 'package:my_solar_app/models/logged_in_user.dart';
 // Define your database and device persistence instances
 IDevicePersistence devicePersistence = DatabaseApi();
 int userId = LoggedInUser.userId;
+
+String address = LoggedInUser.userAddress;
+
 class DevicesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Devices'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.lightbulb_outline), 
+            onPressed: () {
+              // Handle the click event here
+            },
+          ),
+        ],
       ),
       body: FutureBuilder<List<Device>>(
         future: createDevicesList(userId), // Replace 61 with the actual user ID
