@@ -108,7 +108,7 @@ class _RegisterSystemPage extends State<RegisterSystemPage> {
 
                 try {
                   //TODO figure out what to put for daily usage '0'
-                  final userId = LoggedInUser.getuserId() as int;
+                  final userId = LoggedInUser.getUserId() as int;
                   await manualPersistence.createManualSystem(userId, systemName,
                       batteryCapacity, productionCount, panelCount, 0);
                   Navigator.of(context).pushReplacementNamed('/');
