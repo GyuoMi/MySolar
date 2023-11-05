@@ -11,7 +11,9 @@ BEGIN
     INTO total_production
     FROM records_tbl
     INNER JOIN device_tbl ON records_tbl.device_id = device_tbl.device_id
-    WHERE records_tbl.user_id = id AND records_tbl.records_time >= NOW() - INTERVAL '7 days' AND device_tbl.device_usage = true;
+    WHERE records_tbl.user_id = id AND 
+          TO_TIMESTAMP(records_tbl.records_time, 'YYYY-MM-DD HH24:MI:SS') >= NOW() - INTERVAL '7 days' AND 
+          device_tbl.device_usage = true;
 
     -- Calculate total_grid and total_solar for the past 7 days based on device_tbl
     SELECT SUM(CASE WHEN device_tbl.device_usage = false AND device_tbl.device_normal = true
@@ -19,15 +21,16 @@ BEGIN
     INTO total_grid
     FROM records_tbl
     INNER JOIN device_tbl ON records_tbl.device_id = device_tbl.device_id
-    WHERE records_tbl.user_id = id AND records_tbl.records_time >= NOW() - INTERVAL '7 days';
+    WHERE records_tbl.user_id = id AND 
+          TO_TIMESTAMP(records_tbl.records_time, 'YYYY-MM-DD HH24:MI:SS') >= NOW() - INTERVAL '7 days';
 
     SELECT SUM(CASE WHEN device_tbl.device_usage = false AND device_tbl.device_normal = false
                     THEN device_tbl.device_wattage * records_tbl.records_minutes / 60 ELSE 0 END)
     INTO total_solar
     FROM records_tbl
     INNER JOIN device_tbl ON records_tbl.device_id = device_tbl.device_id
-    WHERE records_tbl.user_id = id AND records_tbl.records_time >= NOW() - INTERVAL '7 days';
-
+    WHERE records_tbl.user_id = id AND 
+          TO_TIMESTAMP(records_tbl.records_time, 'YYYY-MM-DD HH24:MI:SS') >= NOW() - INTERVAL '7 days';
 
     -- Return the calculated values as a JSON object
     RETURN json_build_object(
