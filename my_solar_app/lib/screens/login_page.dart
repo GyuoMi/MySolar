@@ -25,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final supabase = Supabase.instance.client;
-  late final StreamSubscription<AuthState> _authSubscription;
+  //late final StreamSubscription<AuthState> _authSubscription;
 
   @override
   void initState() {
@@ -43,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
-    _authSubscription.cancel();
+    //_authSubscription.cancel();
     super.dispose();
   }
 
