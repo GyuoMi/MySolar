@@ -109,12 +109,12 @@ class _RegisterSystemPage extends State<RegisterSystemPage> {
 
                 try {
                   //TODO figure out what to put for daily usage '0'
-                  final userId = LoggedInUser.getUserId() as int;
-
-                  //create user system on database
-                  await manualPersistence.createManualSystem(userId, systemName,
-                      batteryCapacity, productionCount, panelCount, 0);
-
+                  final userId = LoggedInUser.getUserId();
+                  //
+                  // //create user system on database
+                  // await manualPersistence.createManualSystem(userId, systemName,
+                  //     batteryCapacity, productionCount, panelCount, 0);
+                  //
                   Navigator.of(context).pushReplacementNamed('/login');
                 } on AuthException catch (error) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
