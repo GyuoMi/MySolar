@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
         // initialRoute: Supabase.instance.client.auth.currentSession != null
         //     ? '/login'
         //     : '/',
-        initialRoute: '/settings',
+        initialRoute: '/login',
         routes: {
           '/': (context) => const MyHomePage(title: 'Home Page'),
           '/login': (context) => const LoginPage(),
