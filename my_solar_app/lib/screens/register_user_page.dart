@@ -87,7 +87,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     width: 300,
                     initialSelection: ColorLabel.manual,
                     controller: colorController,
-                    label: const Text('Location'),
+                    label: const Text('System Type'),
                     dropdownMenuEntries: colorEntries,
                     onSelected: (ColorLabel? color) {
                       setState(() {
