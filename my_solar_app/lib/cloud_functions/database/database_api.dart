@@ -93,7 +93,7 @@ class DatabaseApi
   }
 
   @override
-  Future createManualSystem(int id, String name, int capacity,
+  Future createManualSystem(int id, String name, double capacity,
       double maxProduction, int count, double dailyUsage) async {
     final manualData = {
       userId: id,
@@ -184,7 +184,7 @@ class DatabaseApi
   }
 
   @override
-  Future updateManualMaxProduction(int id, String maxProduction) async {
+  Future updateManualMaxProduction(int id, double maxProduction) async {
     return database.updateField(
         manualTable, {manualMaxProduction: maxProduction}, {manualId: id});
   }
