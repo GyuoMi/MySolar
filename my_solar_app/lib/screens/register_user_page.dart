@@ -45,24 +45,6 @@ class _RegisterPageState extends State<RegisterPage> {
         /* const Text("Register"), */
         //shows user name and password text boxes
         const SizedBox(height: 40),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                DropdownMenu<ColorLabel>(
-                    width: 300,
-                    initialSelection: ColorLabel.manual,
-                    controller: colorController,
-                    label: const Text('System Type'),
-                    dropdownMenuEntries: colorEntries,
-                    onSelected: (ColorLabel? color) {
-                      setState(() {
-                        systemType = color!;
-                      });
-                    }),
-              ]),
-        ),
 
         LoginPageTextField(
           controller: emailController,
@@ -78,6 +60,26 @@ class _RegisterPageState extends State<RegisterPage> {
           textType: TextInputType.text,
         ),
         //TODO add address widget
+        // Padding(
+        //   padding: const EdgeInsets.symmetric(vertical: 20),
+        //   child: Row(
+        //       mainAxisAlignment: MainAxisAlignment.center,
+        //       children: <Widget>[
+        //         DropdownMenu<ColorLabel>(
+        //             width: 300,
+        //             initialSelection: ColorLabel.manual,
+        //             controller: colorController,
+        //             label: const Text('System Type'),
+        //             dropdownMenuEntries: colorEntries,
+        //             onSelected: (ColorLabel? color) {
+        //               setState(() {
+        //                 systemType = color!;
+        //               });
+        //             }),
+        //       ]),
+        // ),
+        //
+        const SizedBox(height: 5),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 20),
           child: Row(
@@ -96,8 +98,6 @@ class _RegisterPageState extends State<RegisterPage> {
                     }),
               ]),
         ),
-
-        const SizedBox(height: 20),
 
         //creates Sign In button
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -139,7 +139,7 @@ class _RegisterPageState extends State<RegisterPage> {
               },
               child: const Text("Next")),
         ]),
-        const SizedBox(height: 25),
+        //const SizedBox(height: 25),
         const SizedBox(
           height: 30,
         ),
