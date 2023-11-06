@@ -14,6 +14,13 @@ class DevicesPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Devices'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            // Add code here to handle the back button press
+            Navigator.pop(context); // This is a common way to navigate back
+          },
+        ),
         actions: [
           IconButton(
             icon: Icon(Icons.lightbulb_outline), 

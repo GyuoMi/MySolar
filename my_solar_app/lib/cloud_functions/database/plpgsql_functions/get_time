@@ -1,0 +1,36 @@
+CREATE OR REPLACE FUNCTION get_time(id INT)
+RETURNS JSON AS $$
+DECLARE
+    last_record_time TIME;
+    next_record_time TIME;
+    result JSON;
+BEGIN
+    -- Get the last stored records_time for the user
+    SELECT MAX(CAST(SUBSTRING(records_time FROM 12 FOR 8) AS TIME))
+    INTO last_record_time
+    FROM records_tbl
+    WHERE user_id = id;
+
+    -- Check if there are no records for the user
+    IF last_record_time IS NULL THEN
+        -- No records found, set last_record_time and next_record_time to the current time rounded down to the nearest four-hour interval
+        last_record_time := CURRENT_TIME;
+        last_record_time := '00:00:00'::TIME + (EXTRACT(HOUR FROM last_record_time)::INT / 4 * 4) * INTERVAL '1 HOUR';
+        next_record_time := last_record_time + '4 hours'::INTERVAL;
+    ELSE
+        -- Calculate the next record time with wrap-around logic
+        CASE
+            WHEN last_record_time >= '20:00:00'::TIME THEN
+                next_record_time := '00:00:00'::TIME;
+            ELSE
+                next_record_time := (last_record_time + INTERVAL '4 hours')::TIME;
+        END CASE;
+    END IF;
+
+    -- Create the result as a JSON object
+    RETURN json_build_object(
+      'recent_time', last_record_time, 
+      'next_time', next_record_time
+    );
+END;
+$$ LANGUAGE plpgsql;
