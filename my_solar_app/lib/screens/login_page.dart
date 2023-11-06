@@ -103,30 +103,34 @@ class _LoginPageState extends State<LoginPage> {
                   //get user details
                   IUserPersistence userPersistence = DatabaseApi();
                   var userData = await userPersistence.getUserDetails(name);
+                  //
                   int id = userData[0][userPersistence.userId] as int;
                   int sysId = userData[0][userPersistence.systemId] as int;
                   String address =
                       userData[0][userPersistence.userAddress] as String;
-
-                  //set up logged in user
+                  //
+                  // //set up logged in user
                   LoggedInUser.setUser(id, sysId, name, password, address);
-
+                  //
                   IManualSystemPersistence systemPersistence = DatabaseApi();
-                  //set up logged in users system details
+                  // //set up logged in users system details
                   var systemData =
                       await systemPersistence.getManualSystemDetails(id);
-                  String systemName =
-                      systemData[0][systemPersistence.manualName] as String;
-                  int systemPanels =
-                      systemData[0][systemPersistence.manualCount] as int;
-                  double panelProduction = systemData[0]
-                      [systemPersistence.manualMaxProduction] as double;
-                  double batteryCapacity =
-                      systemData[0][systemPersistence.manualCapacity] as double;
+                  try {
+                    String systemName =
+                        systemData[0][systemPersistence.manualName] as String;
+                    int systemPanels =
+                        systemData[0][systemPersistence.manualCount] as int;
+                    double panelProduction = systemData[0]
+                        [systemPersistence.manualMaxProduction] as double;
+                    double batteryCapacity = systemData[0]
+                        [systemPersistence.manualCapacity] as double;
 
-                  LoggedInUser.setSystem(systemName, systemPanels,
-                      panelProduction, batteryCapacity);
-
+                    LoggedInUser.setSystem(systemName, systemPanels,
+                        panelProduction, batteryCapacity);
+                  } catch (error) {
+                    print(error.toString() + ": no manual system in database");
+                  }
                   //navigate to new homepage
                   Navigator.of(context).pushReplacementNamed('/');
                 } on AuthException catch (error) {
