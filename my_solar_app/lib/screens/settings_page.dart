@@ -169,7 +169,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   final solarPanelProduction =
                       double.parse(solarPanelProductionController.text.trim());
                   final batteryCapacity =
-                      double.parse(batteryCapacityController.text.trim());
+                      int.parse(batteryCapacityController.text.trim());
                   try {
                     //check to see if user is in database
                     //await authentication.signInEmailAndPassword(name, password);
@@ -212,6 +212,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       backgroundColor: Theme.of(context).colorScheme.error,
                     ));
                   } catch (error) {
+                    print(error.toString());
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                         content: Text("Error occured please try again"),
                         backgroundColor: Theme.of(context).colorScheme.error));

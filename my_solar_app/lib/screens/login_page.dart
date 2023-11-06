@@ -103,6 +103,7 @@ class _LoginPageState extends State<LoginPage> {
                   //get user details
                   IUserPersistence userPersistence = DatabaseApi();
                   var userData = await userPersistence.getUserDetails(name);
+                  print(userData);
                   //
                   int id = userData[0][userPersistence.userId] as int;
                   int sysId = userData[0][userPersistence.systemId] as int;
@@ -117,14 +118,15 @@ class _LoginPageState extends State<LoginPage> {
                   var systemData =
                       await systemPersistence.getManualSystemDetails(id);
                   try {
-                    String systemName =
+                    var systemName =
                         systemData[0][systemPersistence.manualName] as String;
-                    int systemPanels =
+                    var systemPanels =
                         systemData[0][systemPersistence.manualCount] as int;
-                    double panelProduction = systemData[0]
-                        [systemPersistence.manualMaxProduction] as double;
-                    double batteryCapacity = systemData[0]
-                        [systemPersistence.manualCapacity] as double;
+                    var panelProduction = double.parse(systemData[0]
+                            [systemPersistence.manualMaxProduction]
+                        .toString());
+                    var batteryCapacity =
+                        systemData[0][systemPersistence.manualCapacity] as int;
 
                     LoggedInUser.setSystem(systemName, systemPanels,
                         panelProduction, batteryCapacity);
@@ -139,6 +141,7 @@ class _LoginPageState extends State<LoginPage> {
                     backgroundColor: Theme.of(context).colorScheme.error,
                   ));
                 } catch (error) {
+                  print(error.toString());
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text("Error occured please try again"),
                       backgroundColor: Theme.of(context).colorScheme.error));
