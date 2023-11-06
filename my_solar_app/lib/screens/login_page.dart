@@ -4,6 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:my_solar_app/cloud_functions/authentication/auth_repository.dart';
 import 'package:my_solar_app/cloud_functions/database/database_api.dart';
+import 'package:my_solar_app/cloud_functions/database/interfaces/manual_system_persistence_interface.dart';
 import 'package:my_solar_app/cloud_functions/database/interfaces/user_persistence_interface.dart';
 import 'package:my_solar_app/main.dart';
 import 'package:my_solar_app/models/logged_in_user.dart';
@@ -109,6 +110,22 @@ class _LoginPageState extends State<LoginPage> {
 
                   //set up logged in user
                   LoggedInUser.setUser(id, sysId, name, password, address);
+
+                  IManualSystemPersistence systemPersistence = DatabaseApi();
+                  //set up logged in users system details
+                  var systemData =
+                      await systemPersistence.getManualSystemDetails(id);
+                  String systemName =
+                      systemData[0][systemPersistence.manualName] as String;
+                  int systemPanels =
+                      systemData[0][systemPersistence.manualCount] as int;
+                  double panelProduction = systemData[0]
+                      [systemPersistence.manualMaxProduction] as double;
+                  double batteryCapacity =
+                      systemData[0][systemPersistence.manualCapacity] as double;
+
+                  LoggedInUser.setSystem(systemName, systemPanels,
+                      panelProduction, batteryCapacity);
 
                   //navigate to new homepage
                   Navigator.of(context).pushReplacementNamed('/');
