@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:my_solar_app/cloud_functions/authentication/auth_repository.dart';
 import 'package:my_solar_app/cloud_functions/database/database_api.dart';
@@ -104,14 +105,17 @@ class _RegisterSystemPage extends State<RegisterSystemPage> {
                 final productionCount =
                     toDouble(solarPanelProductionController.text.trim()) ?? 0;
                 final batteryCapacity =
-                    toInt(batteryCapacityController.text.trim()) ?? 0;
+                    toDouble(batteryCapacityController.text.trim()) ?? 0;
 
                 try {
                   //TODO figure out what to put for daily usage '0'
-                  final userId = LoggedInUser.getUserId() as int;
-                  await manualPersistence.createManualSystem(userId, systemName,
-                      batteryCapacity, productionCount, panelCount, 0);
-                  Navigator.of(context).pushReplacementNamed('/');
+                  final userId = LoggedInUser.getUserId();
+                  //
+                  // //create user system on database
+                  // await manualPersistence.createManualSystem(userId, systemName,
+                  //     batteryCapacity, productionCount, panelCount, 0);
+                  //
+                  Navigator.of(context).pushReplacementNamed('/login');
                 } on AuthException catch (error) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(error.message),
@@ -148,13 +152,18 @@ class _RegisterSystemPage extends State<RegisterSystemPage> {
         const SizedBox(
           height: 30,
         ),
-        const Row(
+        Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('already have an account? '),
-            Text(
-              'Login now',
-              style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+            Text('Already have an Account?'),
+            RichText(
+              text: TextSpan(
+                  text: 'Login now',
+                  style: TextStyle(
+                      color: Colors.blue, fontWeight: FontWeight.bold),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () =>
+                        Navigator.of(context).pushReplacementNamed('/login')),
             )
           ],
         )
