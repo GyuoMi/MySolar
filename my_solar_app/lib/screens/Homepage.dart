@@ -5,6 +5,8 @@ import 'package:my_solar_app/widgets/drawer.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import '../../API\'s/WeatherApi.dart';
 import '../../API\'s/LoadSheddingAPI.dart';
+import '../API\'s/loadsheddingFunctions.dart';
+
 import '../cloud_functions/database/database_api.dart';
 import '../cloud_functions/database/interfaces/database_functions_interface.dart';
 import '../models/logged_in_user.dart';
@@ -82,12 +84,7 @@ class _MyCustomWidgetState extends State<MyCustomWidget> {
         solarDraw = true;
       });
     }
-    if (time != 'day') {
-      print('make false');
-      setState(() {
-        solarDraw = false;
-      });
-    }
+
     if (usage > 0) {
       setState(() {
         houseDraw = true;
@@ -157,9 +154,9 @@ class _MyCustomWidgetState extends State<MyCustomWidget> {
         setState(() {
           time = match.group(1)!;
         });
-        //print(time);
+        print(time);
         if (time != 'day') {
-          print('make false');
+
           setState(() {
             solarDraw = false;
           });
@@ -375,7 +372,7 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
 
   Future<void> loadshedding() async {
     final String url =
-        "https://developer.sepush.co.za/business/2.0/areas_search?text=constansia-kloof?test";
+        "https://developer.sepush.co.za/business/2.0/areas_search?text=constansia-kloof";
     final Map<String, String> headers = {
       "token": "DAB1EF89-2748405F-9FD69CF5-866DFEEE",
     };
@@ -581,14 +578,23 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                     child: TabBarView(
                       children: [
                         // Loadshedding tab content
-                        (loadSheddingStatus != 1000)
-                            ? Center(
-                                child: (loadSheddingStatus == 0)
+                        if (loadSheddingStatus != 1000)
+                          SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                LoadShedding(),
+                                (loadSheddingStatus == 0)
                                     ? Text('No Load Shedding Currently')
-                                    : Text(
-                                        'Load Shedding Status: Stage $loadSheddingStatus'),
-                              )
-                            : CircularProgressIndicator(),
+                                    : Text('Load Shedding Status: Stage $loadSheddingStatus'),
+                              ],
+                            ),
+                          )
+                        else
+                          Column(
+                            children: [
+                              CircularProgressIndicator(),
+                            ],
+                          ),
                         // Usage tab content
                         PageView(
                           controller: _pageController,
