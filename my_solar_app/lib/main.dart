@@ -5,6 +5,7 @@ import 'package:my_solar_app/screens/register_user_page.dart';
 import 'package:my_solar_app/screens/Homepage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:my_solar_app/screens/devices.dart';
+import 'package:my_solar_app/screens/tracking_page.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
@@ -12,12 +13,7 @@ import 'package:my_solar_app/utilities/notifications.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final notificationService = NotificationService(); // Create an instance
-  await notificationService.initNotification(); // Initialize notifications
-  await notificationService.showNotification(
-    title: 'MySolar',
-    body: 'Enter new device readings',
-  );
+  
   await Supabase.initialize(
     url: 'https://fsirbhoucrjtnkvchwuf.supabase.co',
     anonKey:
@@ -27,9 +23,32 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
+
+  
   @override
   Widget build(BuildContext context) {
+    void onNotificationTapped(String payload) {
+    if (payload == 'tracking_page') {
+          print('Tapped on notification with payload: $payload');
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => TrackingPage()),
+      );
+    }
+  }
+    final notificationService = NotificationService(
+      context: context,
+      onNotificationTapped: onNotificationTapped,
+    );
+    notificationService.initNotification(); // Initialize notifications
+    notificationService.showNotification(
+    title: 'MySolar',
+    body: 'Enter new device readings',
+    payLoad: 'tracking_page',
+  );
+  notificationService.handleNotification('tracking_page');
     return MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
@@ -60,6 +79,7 @@ class MyApp extends StatelessWidget {
           '/register_user': (context) => RegisterPage(),
           '/register_system': (context) => RegisterSystemPage(),
           '/devices': (context) => DevicesPage(),
+          '/tracking': (context) => TrackingPage(),
         });
   }
 }
