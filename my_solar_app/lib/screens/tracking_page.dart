@@ -10,6 +10,7 @@ import 'package:my_solar_app/models/logged_in_user.dart';
 
 IDevicePersistence devicePersistence = DatabaseApi();
 int userId = LoggedInUser.userId;
+var devicesPageInstance = DevicesPage();
 
 class TrackingPage extends StatelessWidget {
   TrackingPage({super.key});
@@ -25,114 +26,226 @@ class TrackingPage extends StatelessWidget {
             child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (false) ...[
-              Image.asset(
-                'assets/images/empty_page.png',
-                scale: 3,
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                "So much blank space.",
-                style: TextStyle(fontWeight: FontWeight.bold),
-                textScaleFactor: 1.25,
-              ),
-              const SizedBox(height: 20),
-              const Text("Let's fill it with excitement!"),
-              const SizedBox(height: 40),
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                FilledButton(
-                    style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        minimumSize: const Size(300, 70)),
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => DevicesPage()));
-                    },
-                    child: const Text("Add Devices")),
-              ]),
-            ] //if
-            else ...[
-              const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Expanded(
-                        flex: 3,
-                        child: Padding(
-                          padding:
-                              EdgeInsets.only(left: 10, bottom: 10, top: 10),
-                          child: Text(
-                            "Devices",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                            textScaleFactor: 1.25,
-                          ),
-                        )),
-                    Expanded(
-                        flex: 1,
-                        child: Padding(
-                          padding:
-                              EdgeInsets.only(right: 10, bottom: 10, top: 10),
-                          child: Text(
-                            "Minutes",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                            textScaleFactor: 1.25,
-                          ),
-                        )),
-                  ]),
-
-              //create list of devices
-              Expanded(
-                child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
-                    _controllers!.add(TextEditingController());
-                    _controllers![index].text = "00";
-                    return Row(children: [
-                      const Expanded(
-                          flex: 3,
-                          child: Padding(
-                            padding: EdgeInsets.only(left: 10),
-                            child: Text(
-                              "Device name",
-                              //textAlign: TextAlign.center,
-                            ),
-                          )),
-                      Expanded(
-                        flex: 1,
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 10),
-                          child: TextFormField(
-                            textAlign: TextAlign.center,
-                            controller: _controllers![index],
-                          ),
+            const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Expanded(
+                      flex: 3,
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 10, bottom: 10, top: 10),
+                        child: Text(
+                          "Devices",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                          textScaleFactor: 1.25,
                         ),
-                      ),
+                      )),
+                  Expanded(
+                      flex: 1,
+                      child: Padding(
+                        padding: EdgeInsets.only(right: 10, bottom: 10, top: 10),
+                        child: Text(
+                          "Minutes",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                          textScaleFactor: 1.25,
+                        ),
+                      )),
+                ]),
+            FutureBuilder(
+                future: devicesPageInstance.createDevicesList(userId),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    final List<Device> devices = snapshot.data!;
+                    return ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      itemCount: devices.length,
+                      itemBuilder: (context, index) {
+                        final device = devices[index];
+
+                        _controllers!.add(TextEditingController());
+                        _controllers![index].text = "00";
+                        return Row(children: [
+                          Expanded(
+                              flex: 3,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 10),
+                                child: Text(
+                                  device.name,
+                                  //textAlign: TextAlign.center,
+                                ),
+                              )),
+                          Expanded(
+                            flex: 1,
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 10),
+                              child: TextFormField(
+                                textAlign: TextAlign.center,
+                                keyboardType: TextInputType.number,
+                                controller: _controllers![index],
+                              ),
+                            ),
+                          ),
+                        ]);
+                      },
+                      //separatorBuilder: (BuildContext context, int index) =>const Divider(),
+                    );
+                  } else {
+                    Image.asset(
+                      'assets/images/empty_page.png',
+                      scale: 3,
+                    );
+                    const SizedBox(height: 20);
+                    const Text(
+                      "So much blank space.",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                      textScaleFactor: 1.25,
+                    );
+                    const SizedBox(height: 20);
+                    const Text("Let's fill it with excitement!");
+                    const SizedBox(height: 40);
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      FilledButton(
+                          style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                              minimumSize: const Size(300, 70)),
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => DevicesPage()));
+                          },
+                          child: const Text("Add Devices")),
                     ]);
+                  }
+                  return const Divider();
+                }),
+            //create save button
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              FilledButton(
+                  style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      minimumSize: const Size(300, 70)),
+                  onPressed: () {
+                    //TODO
+                    for (int index = 0; index < 10; index++) {
+                      String value = _controllers![index].text;
+                      _controllers![index].text = value;
+                    }
                   },
-                  //separatorBuilder: (BuildContext context, int index) =>const Divider(),
-                ),
-              ),
+                  child: const Text("Save")),
+            ]),
+            // if (false) ...[
+            //   Image.asset(
+            //     'assets/images/empty_page.png',
+            //     scale: 3,
+            //   ),
+            //   const SizedBox(height: 20),
+            //   const Text(
+            //     "So much blank space.",
+            //     style: TextStyle(fontWeight: FontWeight.bold),
+            //     textScaleFactor: 1.25,
+            //   ),
+            //   const SizedBox(height: 20),
+            //   const Text("Let's fill it with excitement!"),
+            //   const SizedBox(height: 40),
+            //   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            //     FilledButton(
+            //         style: ElevatedButton.styleFrom(
+            //             shape: RoundedRectangleBorder(
+            //                 borderRadius: BorderRadius.circular(10)),
+            //             minimumSize: const Size(300, 70)),
+            //         onPressed: () {
+            //           Navigator.of(context).push(MaterialPageRoute(
+            //               builder: (context) => DevicesPage()));
+            //         },
+            //         child: const Text("Add Devices")),
+            //   ]),
+            // ] //if
+            // else ...[
+            //   const Row(
+            //       mainAxisAlignment: MainAxisAlignment.spaceAround,
+            //       children: [
+            //         Expanded(
+            //             flex: 3,
+            //             child: Padding(
+            //               padding:
+            //                   EdgeInsets.only(left: 10, bottom: 10, top: 10),
+            //               child: Text(
+            //                 "Devices",
+            //                 style: TextStyle(fontWeight: FontWeight.bold),
+            //                 textScaleFactor: 1.25,
+            //               ),
+            //             )),
+            //         Expanded(
+            //             flex: 1,
+            //             child: Padding(
+            //               padding:
+            //                   EdgeInsets.only(right: 10, bottom: 10, top: 10),
+            //               child: Text(
+            //                 "Minutes",
+            //                 style: TextStyle(fontWeight: FontWeight.bold),
+            //                 textScaleFactor: 1.25,
+            //               ),
+            //             )),
+            //       ]),
 
-              //create save button
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                FilledButton(
-                    style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        minimumSize: const Size(300, 70)),
-                    onPressed: () {
-                      for (int index = 0; index < 10; index++) {
-                        String value = _controllers![index].text;
-                        _controllers![index].text = value;
-                      }
-                    },
-                    child: const Text("Save")),
-              ]),
+            //   //create list of devices
+            //   Expanded(
+            //     child: ListView.builder(
+            //       scrollDirection: Axis.vertical,
+            //       shrinkWrap: true,
+            //       itemCount: devices.length,
+            //       itemBuilder: (context, index) {
+            //         final device = devices[index];
 
-              const SizedBox(height: 10),
-            ], //else
+            //         _controllers!.add(TextEditingController());
+            //         _controllers![index].text = "00";
+            //         return Row(children: [
+            //           const Expanded(
+            //               flex: 3,
+            //               child: Padding(
+            //                 padding: EdgeInsets.only(left: 10),
+            //                 child: Text(
+            //                   //TODO
+            //                   "Device name",
+            //                   //textAlign: TextAlign.center,
+            //                 ),
+            //               )),
+            //           Expanded(
+            //             flex: 1,
+            //             child: Padding(
+            //               padding: const EdgeInsets.only(right: 10),
+            //               child: TextFormField(
+            //                 textAlign: TextAlign.center,
+            //                 controller: _controllers![index],
+            //               ),
+            //             ),
+            //           ),
+            //         ]);
+            //       },
+            //       //separatorBuilder: (BuildContext context, int index) =>const Divider(),
+            //     ),
+            //   ),
+
+            // //create save button
+            // Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            //   FilledButton(
+            //       style: ElevatedButton.styleFrom(
+            //           shape: RoundedRectangleBorder(
+            //               borderRadius: BorderRadius.circular(10)),
+            //           minimumSize: const Size(300, 70)),
+            //       onPressed: () {
+            //         //TODO
+            //         for (int index = 0; index < 10; index++) {
+            //           String value = _controllers![index].text;
+            //           _controllers![index].text = value;
+            //         }
+            //       },
+            //       child: const Text("Save")),
+            // ]),
+
+            //   const SizedBox(height: 10),
+            // ], //else
           ],
         )));
   }
