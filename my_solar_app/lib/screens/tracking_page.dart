@@ -6,9 +6,10 @@ import 'package:my_solar_app/widgets/authentication/square_tile_images.dart';
 import 'package:my_solar_app/widgets/authentication/text_field.dart';
 import 'package:my_solar_app/cloud_functions/authentication/interfaces/auth_repository_interface.dart';
 import 'package:my_solar_app/cloud_functions/database/interfaces/device_persistence_interface.dart';
+import 'package:my_solar_app/models/logged_in_user.dart';
 
 IDevicePersistence devicePersistence = DatabaseApi();
-final DeviceList = devicePersistence.getUserDeviceIds(20);
+int userId = LoggedInUser.userId;
 
 class TrackingPage extends StatelessWidget {
   TrackingPage({super.key});
@@ -121,7 +122,6 @@ class TrackingPage extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)),
                         minimumSize: const Size(300, 70)),
-                    //TODO: change this lambda function
                     onPressed: () {
                       for (int index = 0; index < 10; index++) {
                         String value = _controllers![index].text;
