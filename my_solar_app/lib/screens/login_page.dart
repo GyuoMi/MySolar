@@ -4,6 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:my_solar_app/cloud_functions/authentication/auth_repository.dart';
 import 'package:my_solar_app/cloud_functions/database/database_api.dart';
+import 'package:my_solar_app/cloud_functions/database/interfaces/manual_system_persistence_interface.dart';
 import 'package:my_solar_app/cloud_functions/database/interfaces/user_persistence_interface.dart';
 import 'package:my_solar_app/main.dart';
 import 'package:my_solar_app/models/logged_in_user.dart';
@@ -29,13 +30,49 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    // _authSubscription = supabase.auth.onAuthStateChange.listen((event) {
-    //   final session = event.session;
-    //   if (session != null) {
-    //     //goes to the main page
-    //     Navigator.of(context).pushReplacementNamed('/');
-    //   }
-    // });
+    _authSubscription = supabase.auth.onAuthStateChange.listen((event) async {
+      final session = event.session;
+      if (session != null) {
+        try {
+          String name = event.session?.user.email ?? "null";
+          IUserPersistence userPersistence = DatabaseApi();
+          var userData = await userPersistence.getUserDetails(name);
+          print(userData);
+          //
+          int id = userData[0][userPersistence.userId] as int;
+          int sysId = userData[0][userPersistence.systemId] as int;
+          String address = userData[0][userPersistence.userAddress] as String;
+          String password = userData[0][userPersistence.userPassword] as String;
+//
+          // //set up logged in user
+          LoggedInUser.setUser(id, sysId, name, password, address);
+          //
+          IManualSystemPersistence systemPersistence = DatabaseApi();
+          // //set up logged in users system details
+          var systemData = await systemPersistence.getManualSystemDetails(id);
+          try {
+            var systemName =
+                systemData[0][systemPersistence.manualName] as String;
+            var systemPanels =
+                systemData[0][systemPersistence.manualCount] as int;
+            var panelProduction = double.parse(systemData[0]
+                    [systemPersistence.manualMaxProduction]
+                .toString());
+            var batteryCapacity =
+                systemData[0][systemPersistence.manualCapacity] as int;
+
+            LoggedInUser.setSystem(
+                systemName, systemPanels, panelProduction, batteryCapacity);
+          } catch (error) {
+            print(error.toString() + ": no manual system in database");
+          }
+        } catch (error) {
+          print(error.toString());
+        }
+
+        Navigator.of(context).pushReplacementNamed('/');
+      }
+    });
   }
 
   @override
@@ -102,14 +139,36 @@ class _LoginPageState extends State<LoginPage> {
                   //get user details
                   IUserPersistence userPersistence = DatabaseApi();
                   var userData = await userPersistence.getUserDetails(name);
+                  print(userData);
+                  //
                   int id = userData[0][userPersistence.userId] as int;
                   int sysId = userData[0][userPersistence.systemId] as int;
                   String address =
                       userData[0][userPersistence.userAddress] as String;
-
-                  //set up logged in user
+                  //
+                  // //set up logged in user
                   LoggedInUser.setUser(id, sysId, name, password, address);
+                  //
+                  IManualSystemPersistence systemPersistence = DatabaseApi();
+                  // //set up logged in users system details
+                  var systemData =
+                      await systemPersistence.getManualSystemDetails(id);
+                  try {
+                    var systemName =
+                        systemData[0][systemPersistence.manualName] as String;
+                    var systemPanels =
+                        systemData[0][systemPersistence.manualCount] as int;
+                    var panelProduction = double.parse(systemData[0]
+                            [systemPersistence.manualMaxProduction]
+                        .toString());
+                    var batteryCapacity =
+                        systemData[0][systemPersistence.manualCapacity] as int;
 
+                    LoggedInUser.setSystem(systemName, systemPanels,
+                        panelProduction, batteryCapacity);
+                  } catch (error) {
+                    print(error.toString() + ": no manual system in database");
+                  }
                   //navigate to new homepage
                   Navigator.of(context).pushReplacementNamed('/');
                 } on AuthException catch (error) {
@@ -118,6 +177,7 @@ class _LoginPageState extends State<LoginPage> {
                     backgroundColor: Theme.of(context).colorScheme.error,
                   ));
                 } catch (error) {
+                  print(error.toString());
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text("Error occured please try again"),
                       backgroundColor: Theme.of(context).colorScheme.error));

@@ -3,6 +3,7 @@ import 'package:my_solar_app/screens/login_page.dart';
 import 'package:my_solar_app/screens/register_system_page.dart';
 import 'package:my_solar_app/screens/register_user_page.dart';
 import 'package:my_solar_app/screens/Homepage.dart';
+import 'package:my_solar_app/screens/settings_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:my_solar_app/screens/devices.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -102,6 +103,7 @@ class MyApp extends StatelessWidget {
           '/register_user': (context) => RegisterPage(),
           '/register_system': (context) => RegisterSystemPage(),
           '/devices': (context) => DevicesPage(),
+          '/settings': (context) => SettingsPage(),
         });
   }
 }

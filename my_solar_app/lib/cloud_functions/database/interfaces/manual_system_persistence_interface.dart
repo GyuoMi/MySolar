@@ -13,7 +13,7 @@ abstract class IManualSystemPersistence {
   Future getManualSystemDetails(int userId);
   Future updateManualDailyUsage(int userId, double dailyUsage);
   Future updateManualCount(int userId, int count);
-  Future updateManualMaxProduction(int userId, String maxProduction);
-  Future updateManualCapacity(int userId, double capacity);
+  Future updateManualMaxProduction(int userId, double maxProduction);
+  Future updateManualCapacity(int userId, int capacity);
   Future updateManualName(int userId, String name);
 }

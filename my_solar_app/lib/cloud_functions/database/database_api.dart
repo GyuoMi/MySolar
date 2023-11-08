@@ -173,32 +173,31 @@ class DatabaseApi
 
   @override
   Future updateManualName(int id, String name) async {
-    return database
-        .updateField(manualTable, {manualName: name}, {manualId: id});
+    return database.updateField(manualTable, {manualName: name}, {userId: id});
   }
 
   @override
-  Future updateManualCapacity(int id, double capacity) async {
+  Future updateManualCapacity(int id, int capacity) async {
     return database
-        .updateField(manualTable, {manualCapacity: capacity}, {manualId: id});
+        .updateField(manualTable, {manualCapacity: capacity}, {userId: id});
   }
 
   @override
-  Future updateManualMaxProduction(int id, String maxProduction) async {
+  Future updateManualMaxProduction(int id, double maxProduction) async {
     return database.updateField(
-        manualTable, {manualMaxProduction: maxProduction}, {manualId: id});
+        manualTable, {manualMaxProduction: maxProduction}, {userId: id});
   }
 
   @override
   Future updateManualCount(int id, int count) async {
     return database
-        .updateField(manualTable, {manualCount: count}, {manualId: id});
+        .updateField(manualTable, {manualCount: count}, {userId: id});
   }
 
   @override
   Future updateManualDailyUsage(int id, double dailyUsage) async {
-    return database.updateField(
-        manualTable, {manualDailyUsage: dailyUsage}, {manualId: id});
+    return database
+        .updateField(manualTable, {manualDailyUsage: dailyUsage}, {userId: id});
   }
 
   //Reading functions
