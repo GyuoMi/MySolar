@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import '../../API\'s/LoadSheddingAPI.dart';
 
 
 class LoadShedding extends StatefulWidget {
@@ -135,13 +136,43 @@ class _LoadSheddingState extends State<LoadShedding> {
   @override
   void initState() {
     super.initState();
+    searchAreasByText("fourways ");
     fetchData();
+    getLoadshedding();
+
+  }
+  String baseUrl = 'https://developer.sepush.co.za/business/2.0/areas_search';
+
+  Future<List<Map<String, dynamic>>> searchAreasByText(String searchText) async {
+
+    String url = '$baseUrl?text=fourways';
+    print (url);
+    final headers = {
+      'Token': 'F294A5CF-965A40F4-A8515DE0-DA856EDD',
+    };
+    try {
+      final response = await http.get(Uri.parse(url), headers: headers);
+        // Replace 'YOUR_API_KEY' with your actual API ke
+      print (url);
+      print(12345);
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> responseData = json.decode(response.body);
+        List<Map<String, dynamic>> areas = responseData['areas'].cast<Map<String, dynamic>>();
+        print(areas);
+        return areas;
+      } else {
+        throw Exception('Failed to search areas');
+      }
+    } catch (error) {
+      throw Exception('Error: $error');
+    }
   }
 
 // Method that requests the load shedding data
   // @pragma('vm:entry-point', true)
   Future<void> fetchData() async {
-    print("fetched data");
+    //print("fetched data");
     final url = Uri.https('developer.sepush.co.za', '/business/2.0/area', {
       'id':
       'eskde-3-universityofthewitwatersrandresearchsiteandsportscityofjohannesburggauteng',
@@ -162,6 +193,24 @@ class _LoadSheddingState extends State<LoadShedding> {
     } catch (e) {
       print('Error:$e');
     }
+  }
+  int loadSheddingStatus = 1000;
+  LoadSheddingService service = LoadSheddingService();
+  Future<int> fetchLoadSheddingStatus() async {
+    // Fetch the load shedding status using your API service
+    // Replace 'loadSheddingService' with your actual instance of the LoadSheddingService class
+
+    return service.getStatus();
+  }
+
+  Future<void> getLoadshedding() async {
+    final loadshedding =
+    await fetchLoadSheddingStatus(); // Get the weather info
+
+    // When you have the weatherInfo, update the URL and trigger a UI update
+    setState(() {
+      loadSheddingStatus = loadshedding - 1;
+    });
   }
 
 
@@ -217,29 +266,14 @@ class _LoadSheddingState extends State<LoadShedding> {
 
     }
 
+  //print (data);
+    int stageno = 0;
 
-    int stageNo = int.parse((data!['events'][0]['note'])[6]);
 
-    List<dynamic> firstDay = dayTimes(stageNo, 1);
+    List<dynamic> firstDay = dayTimes(loadSheddingStatus, 1);
     String dayZero = days[0];
 
-    List<dynamic> secondDay = dayTimes(stageNo, 2);
-    String dayOne = days[1];
 
-    List<dynamic> thirdDay = dayTimes(stageNo, 3);
-    String dayTwo = days[2];
-
-    List<dynamic> fourthDay = dayTimes(stageNo, 4);
-    String dayThree = days[3];
-
-    List<dynamic> fifthDay = dayTimes(stageNo, 5);
-    String dayFour = days[4];
-
-    List<dynamic> sixthDay = dayTimes(stageNo, 6);
-    String dayFive = days[5];
-
-    List<dynamic> seventhDay = dayTimes(stageNo, 7);
-    String daySix = days[6];
 
     return  SingleChildScrollView(
 
@@ -258,7 +292,7 @@ class _LoadSheddingState extends State<LoadShedding> {
                         ),
                         Container(
                             padding: EdgeInsets.only(top: 10, bottom: 15),
-                            child: Text("Current Stage: $stageNo",
+                            child: Text("Current Stage: $loadSheddingStatus",
                                 style: const TextStyle(
                                     fontSize: 16.0, fontStyle: FontStyle.italic))),
                         Container(
@@ -286,154 +320,154 @@ class _LoadSheddingState extends State<LoadShedding> {
                                     padding: EdgeInsets.only(bottom: 5, top: 5),
                                     child: Text(i.toString()))
                             ])),
-                        Container(
-                            width: 200,
-                            margin: EdgeInsets.only(top: 10),
-                            padding: EdgeInsets.only(bottom: 5),
-                            decoration: BoxDecoration(
-                              border: Border.all(width: 1.0, color: Colors.black),
-                            ),
-                            child: Column(children: [
-                              Container(
-                                width: 200,
-                                padding: EdgeInsets.only(top: 5, bottom: 5),
-                                decoration: BoxDecoration(color: Colors.black),
-                                child: Text(
-                                  dayOne,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold, color: Colors.white),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                              for (var i in secondDay)
-                                Container(
-                                    padding: EdgeInsets.only(bottom: 5, top: 5),
-                                    child: Text(i.toString()))
-                            ])),
-                        Container(
-                            width: 200,
-                            margin: EdgeInsets.only(top: 10),
-                            padding: EdgeInsets.only(bottom: 5),
-                            decoration: BoxDecoration(
-                                border: Border.all(width: 1.0, color: Colors.black)),
-                            child: Column(children: [
-                              Container(
-                                width: 200,
-                                //height: screenHeight,
-                                padding: EdgeInsets.only(top: 5, bottom: 5),
-                                decoration: BoxDecoration(color: Colors.black),
-                                child: Text(
-                                  dayTwo,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold, color: Colors.white),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                              for (var i in thirdDay)
-                                Container(
-                                    padding: EdgeInsets.only(bottom: 5, top: 5),
-                                    child: Text(i.toString()))
-                            ])),
-                        Container(
-                            width: 200,
-                            margin: EdgeInsets.only(top: 10),
-                            padding: EdgeInsets.only(bottom: 5),
-                            decoration: BoxDecoration(
-                                border: Border.all(width: 1.0, color: Colors.black)),
-                            child: Column(children: [
-                              Container(
-                                width: 200,
-                                //height: screenHeight,
-                                //padding: const EdgeInsets.symmetric(horizontal: 14),
-                                padding: EdgeInsets.only(top: 5, bottom: 5),
-                                decoration: BoxDecoration(color: Colors.black),
-                                child: Text(
-                                  dayThree,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold, color: Colors.white),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                              for (var i in fourthDay)
-                                Container(
-                                    padding: EdgeInsets.only(bottom: 5, top: 5),
-                                    child: Text(i.toString()))
-                            ])),
-                        Container(
-                            width: 200,
-                            margin: EdgeInsets.only(top: 10),
-                            padding: EdgeInsets.only(bottom: 5),
-                            decoration: BoxDecoration(
-                                border: Border.all(width: 1.0, color: Colors.black)),
-                            child: Column(children: [
-                              Container(
-                                width: 200,
-                                //height: screenHeight,
-                                //padding: const EdgeInsets.symmetric(horizontal: 14),
-                                padding: EdgeInsets.only(top: 5, bottom: 5),
-                                decoration: BoxDecoration(color: Colors.black),
-                                child: Text(
-                                  dayFour,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold, color: Colors.white),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                              for (var i in fifthDay)
-                                Container(
-                                    padding: EdgeInsets.only(bottom: 5, top: 5),
-                                    child: Text(i.toString()))
-                            ])),
-                        Container(
-                            width: 200,
-                            margin: EdgeInsets.only(top: 10),
-                            padding: EdgeInsets.only(bottom: 5),
-                            decoration: BoxDecoration(
-                                border: Border.all(width: 1.0, color: Colors.black)),
-                            child: Column(children: [
-                              Container(
-                                width: 200,
-                                //height: screenHeight,
-                                //padding: const EdgeInsets.symmetric(horizontal: 14),
-                                padding: EdgeInsets.only(top: 5, bottom: 5),
-                                decoration: BoxDecoration(color: Colors.black),
-                                child: Text(
-                                  dayFive,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold, color: Colors.white),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                              for (var i in sixthDay)
-                                Container(
-                                    padding: EdgeInsets.only(bottom: 5, top: 5),
-                                    child: Text(i.toString()))
-                            ])),
-                        Container(
-                            width: 200,
-                            margin: EdgeInsets.only(top: 10, bottom: 15),
-                            padding: EdgeInsets.only(bottom: 5),
-                            decoration: BoxDecoration(
-                                border: Border.all(width: 1.0, color: Colors.black)),
-                            child: Column(children: [
-                              Container(
-                                //height: screenHeight,
-                                //padding: const EdgeInsets.symmetric(horizontal: 14),
-                                width: 200,
-                                padding: EdgeInsets.only(top: 5, bottom: 5),
-                                decoration: BoxDecoration(color: Colors.black),
-                                child: Text(
-                                  daySix,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold, color: Colors.white),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                              for (var i in seventhDay)
-                                Container(
-                                    padding: EdgeInsets.only(bottom: 5, top: 5),
-                                    child: Text(i.toString()))
-                            ]))
+                        // Container(
+                        //     width: 200,
+                        //     margin: EdgeInsets.only(top: 10),
+                        //     padding: EdgeInsets.only(bottom: 5),
+                        //     decoration: BoxDecoration(
+                        //       border: Border.all(width: 1.0, color: Colors.black),
+                        //     ),
+                        //     child: Column(children: [
+                        //       Container(
+                        //         width: 200,
+                        //         padding: EdgeInsets.only(top: 5, bottom: 5),
+                        //         decoration: BoxDecoration(color: Colors.black),
+                        //         child: Text(
+                        //           dayOne,
+                        //           style: const TextStyle(
+                        //               fontWeight: FontWeight.bold, color: Colors.white),
+                        //           textAlign: TextAlign.center,
+                        //         ),
+                        //       ),
+                        //       for (var i in secondDay)
+                        //         Container(
+                        //             padding: EdgeInsets.only(bottom: 5, top: 5),
+                        //             child: Text(i.toString()))
+                        // //     ])),
+                        // Container(
+                        //     width: 200,
+                        //     margin: EdgeInsets.only(top: 10),
+                        //     padding: EdgeInsets.only(bottom: 5),
+                        //     decoration: BoxDecoration(
+                        //         border: Border.all(width: 1.0, color: Colors.black)),
+                        //     child: Column(children: [
+                        //       Container(
+                        //         width: 200,
+                        //         //height: screenHeight,
+                        //         padding: EdgeInsets.only(top: 5, bottom: 5),
+                        //         decoration: BoxDecoration(color: Colors.black),
+                        //         child: Text(
+                        //           dayTwo,
+                        //           style: const TextStyle(
+                        //               fontWeight: FontWeight.bold, color: Colors.white),
+                        //           textAlign: TextAlign.center,
+                        //         ),
+                        //       ),
+                        //       for (var i in thirdDay)
+                        //         Container(
+                        //             padding: EdgeInsets.only(bottom: 5, top: 5),
+                        //             child: Text(i.toString()))
+                        //     ])),
+                        // Container(
+                        //     width: 200,
+                        //     margin: EdgeInsets.only(top: 10),
+                        //     padding: EdgeInsets.only(bottom: 5),
+                        //     decoration: BoxDecoration(
+                        //         border: Border.all(width: 1.0, color: Colors.black)),
+                        //     child: Column(children: [
+                        //       Container(
+                        //         width: 200,
+                        //         //height: screenHeight,
+                        //         //padding: const EdgeInsets.symmetric(horizontal: 14),
+                        //         padding: EdgeInsets.only(top: 5, bottom: 5),
+                        //         decoration: BoxDecoration(color: Colors.black),
+                        //         child: Text(
+                        //           dayThree,
+                        //           style: const TextStyle(
+                        //               fontWeight: FontWeight.bold, color: Colors.white),
+                        //           textAlign: TextAlign.center,
+                        //         ),
+                        //       ),
+                        //       for (var i in fourthDay)
+                        //         Container(
+                        //             padding: EdgeInsets.only(bottom: 5, top: 5),
+                        //             child: Text(i.toString()))
+                        //     ])),
+                        // Container(
+                        //     width: 200,
+                        //     margin: EdgeInsets.only(top: 10),
+                        //     padding: EdgeInsets.only(bottom: 5),
+                        //     decoration: BoxDecoration(
+                        //         border: Border.all(width: 1.0, color: Colors.black)),
+                        //     child: Column(children: [
+                        //       Container(
+                        //         width: 200,
+                        //         //height: screenHeight,
+                        //         //padding: const EdgeInsets.symmetric(horizontal: 14),
+                        //         padding: EdgeInsets.only(top: 5, bottom: 5),
+                        //         decoration: BoxDecoration(color: Colors.black),
+                        //         child: Text(
+                        //           dayFour,
+                        //           style: const TextStyle(
+                        //               fontWeight: FontWeight.bold, color: Colors.white),
+                        //           textAlign: TextAlign.center,
+                        //         ),
+                        //       ),
+                        //       for (var i in fifthDay)
+                        //         Container(
+                        //             padding: EdgeInsets.only(bottom: 5, top: 5),
+                        //             child: Text(i.toString()))
+                        //     ])),
+                        // Container(
+                        //     width: 200,
+                        //     margin: EdgeInsets.only(top: 10),
+                        //     padding: EdgeInsets.only(bottom: 5),
+                        //     decoration: BoxDecoration(
+                        //         border: Border.all(width: 1.0, color: Colors.black)),
+                        //     child: Column(children: [
+                        //       Container(
+                        //         width: 200,
+                        //         //height: screenHeight,
+                        //         //padding: const EdgeInsets.symmetric(horizontal: 14),
+                        //         padding: EdgeInsets.only(top: 5, bottom: 5),
+                        //         decoration: BoxDecoration(color: Colors.black),
+                        //         child: Text(
+                        //           dayFive,
+                        //           style: const TextStyle(
+                        //               fontWeight: FontWeight.bold, color: Colors.white),
+                        //           textAlign: TextAlign.center,
+                        //         ),
+                        //       ),
+                        //       for (var i in sixthDay)
+                        //         Container(
+                        //             padding: EdgeInsets.only(bottom: 5, top: 5),
+                        //             child: Text(i.toString()))
+                        //     ])),
+                        // Container(
+                        //     width: 200,
+                        //     margin: EdgeInsets.only(top: 10, bottom: 15),
+                        //     padding: EdgeInsets.only(bottom: 5),
+                        //     decoration: BoxDecoration(
+                        //         border: Border.all(width: 1.0, color: Colors.black)),
+                        //     child: Column(children: [
+                        //       Container(
+                        //         //height: screenHeight,
+                        //         //padding: const EdgeInsets.symmetric(horizontal: 14),
+                        //         width: 200,
+                        //         padding: EdgeInsets.only(top: 5, bottom: 5),
+                        //         decoration: BoxDecoration(color: Colors.black),
+                        //         child: Text(
+                        //           daySix,
+                        //           style: const TextStyle(
+                        //               fontWeight: FontWeight.bold, color: Colors.white),
+                        //           textAlign: TextAlign.center,
+                        //         ),
+                        //       ),
+                        //       for (var i in seventhDay)
+                        //         Container(
+                        //             padding: EdgeInsets.only(bottom: 5, top: 5),
+                        //             child: Text(i.toString()))
+                        //     ]))
                       ],
                     )
 
