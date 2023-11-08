@@ -6,30 +6,15 @@ import 'package:my_solar_app/screens/Homepage.dart';
 import 'package:my_solar_app/screens/settings_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:my_solar_app/screens/devices.dart';
+import 'package:my_solar_app/screens/tracking_page.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
-import 'package:permission_handler/permission_handler.dart';
+import 'package:my_solar_app/utilities/notifications.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  tz.initializeTimeZones();
-
-  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  // Check notification permission status
-  final permissionStatus = await Permission.notification.status;
-  if (permissionStatus.isDenied) {
-    // You can request notification permissions here
-    final status = await Permission.notification.request();
-
-    if (status.isGranted) {
-      print('Notification permission granted');
-    } else {
-      print('Notification permission denied');
-    }
-  }
-  await scheduleNotifications(flutterLocalNotificationsPlugin);
-
+  
   await Supabase.initialize(
     url: 'https://fsirbhoucrjtnkvchwuf.supabase.co',
     anonKey:
@@ -38,41 +23,33 @@ Future<void> main() async {
   runApp(MyApp());
 }
 
-Future<void> scheduleNotifications(FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) async {
-  // Define your notification details outside the loop
-  const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
-    '0', // Replace with your own channel ID
-    'Scheduled Notifications',
-    channelDescription: 'Scheduled Notifications Channel',
-    importance: Importance.defaultImportance,
-    priority: Priority.defaultPriority,
-  );
-  const NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
-
-  // Calculate the time for the first notification at midnight
-  final now = tz.TZDateTime.now(tz.local);
-  final midnight = tz.TZDateTime(tz.local, now.year, now.month, now.day, 0, 0);
-
-  // Schedule notifications every 4 hours starting from midnight
-  for (int i = 0; i < 6; i++) {
-    final scheduledTime = midnight.add(Duration(hours: i * 4));
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-      i, // Unique ID for the notification
-      'MySolar',
-      'Click to enter your device readings!',
-      scheduledTime,
-      platformChannelSpecifics, // Reuse the notification details here
-      androidAllowWhileIdle: true,
-      payload: 'tracking_page.dart',
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-    );
-  }
-}
-
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
+
+  
   @override
   Widget build(BuildContext context) {
+    void onNotificationTapped(String payload) {
+    if (payload == 'tracking_page') {
+          print('Tapped on notification with payload: $payload');
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => TrackingPage()),
+      );
+    }
+  }
+    final notificationService = NotificationService(
+      context: context,
+      onNotificationTapped: onNotificationTapped,
+    );
+    notificationService.initNotification(); // Initialize notifications
+    notificationService.showNotification(
+    title: 'MySolar',
+    body: 'Enter new device readings',
+    payLoad: 'tracking_page',
+  );
+  notificationService.handleNotification('tracking_page');
     return MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
@@ -104,6 +81,7 @@ class MyApp extends StatelessWidget {
           '/register_system': (context) => RegisterSystemPage(),
           '/devices': (context) => DevicesPage(),
           '/settings': (context) => SettingsPage(),
+          '/tracking': (context) => TrackingPage(),
         });
   }
 }
