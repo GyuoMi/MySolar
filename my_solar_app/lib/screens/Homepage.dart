@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:based_battery_indicator/based_battery_indicator.dart';
+import 'package:my_solar_app/screens/login_page.dart';
 import 'package:my_solar_app/widgets/drawer.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import '../../API\'s/WeatherApi.dart';
@@ -13,6 +14,7 @@ import '../models/logged_in_user.dart';
 import 'package:my_solar_app/screens/devices.dart';
 import 'package:http/http.dart' as http;
 import 'dart:math';
+import 'package:rating_dialog/rating_dialog.dart';
 
 class MyCustomWidget extends StatefulWidget {
   const MyCustomWidget({
@@ -156,7 +158,6 @@ class _MyCustomWidgetState extends State<MyCustomWidget> {
         });
         print(time);
         if (time != 'day') {
-
           setState(() {
             solarDraw = false;
           });
@@ -536,7 +537,7 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () {
-              Navigator.of(context).pushReplacementNamed('/login');
+              showRating();
             },
           ),
         ],
@@ -585,7 +586,8 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                                 LoadShedding(),
                                 (loadSheddingStatus == 0)
                                     ? Text('No Load Shedding Currently')
-                                    : Text('Load Shedding Status: Stage $loadSheddingStatus'),
+                                    : Text(
+                                        'Load Shedding Status: Stage $loadSheddingStatus'),
                               ],
                             ),
                           )
@@ -952,6 +954,57 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
       ),
     );
   }
+
+  void showRating() {
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (context) {
+          return Container(
+            color: Colors.white,
+            child: RatingDialog(
+              //INNOVATECH LOGO
+              image: Image.asset(
+                'assets/images/my_solar.png',
+                //'assets/images/InnovaTechLogo.png',
+                width: 125,
+              ),
+              title: Text(
+                "Liked our app?",
+                textAlign: TextAlign.center,
+              ),
+              message: Text(
+                "Leave your rating",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 15),
+              ),
+              starColor: Color.fromARGB(255, 247, 197, 47),
+              submitButtonText: "Submit rating",
+              //RATING SUBMITTED BY QUIZ TAKER
+              onSubmitted: (response) {
+                //rating = response.rating;
+                //print("rating = ${rating}");
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const LoginPage(
+                          //testFlag: false,
+                          )),
+                );
+              },
+              enableComment: false,
+              //TO NOT RATE QUIZ AND LEAVE PAGE
+              onCancelled: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const LoginPage(
+                        //testFlag: false,
+                        )),
+              ),
+            ),
+          );
+        });
+  }
 }
 
 //usage chart data
@@ -971,4 +1024,3 @@ class LineGraphData {
 
   LineGraphData(this.LGx, this.LGy, this.LGy2, this.LGy3);
 }
-
