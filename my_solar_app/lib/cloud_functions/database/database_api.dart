@@ -270,7 +270,7 @@ class DatabaseApi
   }
 
   @override
-  Future getTime(int id) async {
-    return database.databaseFunction('get_time', {databaseFunctionId: id});
+  Future getTime() async {
+    return database.databaseFunction('get_time', {});
   }
 }
