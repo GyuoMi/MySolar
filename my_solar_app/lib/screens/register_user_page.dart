@@ -34,6 +34,7 @@ class _RegisterPageState extends State<RegisterPage> {
       );
     }
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Center(
             child: Column(
       mainAxisAlignment: MainAxisAlignment.center,

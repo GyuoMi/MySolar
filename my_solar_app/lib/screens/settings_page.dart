@@ -65,6 +65,7 @@ class _SettingsPageState extends State<SettingsPage> {
       );
     }
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       drawer: CustomDrawer(),
       appBar: AppBar(title: Text("Settings")),
       body: Center(
