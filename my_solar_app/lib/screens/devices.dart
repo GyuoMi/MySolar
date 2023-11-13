@@ -190,33 +190,34 @@ class _EditDeviceDialogState extends State<EditDeviceDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Edit Device'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Text Form Field for Device Name
-          TextFormField(
-            initialValue: widget.device.name,
-            decoration: InputDecoration(labelText: 'Device name'),
-            onChanged: (value) {
-              // Update the device name
-              widget.device.name = value;
-            },
-          ),
+      title: Text(widget.isAdding ? 'Add Device' : 'Edit Device'),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Text Form Field for Device Name
+            TextFormField(
+              initialValue: widget.device.name,
+              decoration: InputDecoration(labelText: 'Device name'),
+              onChanged: (value) {
+                // Update the device name
+                widget.device.name = value;
+              },
+            ),
 
-          // Switch for Device Usage (Producer/Consumer)
-          SwitchListTile(
-            title: Text('Device Usage'),
-            value: isProducer,
-            onChanged: (value) {
-              setState(() {
-                isProducer = value;
-                widget.device.usage = value; // Update device.usage accordingly
-              });
-            },
-            secondary: isProducer ? Text('Producer') : Text('Consumer'),
-          ),
-           // Text Form Field for Device Voltage
+            // Switch for Device Usage (Producer/Consumer)
+            SwitchListTile(
+              title: Text('Device Usage'),
+              value: isProducer,
+              onChanged: (value) {
+                setState(() {
+                  isProducer = value;
+                  widget.device.usage = value; // Update device.usage accordingly
+                });
+              },
+              secondary: isProducer ? Text('Producer') : Text('Consumer'),
+            ),
+            // Text Form Field for Device Voltage
             TextFormField(
               initialValue: widget.device.voltage.toString(),
               keyboardType: TextInputType.number,
@@ -240,53 +241,59 @@ class _EditDeviceDialogState extends State<EditDeviceDialog> {
 
             // Switch for Loadshedding
             SwitchListTile(
-            title: Text('Loadshedding'),
-            value: isLoadshedding,
-            onChanged: (value) {
-              setState(() {
-                isLoadshedding = value;
-                widget.device.loadshedding = value;
-              });
-            },
-          ),
+              title: Text('Loadshedding'),
+              value: isLoadshedding,
+              onChanged: (value) {
+                setState(() {
+                  isLoadshedding = value;
+                  widget.device.loadshedding = value;
+                });
+              },
+            ),
 
-          // Switch for Normal
+            // Switch for Normal
             SwitchListTile(
               title: Text('Normal'),
-            value: isNormal,
-            onChanged: (value) {
-              setState(() {
-                isNormal = value;
-                widget.device.normal =
-                    value; // Update device.normal accordingly
-              });
-            },
-          ),
-        ],
+              value: isNormal,
+              onChanged: (value) {
+                setState(() {
+                  isNormal = value;
+                  widget.device.normal =
+                      value; // Update device.normal accordingly
+                });
+              },
+            ),
+          ],
+        ),
       ),
       actions: <Widget>[
         // Done button...
         TextButton(
           onPressed: () {
             if (widget.isAdding) {
-                devicePersistence.createDevice(
-                  userId, // Use the appropriate user ID here
-                  widget.device.name,
-                  widget.device.usage,
-                  widget.device.wattage,
-                  widget.device.voltage,
-                  widget.device.normal,
-                  widget.device.loadshedding,
-                );
-              } 
-              else {
-                devicePersistence.updateDeviceName(widget.device.id, widget.device.name);
-                devicePersistence.updateDeviceUsage(widget.device.id, widget.device.usage);
-                devicePersistence.updateDeviceNormalSetting(widget.device.id, widget.device.normal);
-                devicePersistence.updateDeviceVoltage(widget.device.id, widget.device.voltage);
-                devicePersistence.updateDeviceWattage(widget.device.id, widget.device.wattage);
-                devicePersistence.updateDeviceLoadSheddingSetting(widget.device.id, widget.device.loadshedding);
-              }
+              devicePersistence.createDevice(
+                userId, // Use the appropriate user ID here
+                widget.device.name,
+                widget.device.usage,
+                widget.device.wattage,
+                widget.device.voltage,
+                widget.device.normal,
+                widget.device.loadshedding,
+              );
+            } else {
+              devicePersistence.updateDeviceName(
+                  widget.device.id, widget.device.name);
+              devicePersistence.updateDeviceUsage(
+                  widget.device.id, widget.device.usage);
+              devicePersistence.updateDeviceNormalSetting(
+                  widget.device.id, widget.device.normal);
+              devicePersistence.updateDeviceVoltage(
+                  widget.device.id, widget.device.voltage);
+              devicePersistence.updateDeviceWattage(
+                  widget.device.id, widget.device.wattage);
+              devicePersistence.updateDeviceLoadSheddingSetting(
+                  widget.device.id, widget.device.loadshedding);
+            }
             Navigator.of(context).pop(); // Close the dialog
           },
           child: Text('Done'),
