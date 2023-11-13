@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:my_solar_app/cloud_functions/database/database_api.dart';
 import 'package:my_solar_app/cloud_functions/database/interfaces/device_persistence_interface.dart';
 import 'package:my_solar_app/models/logged_in_user.dart';
+import 'package:my_solar_app/widgets/drawer.dart'; 
+import 'dart:async';
+
 // Define your database and device persistence instances
 IDevicePersistence devicePersistence = DatabaseApi();
 int userId = LoggedInUser.userId;
@@ -9,13 +12,18 @@ class DevicesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
+      drawer: CustomDrawer(),
       appBar: AppBar(
         title: Text('Devices'),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            // Add code here to handle the back button press
-            Navigator.pop(context); // This is a common way to navigate back
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: Icon(Icons.menu), // Hamburger menu icon
+              onPressed: () {
+                Scaffold.of(context).openDrawer(); // Open the drawer
+              },
+            );
           },
         ),
       ),
@@ -79,14 +87,27 @@ class DevicesPage extends StatelessWidget {
     // Step 6: Return the list of devices
     return devices;
   }
-
+  // Method to refresh the device page
+  void _refreshDevicePage(BuildContext context) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => DevicesPage()),
+    );
+  }
   Future<void> _showEditDeviceDialog(BuildContext context, Device device) async {
     await showDialog(
       context: context, // Pass the context here
       builder: (BuildContext context) {
-        return EditDeviceDialog(device: device, isAdding: false,);
+        return EditDeviceDialog(
+          device: device,
+          isAdding: false,
+          refreshDeviceList: () {
+            createDevicesList(userId);
+          },
+        );
       },
     );
+    _refreshDevicePage(context);
   }
 
   Future<void> _showAddDeviceDialog(BuildContext context) async {
@@ -102,11 +123,18 @@ class DevicesPage extends StatelessWidget {
   );
 
   await showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return EditDeviceDialog(device: newDevice, isAdding: true); // Pass an additional flag to indicate it's for adding
-    },
-  );
+      context: context,
+      builder: (BuildContext context) {
+        return EditDeviceDialog(
+          device: newDevice,
+          isAdding: true,
+          refreshDeviceList: () {
+            createDevicesList(userId);
+          },
+        ); // Pass an additional flag to indicate it's for adding
+      },
+    );
+  _refreshDevicePage(context);
 }
 
 }
@@ -145,23 +173,74 @@ class DeviceList extends StatelessWidget {
       itemBuilder: (context, index) {
         final device = devices[index];
 
-        return ListTile(
-          onTap: () {
-            showEditDeviceDialog(context, device);
+        return Dismissible(
+          key: Key(device.id.toString()),
+          direction: DismissDirection.endToStart,
+          background: Container(
+            color: Colors.red,
+            alignment: Alignment.centerRight,
+            padding: EdgeInsets.only(right: 16.0),
+            child: Icon(
+              Icons.delete,
+              color: Colors.white,
+            ),
+          ),
+          confirmDismiss: (direction) async {
+            // Show delete confirmation dialog
+            return await _showDeleteConfirmationDialog(context, device);
           },
-          title: Text(device.name),
-          subtitle: Text('${device.wattage} watts'),
-          trailing: Icon(Icons.arrow_forward),
+          child: ListTile(
+            onTap: () {
+              showEditDeviceDialog(context, device);
+            },
+            title: Text(device.name),
+            subtitle: Text('${device.wattage} watts'),
+            trailing: Icon(Icons.arrow_forward),
+          ),
         );
       },
     );
   }
 }
 
+Future<bool> _showDeleteConfirmationDialog(BuildContext context, Device device) async {
+  Completer<bool> completer = Completer<bool>();
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Confirm Delete'),
+        content: Text('Are you sure you want to delete ${device.name}?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(false); // Close the dialog and return false
+            },
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              await devicePersistence.deleteDevice(device.id);
+              Navigator.of(context).pop(true); // Close the dialog and return true
+              // You can also refresh the device list here if needed
+            },
+            child: Text('Delete'),
+          ),
+        ],
+      );
+    },
+  ).then((value) => completer.complete(value ?? false));
+
+  return completer.future;
+}
+
+
 class EditDeviceDialog extends StatefulWidget {
   final Device device;
   final bool isAdding;
-  EditDeviceDialog({required this.device, required this.isAdding});
+  final Function refreshDeviceList;
+  EditDeviceDialog({required this.device, required this.isAdding, required this.refreshDeviceList});
 
   @override
   _EditDeviceDialogState createState() => _EditDeviceDialogState();
@@ -183,33 +262,34 @@ class _EditDeviceDialogState extends State<EditDeviceDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Edit Device'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Text Form Field for Device Name
-          TextFormField(
-            initialValue: widget.device.name,
-            decoration: InputDecoration(labelText: 'Device name'),
-            onChanged: (value) {
-              // Update the device name
-              widget.device.name = value;
-            },
-          ),
+      title: Text(widget.isAdding ? 'Add Device' : 'Edit Device'),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Text Form Field for Device Name
+            TextFormField(
+              initialValue: widget.device.name,
+              decoration: InputDecoration(labelText: 'Device name'),
+              onChanged: (value) {
+                // Update the device name
+                widget.device.name = value;
+              },
+            ),
 
-          // Switch for Device Usage (Producer/Consumer)
-          SwitchListTile(
-            title: Text('Device Usage'),
-            value: isProducer,
-            onChanged: (value) {
-              setState(() {
-                isProducer = value;
-                widget.device.usage = value; // Update device.usage accordingly
-              });
-            },
-            secondary: isProducer ? Text('Producer') : Text('Consumer'),
-          ),
-           // Text Form Field for Device Voltage
+            // Switch for Device Usage (Producer/Consumer)
+            SwitchListTile(
+              title: Text('Device Usage'),
+              value: isProducer,
+              onChanged: (value) {
+                setState(() {
+                  isProducer = value;
+                  widget.device.usage = value; // Update device.usage accordingly
+                });
+              },
+              secondary: isProducer ? Text('Producer') : Text('Consumer'),
+            ),
+            // Text Form Field for Device Voltage
             TextFormField(
               initialValue: widget.device.voltage.toString(),
               keyboardType: TextInputType.number,
@@ -233,57 +313,63 @@ class _EditDeviceDialogState extends State<EditDeviceDialog> {
 
             // Switch for Loadshedding
             SwitchListTile(
-            title: Text('Loadshedding'),
-            value: isLoadshedding,
-            onChanged: (value) {
-              setState(() {
-                isLoadshedding = value;
-                widget.device.loadshedding = value;
-              });
-            },
-          ),
+              title: Text('Loadshedding'),
+              value: isLoadshedding,
+              onChanged: (value) {
+                setState(() {
+                  isLoadshedding = value;
+                  widget.device.loadshedding = value;
+                });
+              },
+            ),
 
-          // Switch for Normal
+            // Switch for Normal
             SwitchListTile(
               title: Text('Normal'),
-            value: isNormal,
-            onChanged: (value) {
-              setState(() {
-                isNormal = value;
-                widget.device.normal =
-                    value; // Update device.normal accordingly
-              });
-            },
-          ),
-        ],
+              value: isNormal,
+              onChanged: (value) {
+                setState(() {
+                  isNormal = value;
+                  widget.device.normal =
+                      value; // Update device.normal accordingly
+                });
+              },
+            ),
+          ],
+        ),
       ),
       actions: <Widget>[
         // Done button...
-        TextButton(
-          onPressed: () {
-            if (widget.isAdding) {
-                devicePersistence.createDevice(
-                  userId, // Use the appropriate user ID here
-                  widget.device.name,
-                  widget.device.usage,
-                  widget.device.wattage,
-                  widget.device.voltage,
-                  widget.device.normal,
-                  widget.device.loadshedding,
-                );
-              } 
-              else {
-                devicePersistence.updateDeviceName(widget.device.id, widget.device.name);
-                devicePersistence.updateDeviceUsage(widget.device.id, widget.device.usage);
-                devicePersistence.updateDeviceNormalSetting(widget.device.id, widget.device.normal);
-                devicePersistence.updateDeviceVoltage(widget.device.id, widget.device.voltage);
-                devicePersistence.updateDeviceWattage(widget.device.id, widget.device.wattage);
-                devicePersistence.updateDeviceLoadSheddingSetting(widget.device.id, widget.device.loadshedding);
-              }
-            Navigator.of(context).pop(); // Close the dialog
-          },
-          child: Text('Done'),
-        ),
+       TextButton(
+  onPressed: () async {
+    if (widget.isAdding) {
+      await devicePersistence.createDevice(
+        userId,
+        widget.device.name,
+        widget.device.usage,
+        widget.device.wattage,
+        widget.device.voltage,
+        widget.device.normal,
+        widget.device.loadshedding,
+      );
+    } else {
+      devicePersistence.updateDeviceName(widget.device.id, widget.device.name);
+      devicePersistence.updateDeviceUsage(widget.device.id, widget.device.usage);
+      devicePersistence.updateDeviceNormalSetting(widget.device.id, widget.device.normal);
+      devicePersistence.updateDeviceVoltage(widget.device.id, widget.device.voltage);
+      devicePersistence.updateDeviceWattage(widget.device.id, widget.device.wattage);
+      devicePersistence.updateDeviceLoadSheddingSetting(widget.device.id, widget.device.loadshedding);
+    }
+
+    // Close the dialog
+    Navigator.of(context).pop();
+
+    // Refresh the device list after adding or editing
+    widget.refreshDeviceList();
+  },
+  child: Text('Done'),
+),
+ 
       ],
     );
   }

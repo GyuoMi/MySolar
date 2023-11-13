@@ -229,7 +229,7 @@ class DatabaseApi
   //deleting functions
   @override
   Future deleteDevice(int singleDeviceId) async {
-    database.deleteRecord(setupTable, {deviceId: singleDeviceId});
+    await database.deleteRecord(setupTable, {deviceId: singleDeviceId});
     return database.deleteRecord(deviceTable, {deviceId: singleDeviceId});
   }
 
