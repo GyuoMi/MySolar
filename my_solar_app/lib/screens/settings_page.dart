@@ -65,6 +65,7 @@ class _SettingsPageState extends State<SettingsPage> {
       );
     }
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       drawer: CustomDrawer(),
       appBar: AppBar(title: Text("Settings")),
       body: Center(
@@ -77,12 +78,12 @@ class _SettingsPageState extends State<SettingsPage> {
           // ),
           //shows user name and password text boxes
           // const SizedBox(height: 20),
-          LoginPageTextField(
-            controller: emailController,
-            hintText: "Email",
-            obscureText: false,
-            textType: TextInputType.emailAddress,
-          ),
+          // LoginPageTextField(
+          //   controller: emailController,
+          //   hintText: "Email",
+          //   obscureText: false,
+          //   textType: TextInputType.emailAddress,
+          // ),
           const SizedBox(height: 20),
           LoginPageTextField(
             controller: passwordController,
@@ -176,6 +177,13 @@ class _SettingsPageState extends State<SettingsPage> {
 
                     //get user details
                     IUserPersistence userPersistence = DatabaseApi();
+
+                    //update user in auth tbl
+                    if (userPassword != LoggedInUser.getPassword()) {
+                      var results = await supabase.auth.updateUser(
+                          UserAttributes(email: name, password: userPassword));
+                    } //set up logged in user
+
                     //update user in user_tbl
                     await userPersistence.updateUserName(userId, name);
                     await userPersistence.updateUserPassword(
@@ -190,12 +198,6 @@ class _SettingsPageState extends State<SettingsPage> {
                         userId, solarPanelProduction);
                     await systemPersistence.updateManualCapacity(
                         userId, batteryCapacity);
-
-                    //update user in auth tbl
-                    await supabase.auth.updateUser(
-                        UserAttributes(email: name, password: userPassword));
-
-                    //set up logged in user
                     //TODO update address here
 
                     LoggedInUser.setUser(userId, systemType.type, name,
