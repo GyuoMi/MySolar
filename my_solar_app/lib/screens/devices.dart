@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:my_solar_app/cloud_functions/database/database_api.dart';
 import 'package:my_solar_app/cloud_functions/database/interfaces/device_persistence_interface.dart';
 import 'package:my_solar_app/models/logged_in_user.dart';
+import 'package:my_solar_app/widgets/drawer.dart'; 
+
 // Define your database and device persistence instances
 IDevicePersistence devicePersistence = DatabaseApi();
 int userId = LoggedInUser.userId;
@@ -9,13 +11,18 @@ class DevicesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
+      drawer: CustomDrawer(),
       appBar: AppBar(
         title: Text('Devices'),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            // Add code here to handle the back button press
-            Navigator.pop(context); // This is a common way to navigate back
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: Icon(Icons.menu), // Hamburger menu icon
+              onPressed: () {
+                Scaffold.of(context).openDrawer(); // Open the drawer
+              },
+            );
           },
         ),
       ),
