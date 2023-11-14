@@ -14,6 +14,7 @@ import '../models/logged_in_user.dart';
 import 'package:my_solar_app/screens/devices.dart';
 import 'package:http/http.dart' as http;
 import 'dart:math';
+import 'dart:convert';
 import 'package:rating_dialog/rating_dialog.dart';
 
 class MyCustomWidget extends StatefulWidget {
@@ -306,7 +307,8 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
   late Map<String, dynamic> dailyTotal;
   late Map<String, dynamic> weeklyTotal;
   late Map<String, dynamic> monthlyTotal;
-  late Map<String, dynamic> hourlyTotal;
+  //late Map<String, dynamic> hourlyTotal;
+  late List<Map<String, dynamic>> hourlyTotal;
   IDatabaseFunctions database = DatabaseApi();
 
   Future<void> getTotals() async {
@@ -318,16 +320,20 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
         await database.calculateMonthlyTotals(LoggedInUser.getUserId());
     final databaseReturnDay =
         await database.calculateDailyTotals(LoggedInUser.getUserId());
-    //final databaseReturnHr = await database.getHourlyTotals(LoggedInUser.getUserId());
+    final databaseReturnHour =
+        await database.getHourlyTotals(LoggedInUser.getUserId());
+
     // When you have the weatherInfo, update the URL and trigger a UI update
     setState(() {
       allTimeTotal = databaseReturnAll;
       dailyTotal = databaseReturnDay;
       weeklyTotal = databaseReturnWeek;
       monthlyTotal = databaseReturnMonth;
-      //hourlyTotal=databaseReturnHr;
+      //hourlyTotal = List<Map<String, dynamic>>.from(jsonDecode(databaseReturnHour));
+      hourlyTotal = databaseReturnHour;
     });
     roundChartData();
+    lineGraphData();
   }
 
   void startAnimation1() {
@@ -477,6 +483,16 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
       ChartData(
           'Battery', batM.roundToDouble()), // Example data for the weekly view
     ];
+  }
+
+  void lineGraphData() {
+    for (int i = 0; i < hourlyTotal.length; i++) {
+      double production = hourlyTotal[i]['total_production'];
+      double usage = hourlyTotal[i]['total_usage'];
+      double solar = hourlyTotal[i]['total_solar'];
+
+      LGData.add(LineGraphData((i * 4).toString(), production, usage, solar));
+    }
   }
 
   List<ChartData> dailyChartData = [
@@ -963,10 +979,8 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
           return Container(
             color: Colors.white,
             child: RatingDialog(
-              //INNOVATECH LOGO
               image: Image.asset(
                 'assets/images/my_solar.png',
-                //'assets/images/InnovaTechLogo.png',
                 width: 125,
               ),
               title: Text(
@@ -980,10 +994,7 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
               ),
               starColor: Color.fromARGB(255, 247, 197, 47),
               submitButtonText: "Submit rating",
-              //RATING SUBMITTED BY QUIZ TAKER
               onSubmitted: (response) {
-                //rating = response.rating;
-                //print("rating = ${rating}");
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -993,7 +1004,7 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                 );
               },
               enableComment: false,
-              //TO NOT RATE QUIZ AND LEAVE PAGE
+              //CHOICE TO NOT RATE AND LEAVE PAGE
               onCancelled: () => Navigator.push(
                 context,
                 MaterialPageRoute(
