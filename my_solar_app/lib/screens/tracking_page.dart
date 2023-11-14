@@ -10,6 +10,7 @@ import 'package:my_solar_app/cloud_functions/authentication/interfaces/auth_repo
 import 'package:my_solar_app/cloud_functions/database/interfaces/device_persistence_interface.dart';
 import 'package:my_solar_app/models/logged_in_user.dart';
 import 'dart:convert';
+import 'package:my_solar_app/widgets/drawer.dart'; 
 
 IDevicePersistence devicePersistence = DatabaseApi();
 IRecordPersistence recordPersistence = DatabaseApi();
@@ -41,8 +42,20 @@ class TrackingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: false,
+        drawer: CustomDrawer(),
         appBar: AppBar(
           title: const Text('Tracking'),
+          leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: Icon(Icons.menu), // Hamburger menu icon
+              onPressed: () {
+                Scaffold.of(context).openDrawer(); // Open the drawer
+              },
+            );
+          },
+        ),
         ),
         body: Center(
           child: FutureBuilder(
