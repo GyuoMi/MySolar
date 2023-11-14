@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:my_solar_app/screens/Channel.dart';
+import 'package:my_solar_app/screens/Recommendations.dart';
 import 'package:my_solar_app/screens/login_page.dart';
+import 'package:my_solar_app/screens/maps.dart';
 import 'package:my_solar_app/screens/register_system_page.dart';
 import 'package:my_solar_app/screens/register_user_page.dart';
 import 'package:my_solar_app/screens/Homepage.dart';
@@ -49,10 +52,13 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (context) => const HOME(),
           '/login': (context) => const LoginPage(),
-          '/register_user': (context) => RegisterPage(),
+          '/register_user': (context) => AddressMapPage(),
           '/register_system': (context) => RegisterSystemPage(),
-          '/devices': (context) => DevicesPage(),
+          '/devices': (context) => AddressMapPage(),
           '/settings': (context) => SettingsPage(),
+         // '/chat': (context) => ChatPage(),
+          '/recommendation': (context) => Recommendation(),
+          '/mapspage':(context)=> AddressMapPage(),
         });
   }
 }

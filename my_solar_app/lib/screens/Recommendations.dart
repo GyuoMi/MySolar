@@ -1,9 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:my_solar_app/models/logged_in_user.dart';
 import 'package:my_solar_app/screens/devices.dart';
+
+import '../cloud_functions/database/database_api.dart';
+import '../cloud_functions/database/interfaces/database_functions_interface.dart';
 class Recommendation extends StatefulWidget {
   @override
   _RecommendationState createState() => _RecommendationState();
@@ -13,16 +16,45 @@ class _RecommendationState extends State<Recommendation> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
   int userId = LoggedInUser.userId;
+  late Map<dynamic, dynamic> totals;
 
   String _outputText = '';
+  Future<void> getTotals() async {
+    final databaseReturn = await database.calculateAllTimeTotals(
+        LoggedInUser.getUserId()); // Get the weather info
 
-  void _submitForm() {
+    // When you have the weatherInfo, update the URL and trigger a UI update
+    setState(() {
+      totals = databaseReturn;
+    });
+  //  uiCalculations();
+  }
+
+  void _submitForm() async {
     String name = _nameController.text;
     String age = _ageController.text;
 
+    // Fetch AI recommendations
+    Map<String, dynamic> recommendations = await DeviceRecommendations();
+
     setState(() {
-      //   _outputText = 'Hello, $name! You are $age years old.';
+      // Update _outputText with the recommendations
+      _outputText = '';
+
+      // Display recommendations in the _outputText
+      recommendations.forEach((key, value) {
+        _outputText += '$value\n';
+      });
     });
+  }
+  @override
+  void initState() {
+    super.initState();
+    getTotals();
+    getTotals1();
+   // getWeatherIcon();
+
+    // loadSheddingStatus = fetchLoadSheddingStatus();
   }
   Future<List<Device>> createDevicesList(int userId) async {
     // Step 1: Get a list of device IDs for the given userId
@@ -41,6 +73,7 @@ class _RecommendationState extends State<Recommendation> {
     for (var deviceId in deviceIds) {
       var deviceData = await devicePersistence.getDevice(deviceId);
 
+
       // Create a Device object from deviceData and add it to the list
       var device = Device(
         id: deviceData[0][devicePersistence.deviceId] as dynamic,
@@ -54,17 +87,100 @@ class _RecommendationState extends State<Recommendation> {
 
       devices.add(device);
     }
-    print(12);
+  //  print(12);
     if (devices.isNotEmpty) {
-      print(devices[1].name);
+      print(devices[0].name);
     }
     print(34);
     // Step 6: Return the list of devices
     return devices;
   }
+  late Map<String, dynamic> allTimeTotal;
+  late Map<String, dynamic> dailyTotal;
+  late Map<String, dynamic> weeklyTotal;
+  late Map<String, dynamic> monthlyTotal;
+  late Map<String, dynamic> hourlyTotal;
+  IDatabaseFunctions database = DatabaseApi();
+  Future<void> getTotals1() async {
+    final databaseReturnAll =
+    await database.calculateAllTimeTotals(LoggedInUser.getUserId());
+    final databaseReturnWeek =
+    await database.calculateWeeklyTotals(LoggedInUser.getUserId());
+    final databaseReturnMonth =
+    await database.calculateMonthlyTotals(LoggedInUser.getUserId());
+    final databaseReturnDay =
+    await database.calculateDailyTotals(LoggedInUser.getUserId());
+    //final databaseReturnHr = await database.getHourlyTotals(LoggedInUser.getUserId());
+    // When you have the weatherInfo, update the URL and trigger a UI update
+    setState(() {
+      allTimeTotal = databaseReturnAll;
+      dailyTotal = databaseReturnDay;
+      weeklyTotal = databaseReturnWeek;
+      monthlyTotal = databaseReturnMonth;
+      //hourlyTotal=databaseReturnHr;
+    });
+   // roundChartData();
+  }
+  Future<Map<String, dynamic>> DeviceRecommendations() async {
+    print(1);
+    List<Device> _Devices = await createDevicesList(userId);
+    print(_Devices[0].name);
+    // dynamic id;
+    // String name;
+    // bool usage;
+    // dynamic wattage;
+    // dynamic voltage;
+    // bool loadshedding;
+    // bool normal;
+    // Accessing the name of the first device
+    String firstDeviceName = _Devices.isNotEmpty ? _Devices[0].name : '';
+    //print(firstDeviceName);
+    final random = Random();
+    final randomNumber = 15 + random.nextInt(45 - 15 + 1);
+
+    double solarT = allTimeTotal['total_solar'] / 1000;
+    double gridT = allTimeTotal['total_grid'] / 1000;
+    double calcT = gridT * (randomNumber / 100);
+    gridT -= calcT;
+    double batT = calcT;
+    print(batT);
+// Creating a list of device names
+    //List<dynamic> _ids = _Devices.map((device) => device.id).toList();
+    List<String> _names = _Devices.map((device) => device.name).toList();
+    List<bool> _usages = _Devices.map((device) => device.usage).toList();
+    List<dynamic> _wattages = _Devices.map((device) => device.wattage).toList();
+   // List<dynamic> _voltages = _Devices.map((device) => device.voltage).toList();
+    List<bool> _battery = _Devices.map((device) => device.loadshedding).toList();
+    List<bool> _normals = _Devices.map((device) => device.normal).toList();
+
+// Assuming Quest and Answ are defined somewhere in your code
+    String prompt = 'I want suggestions on devices that can be switched from normal grid power to battery power supplied by solar panels. These are the lists: $_names,$_normals,$_battery,$_usages,$_wattages based on $batT, $solarT, $gridT. where $solarT is the amount of electricity the solor pannels create, $batT is the amount drawing from the battery, $gridT amount drawing from the grid. I only want you to return a A list of Names of devices that have been changed in the form [deviccename1, devicename2, devicenamen]. Also print out the input varibles as well as $_names,$_normals,$_battery,$_usages,$_wattages';
+
+    final response = await sendChatGPTRequest(utf8.decode(utf8.encode(prompt)));
+    print(response);
+    final choices = response['choices'];
+    if (choices != null && choices.isNotEmpty) {
+      final completion = choices[0];
+      final message = completion['message'];
+      if (message != null && message['content'] != null) {
+        final content = message['content'] as String;
+        List<String> sentencesList = content.split('.');
+
+        // Create a Map<String, dynamic> from the list of sentences
+        Map<String, dynamic> sentences = {};
+
+        for (int i = 0; i < sentencesList.length; i++) {
+          sentences['sentence${i + 1}'] = sentencesList[i].trim() + '.';
+        }
+
+        return sentences;
+      }
+    }
+    return{};
+  }
   Future<Map<String, dynamic>> sendChatGPTRequest(String message) async {
     final String apiUrl = 'https://api.openai.com/v1/chat/completions';
-    final apikey = 'Your Api key';
+    final apikey = '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';
 
     final response = await http.post(
       Uri.parse(apiUrl),
@@ -79,7 +195,7 @@ class _RecommendationState extends State<Recommendation> {
           {'role': 'system', 'content': 'You are a helpful assistant.'},
           {'role': 'user', 'content': message},
         ],
-        'max_tokens': 1000,
+        'max_tokens': 2000,
       }),
     );
 
@@ -113,54 +229,36 @@ class _RecommendationState extends State<Recommendation> {
     return{};
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Reccommendation And Suggestion'),
+      appBar: AppBar(
+        title: Text('Recommendation '),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(12.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextField(
+                controller: _nameController,
+                // ... rest of your text field code
+              ),
+              SizedBox(height: 8.0),
+              ElevatedButton(
+                onPressed: _submitForm,
+                child: Text('Implement these recommendations'),
+              ),
+              SizedBox(height: 8.0),
+              Text(
+                _outputText,
+                style: TextStyle(fontSize: 16.0),
+              ),
+            ],
+          ),
         ),
-        body:
-        FutureBuilder<List<Device>>(
-          future: createDevicesList(userId),
-          builder: (BuildContext context, AsyncSnapshot<List<Device>> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              // If the Future is still running, show a loading indicator
-              return CircularProgressIndicator();
-            } else if (snapshot.hasError) {
-              // If the Future throws an error, display the error message
-              return Text('Error: ${snapshot.error}');
-            } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-              // If the Future is complete and data is available, display the UI
-              return Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    TextField(
-                      controller: _nameController,
-                      // ... rest of your text field code
-                    ),
-                    SizedBox(height: 12.0),
-                    ElevatedButton(
-                      onPressed:  _submitForm,
-                      child: Text('Implement these recommendations'),
-                    ),
-                    SizedBox(height: 24.0),
-                    Text(
-                      _outputText,
-                      style: TextStyle(fontSize: 18.0),
-                    ),
-                  ],
-                ),
-              );
-            } else {
-              // If there is no data, display a message indicating no devices found
-              return Text('No devices found.');
-            }
-          },
-        )
+      ),
     );
   }
 }

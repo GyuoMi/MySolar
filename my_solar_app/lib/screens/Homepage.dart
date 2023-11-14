@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:based_battery_indicator/based_battery_indicator.dart';
@@ -13,7 +15,7 @@ import '../cloud_functions/database/interfaces/database_functions_interface.dart
 import '../models/logged_in_user.dart';
 import 'package:my_solar_app/screens/devices.dart';
 import 'package:http/http.dart' as http;
-import 'dart:math';
+
 import 'package:rating_dialog/rating_dialog.dart';
 
 class MyCustomWidget extends StatefulWidget {
