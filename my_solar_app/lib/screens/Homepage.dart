@@ -3,16 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:based_battery_indicator/based_battery_indicator.dart';
 import 'package:my_solar_app/cloud_functions/authentication/auth_repository.dart';
 import 'package:my_solar_app/cloud_functions/authentication/interfaces/auth_repository_interface.dart';
+import 'package:my_solar_app/screens/login_page.dart';
 import 'package:my_solar_app/widgets/drawer.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import '../../API\'s/WeatherApi.dart';
 import '../../API\'s/LoadSheddingAPI.dart';
+import '../API\'s/loadsheddingFunctions.dart';
+
 import '../cloud_functions/database/database_api.dart';
 import '../cloud_functions/database/interfaces/database_functions_interface.dart';
 import '../models/logged_in_user.dart';
 import 'package:my_solar_app/screens/devices.dart';
 import 'package:http/http.dart' as http;
 import 'dart:math';
+import 'dart:convert';
+import 'package:rating_dialog/rating_dialog.dart';
 
 class MyCustomWidget extends StatefulWidget {
   const MyCustomWidget({
@@ -84,12 +89,7 @@ class _MyCustomWidgetState extends State<MyCustomWidget> {
         solarDraw = true;
       });
     }
-    if (time != 'day') {
-      print('make false');
-      setState(() {
-        solarDraw = false;
-      });
-    }
+
     if (usage > 0) {
       setState(() {
         houseDraw = true;
@@ -159,9 +159,8 @@ class _MyCustomWidgetState extends State<MyCustomWidget> {
         setState(() {
           time = match.group(1)!;
         });
-        //print(time);
+        print(time);
         if (time != 'day') {
-          print('make false');
           setState(() {
             solarDraw = false;
           });
@@ -310,7 +309,8 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
   late Map<String, dynamic> dailyTotal;
   late Map<String, dynamic> weeklyTotal;
   late Map<String, dynamic> monthlyTotal;
-  late Map<String, dynamic> hourlyTotal;
+  //late Map<String, dynamic> hourlyTotal;
+  late List<Map<String, dynamic>> hourlyTotal;
   IDatabaseFunctions database = DatabaseApi();
 
   Future<void> getTotals() async {
@@ -322,16 +322,20 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
         await database.calculateMonthlyTotals(LoggedInUser.getUserId());
     final databaseReturnDay =
         await database.calculateDailyTotals(LoggedInUser.getUserId());
-    //final databaseReturnHr = await database.getHourlyTotals(LoggedInUser.getUserId());
+    final databaseReturnHour =
+        await database.getHourlyTotals(LoggedInUser.getUserId());
+
     // When you have the weatherInfo, update the URL and trigger a UI update
     setState(() {
       allTimeTotal = databaseReturnAll;
       dailyTotal = databaseReturnDay;
       weeklyTotal = databaseReturnWeek;
       monthlyTotal = databaseReturnMonth;
-      //hourlyTotal=databaseReturnHr;
+      //hourlyTotal = List<Map<String, dynamic>>.from(jsonDecode(databaseReturnHour));
+      hourlyTotal = databaseReturnHour;
     });
     roundChartData();
+    lineGraphData();
   }
 
   void startAnimation1() {
@@ -377,7 +381,7 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
 
   Future<void> loadshedding() async {
     final String url =
-        "https://developer.sepush.co.za/business/2.0/areas_search?text=constansia-kloof?test";
+        "https://developer.sepush.co.za/business/2.0/areas_search?text=constansia-kloof";
     final Map<String, String> headers = {
       "token": "DAB1EF89-2748405F-9FD69CF5-866DFEEE",
     };
@@ -483,6 +487,16 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
     ];
   }
 
+  void lineGraphData() {
+    for (int i = 0; i < hourlyTotal.length; i++) {
+      double production = hourlyTotal[i]['total_production'];
+      double usage = hourlyTotal[i]['total_usage'];
+      double solar = hourlyTotal[i]['total_solar'];
+
+      LGData.add(LineGraphData((i * 4).toString(), production, usage, solar));
+    }
+  }
+
   List<ChartData> dailyChartData = [
     ChartData('Solar', 1), // Example data for the weekly view
     ChartData('Grid', 1), // Example data for the weekly view
@@ -585,14 +599,24 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                     child: TabBarView(
                       children: [
                         // Loadshedding tab content
-                        (loadSheddingStatus != 1000)
-                            ? Center(
-                                child: (loadSheddingStatus == 0)
+                        if (loadSheddingStatus != 1000)
+                          SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                LoadShedding(),
+                                (loadSheddingStatus == 0)
                                     ? Text('No Load Shedding Currently')
                                     : Text(
                                         'Load Shedding Status: Stage $loadSheddingStatus'),
-                              )
-                            : CircularProgressIndicator(),
+                              ],
+                            ),
+                          )
+                        else
+                          Column(
+                            children: [
+                              CircularProgressIndicator(),
+                            ],
+                          ),
                         // Usage tab content
                         PageView(
                           controller: _pageController,
@@ -949,6 +973,52 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
         ),
       ),
     );
+  }
+
+  void showRating() {
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (context) {
+          return Container(
+            color: Colors.white,
+            child: RatingDialog(
+              image: Image.asset(
+                'assets/images/my_solar.png',
+                width: 125,
+              ),
+              title: Text(
+                "Liked our app?",
+                textAlign: TextAlign.center,
+              ),
+              message: Text(
+                "Leave your rating",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 15),
+              ),
+              starColor: Color.fromARGB(255, 247, 197, 47),
+              submitButtonText: "Submit rating",
+              onSubmitted: (response) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const LoginPage(
+                          //testFlag: false,
+                          )),
+                );
+              },
+              enableComment: false,
+              //CHOICE TO NOT RATE AND LEAVE PAGE
+              onCancelled: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const LoginPage(
+                        //testFlag: false,
+                        )),
+              ),
+            ),
+          );
+        });
   }
 }
 
