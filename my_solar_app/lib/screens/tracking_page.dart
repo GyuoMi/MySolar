@@ -3,20 +3,15 @@ import 'package:my_solar_app/cloud_functions/database/database_api.dart';
 import 'package:my_solar_app/cloud_functions/database/interfaces/database_functions_interface.dart';
 import 'package:my_solar_app/cloud_functions/database/interfaces/record_persistence_interface.dart';
 import 'package:my_solar_app/screens/devices.dart';
-import 'package:my_solar_app/screens/login_page.dart';
-import 'package:my_solar_app/widgets/authentication/square_tile_images.dart';
-import 'package:my_solar_app/widgets/authentication/text_field.dart';
-import 'package:my_solar_app/cloud_functions/authentication/interfaces/auth_repository_interface.dart';
 import 'package:my_solar_app/cloud_functions/database/interfaces/device_persistence_interface.dart';
 import 'package:my_solar_app/models/logged_in_user.dart';
-import 'dart:convert';
-import 'package:my_solar_app/widgets/drawer.dart'; 
+import 'package:my_solar_app/widgets/drawer.dart';
 
 IDevicePersistence devicePersistence = DatabaseApi();
 IRecordPersistence recordPersistence = DatabaseApi();
 IDatabaseFunctions databaseFunctions = DatabaseApi();
 int userId = LoggedInUser.userId;
-// int userId = 51;
+// int userId = 61;
 var devicesPageInstance = DevicesPage();
 
 class Time {
@@ -47,15 +42,15 @@ class TrackingPage extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Tracking'),
           leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-              icon: Icon(Icons.menu), // Hamburger menu icon
-              onPressed: () {
-                Scaffold.of(context).openDrawer(); // Open the drawer
-              },
-            );
-          },
-        ),
+            builder: (BuildContext context) {
+              return IconButton(
+                icon: Icon(Icons.menu), // Hamburger menu icon
+                onPressed: () {
+                  Scaffold.of(context).openDrawer(); // Open the drawer
+                },
+              );
+            },
+          ),
         ),
         body: Center(
           child: FutureBuilder(
@@ -63,7 +58,7 @@ class TrackingPage extends StatelessWidget {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return CircularProgressIndicator();
-                } else if (snapshot.hasData || snapshot.data!.isNotEmpty) {
+                } else if (snapshot.data != null && snapshot.data!.isNotEmpty) {
                   final List<Device> devices = snapshot.data!;
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -132,7 +127,6 @@ class TrackingPage extends StatelessWidget {
                               ),
                             ]);
                           },
-                          //separatorBuilder: (BuildContext context, int index) =>const Divider(),
                         ),
                       ),
                       //create save button
@@ -162,7 +156,6 @@ class TrackingPage extends StatelessWidget {
                                   child: const Text("Save")),
                             )),
                       ),
-
                       const SizedBox(height: 10),
                     ],
                   );
