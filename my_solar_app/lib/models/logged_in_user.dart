@@ -7,7 +7,7 @@ class LoggedInUser {
   static var systemName = "";
   static var amountOfSolarPanels = 0,
       solarPanelProduction = 0.0,
-      batteryCapacityInWatts = 0.0;
+      batteryCapacityInWatts = 0;
 
   static setUser(
       int id, int sysId, String email, String password, String address) {
@@ -55,7 +55,7 @@ class LoggedInUser {
   }
 
   static setSystem(
-      String name, int panels, double panelProduction, double batteryCapacity) {
+      String name, int panels, double panelProduction, int batteryCapacity) {
     systemName = name;
     amountOfSolarPanels = panels;
     solarPanelProduction = panelProduction;

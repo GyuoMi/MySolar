@@ -4,5 +4,5 @@ abstract class IDatabaseFunctions {
   Future calculateWeeklyTotals(int id);
   Future calculateMonthlyTotals(int id);
   Future getHourlyTotals(int id);
-  Future getTime(int id);
+  Future getTime();
 }

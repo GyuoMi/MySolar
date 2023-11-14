@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:based_battery_indicator/based_battery_indicator.dart';
+import 'package:my_solar_app/cloud_functions/authentication/auth_repository.dart';
+import 'package:my_solar_app/cloud_functions/authentication/interfaces/auth_repository_interface.dart';
 import 'package:my_solar_app/screens/login_page.dart';
 import 'package:my_solar_app/widgets/drawer.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -553,7 +555,9 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () {
-              showRating();
+              IAuthRepository ar = AuthRepository();
+              ar.signOut();
+              Navigator.of(context).pushReplacementNamed('/login');
             },
           ),
         ],
