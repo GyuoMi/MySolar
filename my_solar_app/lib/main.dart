@@ -60,6 +60,7 @@ class MyApp extends StatelessWidget {
           '/recommendation': (context) => Recommendation(),
           '/mapspage':(context)=> AddressMapPage(),
         });
+    //1
   }
 }
 
