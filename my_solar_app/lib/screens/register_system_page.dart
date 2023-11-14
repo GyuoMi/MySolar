@@ -35,140 +35,148 @@ class _RegisterSystemPage extends State<RegisterSystemPage> {
       );
     }
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Center(
             child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Image.asset(
-          'assets/images/my_solar_logo.png',
-          scale: 3,
-        ),
-        /* const Text("Solar System"), */
-        //shows user name and password text boxes
-        const SizedBox(height: 40),
-
-        LoginPageTextField(
-          controller: systemNameController,
-          hintText: "System Name",
-          obscureText: false,
-          textType: TextInputType.text,
-        ),
-        const SizedBox(height: 20),
-        LoginPageTextField(
-          controller: solarPanelCountController,
-          hintText: "Amount of solar panels",
-          obscureText: false,
-          textType:
-              TextInputType.numberWithOptions(signed: false, decimal: false),
-        ),
-        const SizedBox(height: 20),
-
-        LoginPageTextField(
-          controller: solarPanelProductionController,
-          hintText: 'Production of a single solar panel in watts',
-          obscureText: false,
-          textType:
-              TextInputType.numberWithOptions(signed: false, decimal: true),
-        ),
-        const SizedBox(height: 20),
-
-        LoginPageTextField(
-          controller: batteryCapacityController,
-          hintText: 'Battery Capacity in watts',
-          obscureText: false,
-          textType:
-              TextInputType.numberWithOptions(signed: false, decimal: true),
-        ),
-        //aligns password to the right
-        // const Row(
-        //   mainAxisAlignment: MainAxisAlignment.end,
-        //   children: [
-        //     Padding(
-        //         padding: EdgeInsets.fromLTRB(0, 5, 50, 0),
-        //         child: Text("Forgot Password?"))
-        //   ],
-        // ),
-        const SizedBox(height: 20),
-
-        //creates Sign In button
-        Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          FilledButton(
-              style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  minimumSize: const Size(300, 70)),
-              onPressed: () async {
-                //gets variables from textfields
-                final systemName = systemNameController.text.trim();
-                final panelCount =
-                    toInt(solarPanelCountController.text.trim()) ?? 0;
-                final productionCount =
-                    toDouble(solarPanelProductionController.text.trim()) ?? 0;
-                final batteryCapacity =
-                    toDouble(batteryCapacityController.text.trim()) ?? 0;
-
-                try {
-                  //TODO figure out what to put for daily usage '0'
-                  final userId = LoggedInUser.getUserId();
-                  //
-                  // //create user system on database
-                  // await manualPersistence.createManualSystem(userId, systemName,
-                  //     batteryCapacity, productionCount, panelCount, 0);
-                  //
-                  Navigator.of(context).pushReplacementNamed('/login');
-                } on AuthException catch (error) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(error.message),
-                    backgroundColor: Theme.of(context).colorScheme.error,
-                  ));
-                } catch (error) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text("Error occured please try again"),
-                      backgroundColor: Theme.of(context).colorScheme.error));
-                }
-              },
-              child: const Text("Next")),
-        ]),
-        const SizedBox(height: 25),
-
-        //creates divider with text continue with
-        // const Row(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   children: [
-        //     Text("Or continue with"),
-        //   ],
-        // ),
-        // const SizedBox(
-        //   height: 25,
-        // ),
-        // const Row(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   children: [
-        //     SquareImageTile(imagePath: 'assets/images/google.png'),
-        //     SizedBox(width: 40),
-        //     SquareImageTile(imagePath: 'assets/images/apple.png')
-        //   ],
-        // ),
-        const SizedBox(
-          height: 30,
-        ),
-        Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Already have an Account?'),
-            RichText(
-              text: TextSpan(
-                  text: 'Login now',
-                  style: TextStyle(
-                      color: Colors.blue, fontWeight: FontWeight.bold),
-                  recognizer: TapGestureRecognizer()
-                    ..onTap = () =>
-                        Navigator.of(context).pushReplacementNamed('/login')),
+            Image.asset(
+              'assets/images/my_solar_logo.png',
+              scale: 3,
+            ),
+            /* const Text("Solar System"), */
+            //shows user name and password text boxes
+            const SizedBox(height: 40),
+
+            LoginPageTextField(
+              controller: systemNameController,
+              hintText: "System Name",
+              obscureText: false,
+              textType: TextInputType.text,
+            ),
+            const SizedBox(height: 20),
+            LoginPageTextField(
+              controller: solarPanelCountController,
+              hintText: "Amount of solar panels",
+              obscureText: false,
+              textType: TextInputType.numberWithOptions(
+                  signed: false, decimal: false),
+            ),
+            const SizedBox(height: 20),
+
+            LoginPageTextField(
+              controller: solarPanelProductionController,
+              hintText: 'Production of a single solar panel in watts',
+              obscureText: false,
+              textType:
+                  TextInputType.numberWithOptions(signed: false, decimal: true),
+            ),
+            const SizedBox(height: 20),
+
+            LoginPageTextField(
+              controller: batteryCapacityController,
+              hintText: 'Battery Capacity in watts',
+              obscureText: false,
+              textType:
+                  TextInputType.numberWithOptions(signed: false, decimal: true),
+            ),
+            //aligns password to the right
+            // const Row(
+            //   mainAxisAlignment: MainAxisAlignment.end,
+            //   children: [
+            //     Padding(
+            //         padding: EdgeInsets.fromLTRB(0, 5, 50, 0),
+            //         child: Text("Forgot Password?"))
+            //   ],
+            // ),
+            const SizedBox(height: 20),
+
+            //creates Sign In button
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              FilledButton(
+                  style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      minimumSize: const Size(300, 70)),
+                  onPressed: () async {
+                    //gets variables from textfields
+                    final systemName = systemNameController.text.trim();
+                    final panelCount =
+                        toInt(solarPanelCountController.text.trim()) ?? 0;
+                    final productionCount =
+                        toDouble(solarPanelProductionController.text.trim()) ??
+                            0;
+                    final batteryCapacity =
+                        toInt(batteryCapacityController.text.trim()) ?? 0;
+
+                    try {
+                      //TODO figure out what to put for daily usage '0'
+                      final userId = LoggedInUser.getUserId();
+                      //
+                      // //create user system on database
+                      await manualPersistence.createManualSystem(
+                          userId,
+                          systemName,
+                          batteryCapacity,
+                          productionCount,
+                          panelCount,
+                          0);
+                      //
+                      Navigator.of(context).pushReplacementNamed('/login');
+                    } on AuthException catch (error) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(error.message),
+                        backgroundColor: Theme.of(context).colorScheme.error,
+                      ));
+                    } catch (error) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text("Error occured please try again"),
+                          backgroundColor:
+                              Theme.of(context).colorScheme.error));
+                    }
+                  },
+                  child: const Text("Next")),
+            ]),
+            const SizedBox(height: 25),
+
+            //creates divider with text continue with
+            // const Row(
+            //   mainAxisAlignment: MainAxisAlignment.center,
+            //   children: [
+            //     Text("Or continue with"),
+            //   ],
+            // ),
+            // const SizedBox(
+            //   height: 25,
+            // ),
+            // const Row(
+            //   mainAxisAlignment: MainAxisAlignment.center,
+            //   children: [
+            //     SquareImageTile(imagePath: 'assets/images/google.png'),
+            //     SizedBox(width: 40),
+            //     SquareImageTile(imagePath: 'assets/images/apple.png')
+            //   ],
+            // ),
+            const SizedBox(
+              height: 30,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Already have an Account?'),
+                RichText(
+                  text: TextSpan(
+                      text: 'Login now',
+                      style: TextStyle(
+                          color: Colors.blue, fontWeight: FontWeight.bold),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () => Navigator.of(context)
+                            .pushReplacementNamed('/login')),
+                )
+              ],
             )
           ],
-        )
-      ],
-    )));
+        )));
   }
 }
 

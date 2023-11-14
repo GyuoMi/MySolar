@@ -25,25 +25,61 @@ class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final supabase = Supabase.instance.client;
-  //late final StreamSubscription<AuthState> _authSubscription;
+  late final StreamSubscription<AuthState> _authSubscription;
 
   @override
   void initState() {
     super.initState();
-    // _authSubscription = supabase.auth.onAuthStateChange.listen((event) {
-    //   final session = event.session;
-    //   if (session != null) {
-    //     //goes to the main page
-    //     Navigator.of(context).pushReplacementNamed('/');
-    //   }
-    // });
+    _authSubscription = supabase.auth.onAuthStateChange.listen((event) async {
+      final session = event.session;
+      if (session != null) {
+        try {
+          String name = event.session?.user.email ?? "null";
+          IUserPersistence userPersistence = DatabaseApi();
+          var userData = await userPersistence.getUserDetails(name);
+          print(userData);
+          //
+          int id = userData[0][userPersistence.userId] as int;
+          int sysId = userData[0][userPersistence.systemId] as int;
+          String address = userData[0][userPersistence.userAddress] as String;
+          String password = userData[0][userPersistence.userPassword] as String;
+//
+          // //set up logged in user
+          LoggedInUser.setUser(id, sysId, name, password, address);
+          //
+          IManualSystemPersistence systemPersistence = DatabaseApi();
+          // //set up logged in users system details
+          var systemData = await systemPersistence.getManualSystemDetails(id);
+          try {
+            var systemName =
+                systemData[0][systemPersistence.manualName] as String;
+            var systemPanels =
+                systemData[0][systemPersistence.manualCount] as int;
+            var panelProduction = double.parse(systemData[0]
+                    [systemPersistence.manualMaxProduction]
+                .toString());
+            var batteryCapacity =
+                systemData[0][systemPersistence.manualCapacity] as int;
+
+            LoggedInUser.setSystem(
+                systemName, systemPanels, panelProduction, batteryCapacity);
+          } catch (error) {
+            print(error.toString() + ": no manual system in database");
+          }
+        } catch (error) {
+          print(error.toString());
+        }
+
+        Navigator.of(context).pushReplacementNamed('/');
+      }
+    });
   }
 
   @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
-    //_authSubscription.cancel();
+    _authSubscription.cancel();
     super.dispose();
   }
 
@@ -103,6 +139,7 @@ class _LoginPageState extends State<LoginPage> {
                   //get user details
                   IUserPersistence userPersistence = DatabaseApi();
                   var userData = await userPersistence.getUserDetails(name);
+                  print(userData);
                   //
                   int id = userData[0][userPersistence.userId] as int;
                   int sysId = userData[0][userPersistence.systemId] as int;
@@ -117,14 +154,15 @@ class _LoginPageState extends State<LoginPage> {
                   var systemData =
                       await systemPersistence.getManualSystemDetails(id);
                   try {
-                    String systemName =
+                    var systemName =
                         systemData[0][systemPersistence.manualName] as String;
-                    int systemPanels =
+                    var systemPanels =
                         systemData[0][systemPersistence.manualCount] as int;
-                    double panelProduction = systemData[0]
-                        [systemPersistence.manualMaxProduction] as double;
-                    double batteryCapacity = systemData[0]
-                        [systemPersistence.manualCapacity] as double;
+                    var panelProduction = double.parse(systemData[0]
+                            [systemPersistence.manualMaxProduction]
+                        .toString());
+                    var batteryCapacity =
+                        systemData[0][systemPersistence.manualCapacity] as int;
 
                     LoggedInUser.setSystem(systemName, systemPanels,
                         panelProduction, batteryCapacity);
@@ -139,6 +177,7 @@ class _LoginPageState extends State<LoginPage> {
                     backgroundColor: Theme.of(context).colorScheme.error,
                   ));
                 } catch (error) {
+                  print(error.toString());
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text("Error occured please try again"),
                       backgroundColor: Theme.of(context).colorScheme.error));

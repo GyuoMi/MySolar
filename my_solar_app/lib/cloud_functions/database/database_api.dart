@@ -93,7 +93,7 @@ class DatabaseApi
   }
 
   @override
-  Future createManualSystem(int id, String name, double capacity,
+  Future createManualSystem(int id, String name, int capacity,
       double maxProduction, int count, double dailyUsage) async {
     final manualData = {
       userId: id,
@@ -173,32 +173,31 @@ class DatabaseApi
 
   @override
   Future updateManualName(int id, String name) async {
-    return database
-        .updateField(manualTable, {manualName: name}, {manualId: id});
+    return database.updateField(manualTable, {manualName: name}, {userId: id});
   }
 
   @override
-  Future updateManualCapacity(int id, double capacity) async {
+  Future updateManualCapacity(int id, int capacity) async {
     return database
-        .updateField(manualTable, {manualCapacity: capacity}, {manualId: id});
+        .updateField(manualTable, {manualCapacity: capacity}, {userId: id});
   }
 
   @override
   Future updateManualMaxProduction(int id, double maxProduction) async {
     return database.updateField(
-        manualTable, {manualMaxProduction: maxProduction}, {manualId: id});
+        manualTable, {manualMaxProduction: maxProduction}, {userId: id});
   }
 
   @override
   Future updateManualCount(int id, int count) async {
     return database
-        .updateField(manualTable, {manualCount: count}, {manualId: id});
+        .updateField(manualTable, {manualCount: count}, {userId: id});
   }
 
   @override
   Future updateManualDailyUsage(int id, double dailyUsage) async {
-    return database.updateField(
-        manualTable, {manualDailyUsage: dailyUsage}, {manualId: id});
+    return database
+        .updateField(manualTable, {manualDailyUsage: dailyUsage}, {userId: id});
   }
 
   //Reading functions
@@ -230,7 +229,7 @@ class DatabaseApi
   //deleting functions
   @override
   Future deleteDevice(int singleDeviceId) async {
-    database.deleteRecord(setupTable, {deviceId: singleDeviceId});
+    await database.deleteRecord(setupTable, {deviceId: singleDeviceId});
     return database.deleteRecord(deviceTable, {deviceId: singleDeviceId});
   }
 
@@ -271,7 +270,7 @@ class DatabaseApi
   }
 
   @override
-  Future getTime(int id) async {
-    return database.databaseFunction('get_time', {databaseFunctionId: id});
+  Future getTime() async {
+    return database.databaseFunction('get_time', {});
   }
 }
