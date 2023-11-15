@@ -85,7 +85,12 @@ class _MyCustomWidgetState extends State<MyCustomWidget> {
       });
     } else {
       setState(() {
-        solarDraw = true;
+        solarDraw = false;
+      });
+    }
+    if (time != 'day' && time !='') {
+      setState(() {
+        solarDraw = false;
       });
     }
 
@@ -150,23 +155,19 @@ class _MyCustomWidgetState extends State<MyCustomWidget> {
     // When you have the weatherInfo, update the URL and trigger a UI update
     setState(() {
       url = weatherInfo!;
-    });
-    if (weatherInfo != null) {
-      // Extract the word before the number using a regular expression
-      final match = RegExp(r'\/(\w+)\/\d+\.png').firstMatch(weatherInfo);
-      if (match != null) {
-        setState(() {
+      if (weatherInfo != null) {
+        // Extract the word before the number using a regular expression
+        final match = RegExp(r'\/(\w+)\/\d+\.png').firstMatch(weatherInfo);
+        if (match != null) {
           time = match.group(1)!;
-        });
-        print(time);
-        if (time != 'day') {
-          setState(() {
-            solarDraw = false;
-          });
         }
       }
-    }
+      if (time != 'day' && time != '') {
+        solarDraw = false;
+      }
+    });
   }
+
 
   @override
   Widget build(BuildContext context) {
