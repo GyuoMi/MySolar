@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:my_solar_app/models/logged_in_user.dart';
 import 'package:my_solar_app/screens/devices.dart';
-
+import '../widgets/drawer.dart';
 import '../cloud_functions/database/database_api.dart';
 import '../cloud_functions/database/interfaces/database_functions_interface.dart';
 class Recommendation extends StatefulWidget {
@@ -180,7 +180,7 @@ class _RecommendationState extends State<Recommendation> {
   }
   Future<Map<String, dynamic>> sendChatGPTRequest(String message) async {
     final String apiUrl = 'https://api.openai.com/v1/chat/completions';
-    final apikey = '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';
+    final apikey = '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';
 
     final response = await http.post(
       Uri.parse(apiUrl),
@@ -206,7 +206,7 @@ class _RecommendationState extends State<Recommendation> {
 
 
     final response = await sendChatGPTRequest(utf8.decode(utf8.encode(
-        'I want you to give  3 possible reasons for why switching from grid to solar is better, Aswell as 4 possible reasons and names of devices i can reduce in order to reduce the amount of power being used, and give 3 possible why swiching some devices to solar all the time may save more power and avoid loadshedding. I want the Output to be in the form of a list and thats all thats meant in the output. Only the output withput any headings')));
+        'I want you to give  3 possible reasons for why switching from grid to solar is better, Aswell as 4 possible reasons and names of devices i can reduce in order to reduce the amount of power being used, and give 3 possible why switching some devices to solar all the time may save more power and avoid loadshedding. I want the Output to be in the form of a list. Only the output the list without any headings')));
 
     final choices = response['choices'];
     if (choices != null && choices.isNotEmpty) {
@@ -232,6 +232,7 @@ class _RecommendationState extends State<Recommendation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: CustomDrawer(),
       appBar: AppBar(
         title: Text('Recommendation '),
       ),
@@ -248,7 +249,7 @@ class _RecommendationState extends State<Recommendation> {
               SizedBox(height: 8.0),
               ElevatedButton(
                 onPressed: _submitForm,
-                child: Text('Implement these recommendations'),
+                child: Text('Get Recommendations'),
               ),
               SizedBox(height: 8.0),
               Text(

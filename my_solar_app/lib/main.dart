@@ -9,7 +9,7 @@ import 'package:my_solar_app/screens/Homepage.dart';
 import 'package:my_solar_app/screens/settings_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:my_solar_app/screens/devices.dart';
-
+import 'package:my_solar_app/screens/tracking_page.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -20,7 +20,6 @@ Future<void> main() async {
   );
   runApp(MyApp());
 }
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
@@ -54,11 +53,12 @@ class MyApp extends StatelessWidget {
           '/login': (context) => const LoginPage(),
           '/register_user': (context) => AddressMapPage(),
           '/register_system': (context) => RegisterSystemPage(),
-          '/devices': (context) => AddressMapPage(),
+          '/map': (context) => AddressMapPage(),
+          '/devices': (context) => DevicesPage(),
           '/settings': (context) => SettingsPage(),
-         // '/chat': (context) => ChatPage(),
+          '/tracking': (context) => TrackingPage(),
           '/recommendation': (context) => Recommendation(),
-          '/mapspage':(context)=> AddressMapPage(),
+
         });
     //1
   }

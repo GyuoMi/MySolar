@@ -11,8 +11,8 @@ class CustomDrawer extends StatelessWidget {
         alignment: Alignment.topLeft, // Align with the top-left of the screen
         child: ConstrainedBox(
           constraints: BoxConstraints(
-              maxHeight: 250,
-              maxWidth: 150), // Adjust the height and width as needed
+              maxHeight: 350,
+              maxWidth: 170), // Adjust the height and width as needed
           child: Drawer(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -42,6 +42,22 @@ class CustomDrawer extends StatelessWidget {
                     Navigator.of(context).pushReplacementNamed('/tracking');
                   },
                 ),
+                ListTile(
+                  title: Text('Recomendations'),
+                  onTap: () {
+                    Navigator.of(context).pushReplacementNamed('/recommendation');
+                  },
+                ),
+                ListTile(
+                  title: Text('Map'),
+                  onTap: () {
+                    Navigator.of(context).pushReplacementNamed('/map');
+                  },
+                ),
+
+
+
+
               ],
             ),
           ),

@@ -5,6 +5,11 @@ import 'package:flutter/cupertino.dart';
 //import 'dart:async';
 import 'package:webview_flutter/webview_flutter.dart';
 
+import 'Homepage.dart';
+
+
+
+
 //import 'package:location/location.dart';
 
 class AddressMapPage extends StatefulWidget {
@@ -17,7 +22,23 @@ class _AddressMapPageState extends State<AddressMapPage> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+
         appBar: AppBar(
+
+          actions: [
+            IconButton(
+              icon: Icon(Icons.home),
+              onPressed: () {
+                // Navigate to the home page using MaterialPageRoute
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HOME(),
+                  ),
+                );
+              },
+            ),
+          ],
           title: Text('Map App'),
         ),
         body: WebView(
