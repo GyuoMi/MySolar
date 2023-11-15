@@ -6,6 +6,7 @@ import 'package:my_solar_app/screens/maps.dart';
 import 'package:my_solar_app/screens/register_system_page.dart';
 
 import 'package:my_solar_app/screens/Homepage.dart';
+import 'package:my_solar_app/screens/register_user_page.dart';
 import 'package:my_solar_app/screens/settings_page.dart';
 import 'package:my_solar_app/screens/tracking_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -17,7 +18,7 @@ Future<void> main() async {
   await Supabase.initialize(
     url: 'https://fsirbhoucrjtnkvchwuf.supabase.co',
     anonKey:
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzaXJiaG91Y3JqdG5rdmNod3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTIzNzYxNTAsImV4cCI6MjAwNzk1MjE1MH0.Bb3OZyxku8_7c_aIQe5GlMsup0SODK-5pPa92tzkNFM',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzaXJiaG91Y3JqdG5rdmNod3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTIzNzYxNTAsImV4cCI6MjAwNzk1MjE1MH0.Bb3OZyxku8_7c_aIQe5GlMsup0SODK-5pPa92tzkNFM',
   );
   runApp(MyApp());
 }
@@ -53,15 +54,14 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (context) => const HOME(),
           '/login': (context) => const LoginPage(),
-          '/register_user': (context) => AddressMapPage(),
+          '/register_user': (context) => RegisterPage(),
           '/register_system': (context) => RegisterSystemPage(),
           '/devices': (context) => DevicesPage(),
           '/settings': (context) => SettingsPage(),
           '/recommendation': (context) => Recommendation(),
-          '/map':(context)=> AddressMapPage(),
-          '/tracking':(context)=> TrackingPage(),
+          '/map': (context) => AddressMapPage(),
+          '/tracking': (context) => TrackingPage(),
         });
     //1
   }
 }
-
