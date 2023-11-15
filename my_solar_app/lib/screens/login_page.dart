@@ -86,144 +86,149 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Center(
             child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Image.asset(
-          'assets/images/my_solar_logo.png',
-          scale: 3,
-        ),
-        const Text("Welcome back!"),
-        //shows user name and password text boxes
-        const SizedBox(height: 40),
-        LoginPageTextField(
-          controller: emailController,
-          hintText: "Email",
-          obscureText: false,
-          textType: TextInputType.emailAddress,
-        ),
-        const SizedBox(height: 20),
-        LoginPageTextField(
-          controller: passwordController,
-          hintText: 'Password',
-          obscureText: true,
-          textType: TextInputType.text,
-        ),
-
-        //aligns password to the right
-        // const Row(
-        //   mainAxisAlignment: MainAxisAlignment.end,
-        //   children: [
-        //     Padding(
-        //         padding: EdgeInsets.fromLTRB(0, 5, 50, 0),
-        //         child: Text("Forgot Password?"))
-        //   ],
-        // ),
-        const SizedBox(height: 20),
-
-        //creates Sign In button
-        Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          FilledButton(
-              style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  minimumSize: const Size(300, 70)),
-              onPressed: () async {
-                final name = emailController.text.trim();
-                final password = passwordController.text.trim();
-                try {
-                  //check to see if user is in database
-                  await authentication.signInEmailAndPassword(name, password);
-
-                  //get user details
-                  IUserPersistence userPersistence = DatabaseApi();
-                  var userData = await userPersistence.getUserDetails(name);
-                  print(userData);
-                  //
-                  int id = userData[0][userPersistence.userId] as int;
-                  int sysId = userData[0][userPersistence.systemId] as int;
-                  String address =
-                      userData[0][userPersistence.userAddress] as String;
-                  //
-                  // //set up logged in user
-                  LoggedInUser.setUser(id, sysId, name, password, address);
-                  //
-                  IManualSystemPersistence systemPersistence = DatabaseApi();
-                  // //set up logged in users system details
-                  var systemData =
-                      await systemPersistence.getManualSystemDetails(id);
-                  try {
-                    var systemName =
-                        systemData[0][systemPersistence.manualName] as String;
-                    var systemPanels =
-                        systemData[0][systemPersistence.manualCount] as int;
-                    var panelProduction = double.parse(systemData[0]
-                            [systemPersistence.manualMaxProduction]
-                        .toString());
-                    var batteryCapacity =
-                        systemData[0][systemPersistence.manualCapacity] as int;
-
-                    LoggedInUser.setSystem(systemName, systemPanels,
-                        panelProduction, batteryCapacity);
-                  } catch (error) {
-                    print(error.toString() + ": no manual system in database");
-                  }
-                  //navigate to new homepage
-                  Navigator.of(context).pushReplacementNamed('/');
-                } on AuthException catch (error) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(error.message),
-                    backgroundColor: Theme.of(context).colorScheme.error,
-                  ));
-                } catch (error) {
-                  print(error.toString());
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text("Error occured please try again"),
-                      backgroundColor: Theme.of(context).colorScheme.error));
-                }
-              },
-              child: const Text("Sign In")),
-        ]),
-        const SizedBox(height: 25),
-
-        //creates divider with text continue with
-        // const Row(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   children: [
-        //     Text("Or continue with"),
-        //   ],
-        // ),
-        // const SizedBox(
-        //   height: 25,
-        // ),
-        // const Row(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   children: [
-        //     SquareImageTile(imagePath: 'assets/images/google.png'),
-        //     SizedBox(width: 40),
-        //     SquareImageTile(imagePath: 'assets/images/apple.png')
-        //   ],
-        // ),
-        const SizedBox(
-          height: 30,
-        ),
-        Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Not a member? '),
-            RichText(
-              text: TextSpan(
-                  text: 'Register now',
-                  style: TextStyle(
-                      color: Colors.blue, fontWeight: FontWeight.bold),
-                  recognizer: TapGestureRecognizer()
-                    ..onTap = () => Navigator.of(context)
-                        .pushReplacementNamed('/register_user')),
+            Image.asset(
+              'assets/images/my_solar_logo.png',
+              scale: 3,
+            ),
+            const Text("Welcome back!"),
+            //shows user name and password text boxes
+            const SizedBox(height: 40),
+            LoginPageTextField(
+              controller: emailController,
+              hintText: "Email",
+              obscureText: false,
+              textType: TextInputType.emailAddress,
+            ),
+            const SizedBox(height: 20),
+            LoginPageTextField(
+              controller: passwordController,
+              hintText: 'Password',
+              obscureText: true,
+              textType: TextInputType.text,
+            ),
+
+            //aligns password to the right
+            // const Row(
+            //   mainAxisAlignment: MainAxisAlignment.end,
+            //   children: [
+            //     Padding(
+            //         padding: EdgeInsets.fromLTRB(0, 5, 50, 0),
+            //         child: Text("Forgot Password?"))
+            //   ],
+            // ),
+            const SizedBox(height: 20),
+
+            //creates Sign In button
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              FilledButton(
+                  style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      minimumSize: const Size(300, 70)),
+                  onPressed: () async {
+                    final name = emailController.text.trim();
+                    final password = passwordController.text.trim();
+                    try {
+                      //check to see if user is in database
+                      await authentication.signInEmailAndPassword(
+                          name, password);
+
+                      //get user details
+                      IUserPersistence userPersistence = DatabaseApi();
+                      var userData = await userPersistence.getUserDetails(name);
+                      print(userData);
+                      //
+                      int id = userData[0][userPersistence.userId] as int;
+                      int sysId = userData[0][userPersistence.systemId] as int;
+                      String address =
+                          userData[0][userPersistence.userAddress] as String;
+                      //
+                      // //set up logged in user
+                      LoggedInUser.setUser(id, sysId, name, password, address);
+                      //
+                      IManualSystemPersistence systemPersistence =
+                          DatabaseApi();
+                      // //set up logged in users system details
+                      var systemData =
+                          await systemPersistence.getManualSystemDetails(id);
+                      try {
+                        var systemName = systemData[0]
+                            [systemPersistence.manualName] as String;
+                        var systemPanels =
+                            systemData[0][systemPersistence.manualCount] as int;
+                        var panelProduction = double.parse(systemData[0]
+                                [systemPersistence.manualMaxProduction]
+                            .toString());
+                        var batteryCapacity = systemData[0]
+                            [systemPersistence.manualCapacity] as int;
+
+                        LoggedInUser.setSystem(systemName, systemPanels,
+                            panelProduction, batteryCapacity);
+                      } catch (error) {
+                        print(error.toString() +
+                            ": no manual system in database");
+                      }
+                      //navigate to new homepage
+                      Navigator.of(context).pushReplacementNamed('/');
+                    } on AuthException catch (error) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(error.message),
+                        backgroundColor: Theme.of(context).colorScheme.error,
+                      ));
+                    } catch (error) {
+                      print(error.toString());
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text("Error occured please try again"),
+                          backgroundColor:
+                              Theme.of(context).colorScheme.error));
+                    }
+                  },
+                  child: const Text("Sign In")),
+            ]),
+            const SizedBox(height: 25),
+
+            //creates divider with text continue with
+            // const Row(
+            //   mainAxisAlignment: MainAxisAlignment.center,
+            //   children: [
+            //     Text("Or continue with"),
+            //   ],
+            // ),
+            // const SizedBox(
+            //   height: 25,
+            // ),
+            // const Row(
+            //   mainAxisAlignment: MainAxisAlignment.center,
+            //   children: [
+            //     SquareImageTile(imagePath: 'assets/images/google.png'),
+            //     SizedBox(width: 40),
+            //     SquareImageTile(imagePath: 'assets/images/apple.png')
+            //   ],
+            // ),
+            const SizedBox(
+              height: 30,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Not a member? '),
+                RichText(
+                  text: TextSpan(
+                      text: 'Register now',
+                      style: TextStyle(
+                          color: Colors.blue, fontWeight: FontWeight.bold),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () => Navigator.of(context)
+                            .pushReplacementNamed('/register_user')),
+                )
+              ],
             )
           ],
-        )
-      ],
-    )));
+        )));
   }
 }
