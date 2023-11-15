@@ -1,4 +1,5 @@
 import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:based_battery_indicator/based_battery_indicator.dart';
@@ -9,8 +10,6 @@ import '../../API\'s/WeatherApi.dart';
 import '../../API\'s/LoadSheddingAPI.dart';
 import '../API\'s/loadsheddingFunctions.dart';
 
-import '../cloud_functions/authentication/auth_repository.dart';
-import '../cloud_functions/authentication/interfaces/auth_repository_interface.dart';
 import '../cloud_functions/database/database_api.dart';
 import '../cloud_functions/database/interfaces/database_functions_interface.dart';
 import '../models/logged_in_user.dart';
@@ -62,6 +61,11 @@ class _MyCustomWidgetState extends State<MyCustomWidget> {
         charging = true;
       });
     } else {
+      setState(() {
+        charging = false;
+      });
+    }
+    if (battery > 0) {
       setState(() {
         charging = false;
       });
@@ -327,6 +331,7 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
       monthlyTotal = databaseReturnMonth;
       hourlyTotal = databaseReturnHour;
     });
+    print(hourlyTotal);
     roundChartData();
     lineGraphData();
   }
@@ -554,9 +559,7 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () {
-              IAuthRepository ar = AuthRepository();
-              ar.signOut();
-              Navigator.of(context).pushReplacementNamed('/login');
+              showRating();
             },
           ),
         ],
@@ -603,7 +606,10 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                             child: Column(
                               children: [
                                 LoadShedding(),
-
+                                (loadSheddingStatus == 0)
+                                    ? Text('No Load Shedding Currently')
+                                    : Text(
+                                        'Load Shedding Status: Stage $loadSheddingStatus'),
                               ],
                             ),
                           )
