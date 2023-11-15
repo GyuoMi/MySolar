@@ -18,11 +18,11 @@ class AddressMapPage extends StatefulWidget {
 }
 
 class _AddressMapPageState extends State<AddressMapPage> {
+  bool _isLoading = true;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-
         appBar: AppBar(
           leading: IconButton(
             icon: Icon(Icons.home),
@@ -39,9 +39,27 @@ class _AddressMapPageState extends State<AddressMapPage> {
           title: Text('Area Map'),
           centerTitle: true, // Center the title
         ),
-        body: WebView(
-          initialUrl: 'https://www.google.com/maps',
-          javascriptMode: JavascriptMode.unrestricted,
+        body: Stack(
+          children: [
+            WebView(
+              initialUrl: 'https://www.google.com/maps',
+              javascriptMode: JavascriptMode.unrestricted,
+              onPageStarted: (String url) {
+                setState(() {
+                  _isLoading = true; // Show loading indicator
+                });
+              },
+              onPageFinished: (String url) {
+                setState(() {
+                  _isLoading = false; // Hide loading indicator
+                });
+              },
+            ),
+            if (_isLoading)
+              Center(
+                child: CircularProgressIndicator(),
+              ),
+          ],
         ),
       ),
     );
