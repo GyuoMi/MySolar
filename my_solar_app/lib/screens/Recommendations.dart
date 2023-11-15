@@ -5,18 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:my_solar_app/models/logged_in_user.dart';
 import 'package:my_solar_app/screens/devices.dart';
 import '../../API\'s/LoadSheddingAPI.dart';
-
-
-
 import '../cloud_functions/database/database_api.dart';
 import '../cloud_functions/database/interfaces/database_functions_interface.dart';
 import '../widgets/drawer.dart';
+
+
 enum RecommendationType {
-  UserRecommendations1,
-  EnvironmentalRecommendations1,
-  FinancialRecommendations1,
-  AIRecommendations1,
-  DeviceRecommendations1,
+  UserRecommendations,
+  EnvironmentalRecommendations,
+  FinancialRecommendations,
+  AIRecommendations,
+  DeviceRecommendations,
 }
 
 class Recommendation extends StatefulWidget {
@@ -45,33 +44,37 @@ class _RecommendationState extends State<Recommendation> {
     });
     //  uiCalculations();
   }
-
+  bool _isLoading = false;
   void _submitForm(RecommendationType selectedRecommendation) async {
+    setState(() {
+      _isLoading = true;
+    });
     String name = _nameController.text;
     String age = _ageController.text;
 
     // Fetch recommendations based on the selected type
-    Map<String, dynamic> recommendations = await AIRecommendations("abc");
+    Map<String, dynamic> recommendations = await AIRecoms("abc");
 
-    if (selectedRecommendation == RecommendationType.UserRecommendations1) {
-      recommendations = await UserRecommendations(_nameController.text);
+    if (selectedRecommendation == RecommendationType.UserRecommendations) {
+      recommendations = await UserRecoms(_nameController.text);
     } else if (selectedRecommendation ==
-        RecommendationType.EnvironmentalRecommendations1) {
-      recommendations = await EnvironmentalRecommendations();
+        RecommendationType.EnvironmentalRecommendations) {
+      recommendations = await EnvironmentalRecoms();
     } else if (selectedRecommendation ==
-        RecommendationType.FinancialRecommendations1) {
-      recommendations = await FinancialRecommendations();
+        RecommendationType.FinancialRecommendations) {
+      recommendations = await FinancialRecoms();
     } else
-    if (selectedRecommendation == RecommendationType.AIRecommendations1) {
-      recommendations = await AIRecommendations(_nameController.text);
+    if (selectedRecommendation == RecommendationType.AIRecommendations) {
+      recommendations = await AIRecoms(_nameController.text);
     } else
-    if (selectedRecommendation == RecommendationType.DeviceRecommendations1) {
+    if (selectedRecommendation == RecommendationType.DeviceRecommendations) {
       recommendations = await DeviceRecommendations();
     }
 
     setState(() {
       // Update _outputText with the recommendations
       _outputText = '';
+      _isLoading = false;
 
       // Display recommendations in the _outputText
       recommendations.forEach((key, value) {
@@ -241,7 +244,7 @@ class _RecommendationState extends State<Recommendation> {
 
   Future<Map<String, dynamic>> DeviceRecommendations() async {
     print(1);
-    List<Device> _Devices = await createDevicesList(LoggedInUser.getUserId());
+    List<Device> _Devices = await createDevicesList(userId);
     print(_Devices[0].name);
     // dynamic id;
     // String name;
@@ -303,7 +306,7 @@ class _RecommendationState extends State<Recommendation> {
 
   Future<Map<String, dynamic>> sendChatGPTRequest(String message) async {
     final String apiUrl = 'https://api.openai.com/v1/chat/completions';
-    final apikey = 'sk-API KEY';
+    final apikey = 'sk-KEY';
 
     final response = await http.post(
       Uri.parse(apiUrl),
@@ -326,7 +329,7 @@ class _RecommendationState extends State<Recommendation> {
         utf8.decode(response.bodyBytes)); // Decode response using utf8.decode
   }
 
-  Future<Map<String, dynamic>> AIRecommendations(String Language) async {
+  Future<Map<String, dynamic>> AIRecoms(String Language) async {
     final response = await sendChatGPTRequest(utf8.decode(utf8.encode(
         'I want you to give  3 possible reasons for why switching from grid to solar is better, Aswell as 4 possible reasons and names of devices i can reduce in order to reduce the amount of power being used, and give 3 possible why swiching some devices to solar all the time may save more power and avoid loadshedding. I want the Output to be in the form of a list and thats all thats meant in the output. Only the output withput any headings')));
 
@@ -351,7 +354,7 @@ class _RecommendationState extends State<Recommendation> {
     return {};
   }
 
-  Future<Map<String, dynamic>> FinancialRecommendations() async {
+  Future<Map<String, dynamic>> FinancialRecoms() async {
     final response = await sendChatGPTRequest(utf8.decode(utf8.encode(
         'I want you to give  5 possible  financial benefits of using solar power, considering savings over time.Provide estimates on return on investment for solar installations.the financial benefits of using solar power, considering savings over time.•	Provide estimates on return on investment for solar installations.I want the Output to be in the form of a list and thats all thats meant in the output. Only the output withput any headings')));
     print(response);
@@ -376,7 +379,7 @@ class _RecommendationState extends State<Recommendation> {
     return {};
   }
 
-  Future<Map<String, dynamic>> EnvironmentalRecommendations() async {
+  Future<Map<String, dynamic>> EnvironmentalRecoms() async {
     final response = await sendChatGPTRequest(utf8.decode(utf8.encode(
         'I want you to give  5 possible  Environmental benefits of using solar power, considering savings over time.Provide estimates on return on investment for solar installations.the financial benefits of using solar power, considering savings over time.•	Provide estimates on return on investment for solar installations.I want the Output to be in the form of a list and thats all thats meant in the output. Only the output withput any headings')));
     print(response);
@@ -401,7 +404,7 @@ class _RecommendationState extends State<Recommendation> {
     return {};
   }
 
-  Future<Map<String, dynamic>> UserRecommendations(String Language) async {
+  Future<Map<String, dynamic>> UserRecoms(String Language) async {
     final response = await sendChatGPTRequest(utf8.decode(utf8.encode(
         'Solar Power recommendation based on the given input()$Language. Only the output withput any headings')));
     print(response);
@@ -428,7 +431,7 @@ class _RecommendationState extends State<Recommendation> {
 
 
   RecommendationType _selectedRecommendation = RecommendationType
-      .UserRecommendations1;
+      .UserRecommendations;
   TextEditingController _name1Controller = TextEditingController();
   String _output1Text = '';
 
@@ -465,9 +468,15 @@ class _RecommendationState extends State<Recommendation> {
                     .toList(),
               ),
               SizedBox(height: 8.0),
-              TextField(
-                controller: _nameController,
-                // ... rest of your text field code
+              Visibility(
+                visible: _selectedRecommendation == RecommendationType.UserRecommendations,
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: "Enter custom prompt",
+                  ),
+                  controller: _nameController,
+                  // ... rest of your text field code
+                ),
               ),
               SizedBox(height: 8.0),
               ElevatedButton(
@@ -475,7 +484,9 @@ class _RecommendationState extends State<Recommendation> {
                   // Assuming _submitForm requires the selected recommendation type
                   _submitForm(_selectedRecommendation);
                 },
-                child: Text('Get Recomendations'),
+                child: _isLoading
+                    ? CircularProgressIndicator() // Show loading indicator
+                    : Text('Get Recommendations'),
               ),
               SizedBox(height: 8.0),
               Text(
