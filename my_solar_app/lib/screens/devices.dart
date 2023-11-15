@@ -7,7 +7,7 @@ import 'dart:async';
 
 // Define your database and device persistence instances
 IDevicePersistence devicePersistence = DatabaseApi();
-int userId = LoggedInUser.userId;
+int userId = LoggedInUser.getUserId();
 class DevicesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class DevicesPage extends StatelessWidget {
         ),
       ),
       body: FutureBuilder<List<Device>>(
-        future: createDevicesList(userId), // Replace 61 with the actual user ID
+        future: createDevicesList(LoggedInUser.getUserId()), // Replace 61 with the actual user ID
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return CircularProgressIndicator();
@@ -40,7 +40,7 @@ class DevicesPage extends StatelessWidget {
             );
           } else {
             final List<Device> devices = snapshot.data!;
-            return DeviceList(devices: devices, showEditDeviceDialog: _showEditDeviceDialog);
+            return DeviceList(deviceList: devices, showEditDeviceDialog: _showEditDeviceDialog);
           }
         },
       ),
@@ -56,7 +56,6 @@ class DevicesPage extends StatelessWidget {
   Future<List<Device>> createDevicesList(int userId) async {
     // Step 1: Get a list of device IDs for the given userId
     final deviceIdsResponse = await devicePersistence.getUserDeviceIds(userId);
-
     // Step 2: Extract device IDs from the response
     var deviceIds = (deviceIdsResponse as List<dynamic>)
         .map((item) =>
@@ -80,7 +79,6 @@ class DevicesPage extends StatelessWidget {
         loadshedding: deviceData[0][devicePersistence.deviceLoadSheddingSetting] as bool,
         normal: deviceData[0][devicePersistence.deviceNormalSetting] as bool,
       );
-
       devices.add(device);
     }
 
@@ -102,7 +100,7 @@ class DevicesPage extends StatelessWidget {
           device: device,
           isAdding: false,
           refreshDeviceList: () {
-            createDevicesList(userId);
+            createDevicesList(LoggedInUser.getUserId());
           },
         );
       },
@@ -129,7 +127,7 @@ class DevicesPage extends StatelessWidget {
           device: newDevice,
           isAdding: true,
           refreshDeviceList: () {
-            createDevicesList(userId);
+            createDevicesList(LoggedInUser.getUserId());
           },
         ); // Pass an additional flag to indicate it's for adding
       },
@@ -160,18 +158,18 @@ class Device {
 }
 
 class DeviceList extends StatelessWidget {
-  final List<Device> devices;
+  final List<Device> deviceList;
 
   final Function(BuildContext, Device) showEditDeviceDialog;
 
-  DeviceList({required this.devices, required this.showEditDeviceDialog});
+  DeviceList({required this.deviceList, required this.showEditDeviceDialog});
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: devices.length,
+      itemCount: deviceList.length,
       itemBuilder: (context, index) {
-        final device = devices[index];
+        final device = deviceList[index];
 
         return Dismissible(
           key: Key(device.id.toString()),

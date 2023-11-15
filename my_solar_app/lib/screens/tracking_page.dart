@@ -11,7 +11,7 @@ import 'package:my_solar_app/widgets/drawer.dart';
 IDevicePersistence devicePersistence = DatabaseApi();
 IRecordPersistence recordPersistence = DatabaseApi();
 IDatabaseFunctions databaseFunctions = DatabaseApi();
-int userId = LoggedInUser.userId;
+int userId = LoggedInUser.getUserId();
 // int userId = 61;
 var devicesPageInstance = DevicesPage();
 
@@ -55,7 +55,7 @@ class TrackingPage extends StatelessWidget {
         ),
         body: Center(
           child: FutureBuilder(
-              future: devicesPageInstance.createDevicesList(userId),
+              future: devicesPageInstance.createDevicesList(LoggedInUser.getUserId()),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return CircularProgressIndicator();

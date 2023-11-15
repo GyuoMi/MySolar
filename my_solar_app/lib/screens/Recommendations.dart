@@ -241,7 +241,7 @@ class _RecommendationState extends State<Recommendation> {
 
   Future<Map<String, dynamic>> DeviceRecommendations() async {
     print(1);
-    List<Device> _Devices = await createDevicesList(userId);
+    List<Device> _Devices = await createDevicesList(LoggedInUser.getUserId());
     print(_Devices[0].name);
     // dynamic id;
     // String name;
