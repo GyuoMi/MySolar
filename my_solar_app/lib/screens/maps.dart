@@ -24,22 +24,20 @@ class _AddressMapPageState extends State<AddressMapPage> {
       home: Scaffold(
 
         appBar: AppBar(
-
-          actions: [
-            IconButton(
-              icon: Icon(Icons.home),
-              onPressed: () {
-                // Navigate to the home page using MaterialPageRoute
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => HOME(),
-                  ),
-                );
-              },
-            ),
-          ],
-          title: Text('Map App'),
+          leading: IconButton(
+            icon: Icon(Icons.home),
+            onPressed: () {
+              // Navigate to the home page
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HOME(),
+                ),
+              );
+            },
+          ),
+          title: Text('Area Map'),
+          centerTitle: true, // Center the title
         ),
         body: WebView(
           initialUrl: 'https://www.google.com/maps',

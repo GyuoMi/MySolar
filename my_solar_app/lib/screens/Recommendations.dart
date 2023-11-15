@@ -10,6 +10,7 @@ import '../../API\'s/LoadSheddingAPI.dart';
 
 import '../cloud_functions/database/database_api.dart';
 import '../cloud_functions/database/interfaces/database_functions_interface.dart';
+import '../widgets/drawer.dart';
 enum RecommendationType {
   UserRecommendations1,
   EnvironmentalRecommendations1,
@@ -302,7 +303,7 @@ class _RecommendationState extends State<Recommendation> {
 
   Future<Map<String, dynamic>> sendChatGPTRequest(String message) async {
     final String apiUrl = 'https://api.openai.com/v1/chat/completions';
-    final apikey = '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';
+    final apikey = 'sk-API KEY';
 
     final response = await http.post(
       Uri.parse(apiUrl),
@@ -433,6 +434,7 @@ class _RecommendationState extends State<Recommendation> {
 
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: CustomDrawer(),
       appBar: AppBar(
         title: Text('Recommendation '),
       ),
@@ -473,7 +475,7 @@ class _RecommendationState extends State<Recommendation> {
                   // Assuming _submitForm requires the selected recommendation type
                   _submitForm(_selectedRecommendation);
                 },
-                child: Text('Implement these recommendations'),
+                child: Text('Get Recomendations'),
               ),
               SizedBox(height: 8.0),
               Text(
@@ -486,8 +488,9 @@ class _RecommendationState extends State<Recommendation> {
                 onPressed: () {
                   // Call a function or perform actions to implement the changes
                   //implementChanges();
+                  Navigator.of(context).pushReplacementNamed('/devices');
                 },
-                child: Text('Implement these changes'),
+                child: Text('Review Devices'),
               ),
             ],
           ),
