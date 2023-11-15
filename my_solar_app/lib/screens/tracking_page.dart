@@ -5,6 +5,7 @@ import 'package:my_solar_app/cloud_functions/database/interfaces/record_persiste
 import 'package:my_solar_app/screens/devices.dart';
 import 'package:my_solar_app/cloud_functions/database/interfaces/device_persistence_interface.dart';
 import 'package:my_solar_app/models/logged_in_user.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:my_solar_app/widgets/drawer.dart';
 
 IDevicePersistence devicePersistence = DatabaseApi();
@@ -152,6 +153,7 @@ class TrackingPage extends StatelessWidget {
                                           recentTime,
                                           double.tryParse(value) ?? 00.00);
                                     }
+                                    showToastMessage();
                                   },
                                   child: const Text("Save")),
                             )),
@@ -198,5 +200,17 @@ class TrackingPage extends StatelessWidget {
                 }
               }),
         ));
+  }
+
+  void showToastMessage() {
+    Fluttertoast.showToast(
+      msg: 'Records saved!',
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.blue,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
   }
 }
