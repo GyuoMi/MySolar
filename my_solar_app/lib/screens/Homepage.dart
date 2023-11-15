@@ -79,7 +79,7 @@ class _MyCustomWidgetState extends State<MyCustomWidget> {
         gridDraw = true;
       });
     }
-    if (solar > 0) {
+    if (solar > 0 && time == 'day' && time !='') {
       setState(() {
         solarDraw = true;
       });
@@ -88,11 +88,8 @@ class _MyCustomWidgetState extends State<MyCustomWidget> {
         solarDraw = false;
       });
     }
-    if (time != 'day' && time !='') {
-      setState(() {
-        solarDraw = false;
-      });
-    }
+
+
 
     if (usage > 0) {
       setState(() {
@@ -135,7 +132,7 @@ class _MyCustomWidgetState extends State<MyCustomWidget> {
   @override
   void initState() {
     super.initState();
-    getTotals();
+
     getWeatherIcon();
 
     // loadSheddingStatus = fetchLoadSheddingStatus();
@@ -155,17 +152,16 @@ class _MyCustomWidgetState extends State<MyCustomWidget> {
     // When you have the weatherInfo, update the URL and trigger a UI update
     setState(() {
       url = weatherInfo!;
-      if (weatherInfo != null) {
-        // Extract the word before the number using a regular expression
-        final match = RegExp(r'\/(\w+)\/\d+\.png').firstMatch(weatherInfo);
-        if (match != null) {
-          time = match.group(1)!;
-        }
+      // Extract the word before the number using a regular expression
+      final match = RegExp(r'\/(\w+)\/\d+\.png').firstMatch(weatherInfo);
+      if (match != null) {
+        time = match.group(1)!;
       }
       if (time != 'day' && time != '') {
         solarDraw = false;
       }
     });
+    getTotals();
   }
 
 
