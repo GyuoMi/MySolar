@@ -1,8 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:based_battery_indicator/based_battery_indicator.dart';
-import 'package:my_solar_app/cloud_functions/authentication/auth_repository.dart';
-import 'package:my_solar_app/cloud_functions/authentication/interfaces/auth_repository_interface.dart';
 import 'package:my_solar_app/screens/login_page.dart';
 import 'package:my_solar_app/widgets/drawer.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -15,8 +15,7 @@ import '../cloud_functions/database/interfaces/database_functions_interface.dart
 import '../models/logged_in_user.dart';
 import 'package:my_solar_app/screens/devices.dart';
 import 'package:http/http.dart' as http;
-import 'dart:math';
-import 'dart:convert';
+
 import 'package:rating_dialog/rating_dialog.dart';
 
 class MyCustomWidget extends StatefulWidget {
@@ -309,8 +308,7 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
   late Map<String, dynamic> dailyTotal;
   late Map<String, dynamic> weeklyTotal;
   late Map<String, dynamic> monthlyTotal;
-  //late Map<String, dynamic> hourlyTotal;
-  late List<Map<String, dynamic>> hourlyTotal;
+  late List<dynamic> hourlyTotal;
   IDatabaseFunctions database = DatabaseApi();
 
   Future<void> getTotals() async {
@@ -324,16 +322,16 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
         await database.calculateDailyTotals(LoggedInUser.getUserId());
     final databaseReturnHour =
         await database.getHourlyTotals(LoggedInUser.getUserId());
-
+    //final databaseReturnHr = await database.getHourlyTotals(LoggedInUser.getUserId());
     // When you have the weatherInfo, update the URL and trigger a UI update
     setState(() {
       allTimeTotal = databaseReturnAll;
       dailyTotal = databaseReturnDay;
       weeklyTotal = databaseReturnWeek;
       monthlyTotal = databaseReturnMonth;
-      //hourlyTotal = List<Map<String, dynamic>>.from(jsonDecode(databaseReturnHour));
       hourlyTotal = databaseReturnHour;
     });
+    print(hourlyTotal);
     roundChartData();
     lineGraphData();
   }
@@ -488,12 +486,18 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
   }
 
   void lineGraphData() {
-    for (int i = 0; i < hourlyTotal.length; i++) {
-      double production = hourlyTotal[i]['total_production'];
-      double usage = hourlyTotal[i]['total_usage'];
-      double solar = hourlyTotal[i]['total_solar'];
+    for (var element in hourlyTotal) {
+      // Checking if the element is a Map
+      if (element is Map<String, dynamic>) {
+        // Accessing properties of the element
+        String recordInterval = element["record_interval"];
+        num production = element["total_production"];
+        num usage = element["total_usage"];
+        num solar = element["total_solar"];
 
-      LGData.add(LineGraphData((i * 4).toString(), production, usage, solar));
+        LGData.add(LineGraphData(recordInterval, production.toDouble() / 1000,
+            usage.toDouble() / 1000, solar.toDouble() / 1000));
+      }
     }
   }
 
@@ -523,14 +527,14 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
 
   //example data for line graph
   List<LineGraphData> LGData = [
-    LineGraphData('00:00', 1, 3, 2),
-    LineGraphData('03:00', 4, 2, 1),
-    LineGraphData('09:00', 2, 1, 0),
-    LineGraphData('12:00', 4, 0, 3),
-    LineGraphData('15:00', 5, 4, 5),
-    LineGraphData('18:00', 1, 6, 0),
-    LineGraphData('21:00', 3, 2, -2),
-    LineGraphData('23:59', 6, 1, 1),
+    // LineGraphData('00:00', 1, 3, 2),
+    // LineGraphData('03:00', 4, 2, 1),
+    // LineGraphData('09:00', 2, 1, 0),
+    // LineGraphData('12:00', 4, 0, 3),
+    // LineGraphData('15:00', 5, 4, 5),
+    // LineGraphData('18:00', 1, 6, 0),
+    // LineGraphData('21:00', 3, 2, -2),
+    // LineGraphData('23:59', 6, 1, 1),
   ];
 
   @override
@@ -555,9 +559,7 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () {
-              IAuthRepository ar = AuthRepository();
-              ar.signOut();
-              Navigator.of(context).pushReplacementNamed('/login');
+              showRating();
             },
           ),
         ],
@@ -910,6 +912,17 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                                   ),
                                   //production power
                                   series: <ChartSeries<LineGraphData, String>>[
+                                    //battery power
+                                    StackedLineSeries<LineGraphData, String>(
+                                      dataSource: LGData,
+                                      xValueMapper: (LineGraphData power, _) =>
+                                          power.LGx,
+                                      yValueMapper: (LineGraphData power, _) =>
+                                          power.LGy3,
+                                      name: " Battery",
+                                      color: Colors.green,
+                                      width: 3,
+                                    ),
                                     StackedLineSeries<LineGraphData, String>(
                                       dataSource: LGData,
                                       xValueMapper: (LineGraphData power, _) =>
@@ -929,17 +942,6 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                                           power.LGy2,
                                       name: " Consumption",
                                       color: Colors.red,
-                                      width: 3,
-                                    ),
-                                    //battery power
-                                    StackedLineSeries<LineGraphData, String>(
-                                      dataSource: LGData,
-                                      xValueMapper: (LineGraphData power, _) =>
-                                          power.LGx,
-                                      yValueMapper: (LineGraphData power, _) =>
-                                          power.LGy3,
-                                      name: " Battery",
-                                      color: Colors.green,
                                       width: 3,
                                     ),
                                   ],
@@ -983,6 +985,7 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
           return Container(
             color: Colors.white,
             child: RatingDialog(
+              //MY SOLAR LOGO
               image: Image.asset(
                 'assets/images/my_solar.png',
                 width: 125,
@@ -998,6 +1001,7 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
               ),
               starColor: Color.fromARGB(255, 247, 197, 47),
               submitButtonText: "Submit rating",
+              //RATING SUBMITTED BY USER
               onSubmitted: (response) {
                 Navigator.push(
                   context,
@@ -1008,7 +1012,7 @@ class _MyHomePageState extends State<HOME> with TickerProviderStateMixin {
                 );
               },
               enableComment: false,
-              //CHOICE TO NOT RATE AND LEAVE PAGE
+              //CHOSE TO NOT RATE AND LEAVE PAGE
               onCancelled: () => Navigator.push(
                 context,
                 MaterialPageRoute(

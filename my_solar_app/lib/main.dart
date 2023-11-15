@@ -1,58 +1,33 @@
 import 'package:flutter/material.dart';
+
+import 'package:my_solar_app/screens/Recommendations.dart';
 import 'package:my_solar_app/screens/login_page.dart';
+import 'package:my_solar_app/screens/maps.dart';
 import 'package:my_solar_app/screens/register_system_page.dart';
-import 'package:my_solar_app/screens/register_user_page.dart';
+
 import 'package:my_solar_app/screens/Homepage.dart';
 import 'package:my_solar_app/screens/settings_page.dart';
+import 'package:my_solar_app/screens/tracking_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:my_solar_app/screens/devices.dart';
-import 'package:my_solar_app/screens/tracking_page.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/timezone.dart' as tz;
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:my_solar_app/utilities/notifications.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   await Supabase.initialize(
     url: 'https://fsirbhoucrjtnkvchwuf.supabase.co',
     anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzaXJiaG91Y3JqdG5rdmNod3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTIzNzYxNTAsImV4cCI6MjAwNzk1MjE1MH0.Bb3OZyxku8_7c_aIQe5GlMsup0SODK-5pPa92tzkNFM',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzaXJiaG91Y3JqdG5rdmNod3VmIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTIzNzYxNTAsImV4cCI6MjAwNzk1MjE1MH0.Bb3OZyxku8_7c_aIQe5GlMsup0SODK-5pPa92tzkNFM',
   );
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  
+  const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    void onNotificationTapped(String payload) {
-    if (payload == 'tracking_page') {
-          print('Tapped on notification with payload: $payload');
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => TrackingPage()),
-      );
-    }
-  }
-    final notificationService = NotificationService(
-      context: context,
-      onNotificationTapped: onNotificationTapped,
-    );
-    notificationService.initNotification(); // Initialize notifications
-    notificationService.showNotification(
-    title: 'MySolar',
-    body: 'Enter new device readings',
-    payLoad: 'tracking_page',
-  );
-  notificationService.handleNotification('tracking_page');
     return MaterialApp(
         title: 'Flutter Demo',
-        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           // This is the theme of your application.
           //
@@ -78,11 +53,15 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (context) => const HOME(),
           '/login': (context) => const LoginPage(),
-          '/register_user': (context) => RegisterPage(),
+          '/register_user': (context) => AddressMapPage(),
           '/register_system': (context) => RegisterSystemPage(),
           '/devices': (context) => DevicesPage(),
           '/settings': (context) => SettingsPage(),
-          '/tracking': (context) => TrackingPage(),
+          '/recommendation': (context) => Recommendation(),
+          '/map':(context)=> AddressMapPage(),
+          '/tracking':(context)=> TrackingPage(),
         });
+    //1
   }
 }
+

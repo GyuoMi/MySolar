@@ -136,7 +136,7 @@ class _LoadSheddingState extends State<LoadShedding> {
   @override
   void initState() {
     super.initState();
-    searchAreasByText("fourways ");
+   // searchAreasByText("fourways ");
     fetchData();
     getLoadshedding();
 
@@ -152,7 +152,7 @@ class _LoadSheddingState extends State<LoadShedding> {
     };
     try {
       final response = await http.get(Uri.parse(url), headers: headers);
-        // Replace 'YOUR_API_KEY' with your actual API ke
+      // Replace 'YOUR_API_KEY' with your actual API ke
       print (url);
       print(12345);
 
@@ -266,210 +266,208 @@ class _LoadSheddingState extends State<LoadShedding> {
 
     }
 
-  //print (data);
+    //print (data);
     int stageno = 0;
 
 
     List<dynamic> firstDay = dayTimes(loadSheddingStatus, 1);
     String dayZero = days[0];
+    //print(firstDay);
+    //print(dayZero);
 
 
 
     return  SingleChildScrollView(
 
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Container(
-                          padding: EdgeInsets.only(top: 10, bottom: 10),
-                          //margin: EdgeInsets.only(top: topmargin),
-                          child: const Text(
-                            'Load Shedding Schedule',
-                            style:
-                            TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        Container(
-                            padding: EdgeInsets.only(top: 10, bottom: 15),
-                            child: Text("Current Stage: $loadSheddingStatus",
-                                style: const TextStyle(
-                                    fontSize: 16.0, fontStyle: FontStyle.italic))),
-                        Container(
-                            width: 200,
-                            padding: EdgeInsets.only(bottom: 5),
-                            decoration: BoxDecoration(
-                                border:
-                                Border.all(width: 1.0, color: Colors.deepOrange)),
-                            child: Column(children: [
-                              Container(
-                                //height: screenHeight,
-                                width: 200,
-                                padding: EdgeInsets.only(top: 5, bottom: 5),
-                                decoration:
-                                BoxDecoration(color: Colors.deepOrange), //shade200
-                                child: Text(
-                                  dayZero,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold, color: Colors.white),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                              for (var i in firstDay)
-                                Container(
-                                    padding: EdgeInsets.only(bottom: 5, top: 5),
-                                    child: Text(i.toString()))
-                            ])),
-                        // Container(
-                        //     width: 200,
-                        //     margin: EdgeInsets.only(top: 10),
-                        //     padding: EdgeInsets.only(bottom: 5),
-                        //     decoration: BoxDecoration(
-                        //       border: Border.all(width: 1.0, color: Colors.black),
-                        //     ),
-                        //     child: Column(children: [
-                        //       Container(
-                        //         width: 200,
-                        //         padding: EdgeInsets.only(top: 5, bottom: 5),
-                        //         decoration: BoxDecoration(color: Colors.black),
-                        //         child: Text(
-                        //           dayOne,
-                        //           style: const TextStyle(
-                        //               fontWeight: FontWeight.bold, color: Colors.white),
-                        //           textAlign: TextAlign.center,
-                        //         ),
-                        //       ),
-                        //       for (var i in secondDay)
-                        //         Container(
-                        //             padding: EdgeInsets.only(bottom: 5, top: 5),
-                        //             child: Text(i.toString()))
-                        // //     ])),
-                        // Container(
-                        //     width: 200,
-                        //     margin: EdgeInsets.only(top: 10),
-                        //     padding: EdgeInsets.only(bottom: 5),
-                        //     decoration: BoxDecoration(
-                        //         border: Border.all(width: 1.0, color: Colors.black)),
-                        //     child: Column(children: [
-                        //       Container(
-                        //         width: 200,
-                        //         //height: screenHeight,
-                        //         padding: EdgeInsets.only(top: 5, bottom: 5),
-                        //         decoration: BoxDecoration(color: Colors.black),
-                        //         child: Text(
-                        //           dayTwo,
-                        //           style: const TextStyle(
-                        //               fontWeight: FontWeight.bold, color: Colors.white),
-                        //           textAlign: TextAlign.center,
-                        //         ),
-                        //       ),
-                        //       for (var i in thirdDay)
-                        //         Container(
-                        //             padding: EdgeInsets.only(bottom: 5, top: 5),
-                        //             child: Text(i.toString()))
-                        //     ])),
-                        // Container(
-                        //     width: 200,
-                        //     margin: EdgeInsets.only(top: 10),
-                        //     padding: EdgeInsets.only(bottom: 5),
-                        //     decoration: BoxDecoration(
-                        //         border: Border.all(width: 1.0, color: Colors.black)),
-                        //     child: Column(children: [
-                        //       Container(
-                        //         width: 200,
-                        //         //height: screenHeight,
-                        //         //padding: const EdgeInsets.symmetric(horizontal: 14),
-                        //         padding: EdgeInsets.only(top: 5, bottom: 5),
-                        //         decoration: BoxDecoration(color: Colors.black),
-                        //         child: Text(
-                        //           dayThree,
-                        //           style: const TextStyle(
-                        //               fontWeight: FontWeight.bold, color: Colors.white),
-                        //           textAlign: TextAlign.center,
-                        //         ),
-                        //       ),
-                        //       for (var i in fourthDay)
-                        //         Container(
-                        //             padding: EdgeInsets.only(bottom: 5, top: 5),
-                        //             child: Text(i.toString()))
-                        //     ])),
-                        // Container(
-                        //     width: 200,
-                        //     margin: EdgeInsets.only(top: 10),
-                        //     padding: EdgeInsets.only(bottom: 5),
-                        //     decoration: BoxDecoration(
-                        //         border: Border.all(width: 1.0, color: Colors.black)),
-                        //     child: Column(children: [
-                        //       Container(
-                        //         width: 200,
-                        //         //height: screenHeight,
-                        //         //padding: const EdgeInsets.symmetric(horizontal: 14),
-                        //         padding: EdgeInsets.only(top: 5, bottom: 5),
-                        //         decoration: BoxDecoration(color: Colors.black),
-                        //         child: Text(
-                        //           dayFour,
-                        //           style: const TextStyle(
-                        //               fontWeight: FontWeight.bold, color: Colors.white),
-                        //           textAlign: TextAlign.center,
-                        //         ),
-                        //       ),
-                        //       for (var i in fifthDay)
-                        //         Container(
-                        //             padding: EdgeInsets.only(bottom: 5, top: 5),
-                        //             child: Text(i.toString()))
-                        //     ])),
-                        // Container(
-                        //     width: 200,
-                        //     margin: EdgeInsets.only(top: 10),
-                        //     padding: EdgeInsets.only(bottom: 5),
-                        //     decoration: BoxDecoration(
-                        //         border: Border.all(width: 1.0, color: Colors.black)),
-                        //     child: Column(children: [
-                        //       Container(
-                        //         width: 200,
-                        //         //height: screenHeight,
-                        //         //padding: const EdgeInsets.symmetric(horizontal: 14),
-                        //         padding: EdgeInsets.only(top: 5, bottom: 5),
-                        //         decoration: BoxDecoration(color: Colors.black),
-                        //         child: Text(
-                        //           dayFive,
-                        //           style: const TextStyle(
-                        //               fontWeight: FontWeight.bold, color: Colors.white),
-                        //           textAlign: TextAlign.center,
-                        //         ),
-                        //       ),
-                        //       for (var i in sixthDay)
-                        //         Container(
-                        //             padding: EdgeInsets.only(bottom: 5, top: 5),
-                        //             child: Text(i.toString()))
-                        //     ])),
-                        // Container(
-                        //     width: 200,
-                        //     margin: EdgeInsets.only(top: 10, bottom: 15),
-                        //     padding: EdgeInsets.only(bottom: 5),
-                        //     decoration: BoxDecoration(
-                        //         border: Border.all(width: 1.0, color: Colors.black)),
-                        //     child: Column(children: [
-                        //       Container(
-                        //         //height: screenHeight,
-                        //         //padding: const EdgeInsets.symmetric(horizontal: 14),
-                        //         width: 200,
-                        //         padding: EdgeInsets.only(top: 5, bottom: 5),
-                        //         decoration: BoxDecoration(color: Colors.black),
-                        //         child: Text(
-                        //           daySix,
-                        //           style: const TextStyle(
-                        //               fontWeight: FontWeight.bold, color: Colors.white),
-                        //           textAlign: TextAlign.center,
-                        //         ),
-                        //       ),
-                        //       for (var i in seventhDay)
-                        //         Container(
-                        //             padding: EdgeInsets.only(bottom: 5, top: 5),
-                        //             child: Text(i.toString()))
-                        //     ]))
-                      ],
-                    )
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Container(
+              padding: EdgeInsets.only(top: 10, bottom: 10),
+              //margin: EdgeInsets.only(top: topmargin),
+              child: const Text(
+                'Load Shedding Schedule',
+                style:
+                TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+              ),
+            ),
+
+            Container(
+                width: 200,
+                padding: EdgeInsets.only(bottom: 5),
+                decoration: BoxDecoration(
+                    border:
+                    Border.all(width: 1.0, color: Colors.deepOrange)),
+                child: Column(children: [
+                  Container(
+                    //height: screenHeight,
+                    width: 200,
+                    padding: EdgeInsets.only(top: 5, bottom: 5),
+                    decoration:
+                    BoxDecoration(color: Colors.deepOrange), //shade200
+                    child: Text(
+                      dayZero,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.white),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  for (var i in firstDay)
+                    Container(
+                        padding: EdgeInsets.only(bottom: 5, top: 5),
+                        child: Text(i.toString()))
+                ])),
+            // Container(
+            //     width: 200,
+            //     margin: EdgeInsets.only(top: 10),
+            //     padding: EdgeInsets.only(bottom: 5),
+            //     decoration: BoxDecoration(
+            //       border: Border.all(width: 1.0, color: Colors.black),
+            //     ),
+            //     child: Column(children: [
+            //       Container(
+            //         width: 200,
+            //         padding: EdgeInsets.only(top: 5, bottom: 5),
+            //         decoration: BoxDecoration(color: Colors.black),
+            //         child: Text(
+            //           dayOne,
+            //           style: const TextStyle(
+            //               fontWeight: FontWeight.bold, color: Colors.white),
+            //           textAlign: TextAlign.center,
+            //         ),
+            //       ),
+            //       for (var i in secondDay)
+            //         Container(
+            //             padding: EdgeInsets.only(bottom: 5, top: 5),
+            //             child: Text(i.toString()))
+            // //     ])),
+            // Container(
+            //     width: 200,
+            //     margin: EdgeInsets.only(top: 10),
+            //     padding: EdgeInsets.only(bottom: 5),
+            //     decoration: BoxDecoration(
+            //         border: Border.all(width: 1.0, color: Colors.black)),
+            //     child: Column(children: [
+            //       Container(
+            //         width: 200,
+            //         //height: screenHeight,
+            //         padding: EdgeInsets.only(top: 5, bottom: 5),
+            //         decoration: BoxDecoration(color: Colors.black),
+            //         child: Text(
+            //           dayTwo,
+            //           style: const TextStyle(
+            //               fontWeight: FontWeight.bold, color: Colors.white),
+            //           textAlign: TextAlign.center,
+            //         ),
+            //       ),
+            //       for (var i in thirdDay)
+            //         Container(
+            //             padding: EdgeInsets.only(bottom: 5, top: 5),
+            //             child: Text(i.toString()))
+            //     ])),
+            // Container(
+            //     width: 200,
+            //     margin: EdgeInsets.only(top: 10),
+            //     padding: EdgeInsets.only(bottom: 5),
+            //     decoration: BoxDecoration(
+            //         border: Border.all(width: 1.0, color: Colors.black)),
+            //     child: Column(children: [
+            //       Container(
+            //         width: 200,
+            //         //height: screenHeight,
+            //         //padding: const EdgeInsets.symmetric(horizontal: 14),
+            //         padding: EdgeInsets.only(top: 5, bottom: 5),
+            //         decoration: BoxDecoration(color: Colors.black),
+            //         child: Text(
+            //           dayThree,
+            //           style: const TextStyle(
+            //               fontWeight: FontWeight.bold, color: Colors.white),
+            //           textAlign: TextAlign.center,
+            //         ),
+            //       ),
+            //       for (var i in fourthDay)
+            //         Container(
+            //             padding: EdgeInsets.only(bottom: 5, top: 5),
+            //             child: Text(i.toString()))
+            //     ])),
+            // Container(
+            //     width: 200,
+            //     margin: EdgeInsets.only(top: 10),
+            //     padding: EdgeInsets.only(bottom: 5),
+            //     decoration: BoxDecoration(
+            //         border: Border.all(width: 1.0, color: Colors.black)),
+            //     child: Column(children: [
+            //       Container(
+            //         width: 200,
+            //         //height: screenHeight,
+            //         //padding: const EdgeInsets.symmetric(horizontal: 14),
+            //         padding: EdgeInsets.only(top: 5, bottom: 5),
+            //         decoration: BoxDecoration(color: Colors.black),
+            //         child: Text(
+            //           dayFour,
+            //           style: const TextStyle(
+            //               fontWeight: FontWeight.bold, color: Colors.white),
+            //           textAlign: TextAlign.center,
+            //         ),
+            //       ),
+            //       for (var i in fifthDay)
+            //         Container(
+            //             padding: EdgeInsets.only(bottom: 5, top: 5),
+            //             child: Text(i.toString()))
+            //     ])),
+            // Container(
+            //     width: 200,
+            //     margin: EdgeInsets.only(top: 10),
+            //     padding: EdgeInsets.only(bottom: 5),
+            //     decoration: BoxDecoration(
+            //         border: Border.all(width: 1.0, color: Colors.black)),
+            //     child: Column(children: [
+            //       Container(
+            //         width: 200,
+            //         //height: screenHeight,
+            //         //padding: const EdgeInsets.symmetric(horizontal: 14),
+            //         padding: EdgeInsets.only(top: 5, bottom: 5),
+            //         decoration: BoxDecoration(color: Colors.black),
+            //         child: Text(
+            //           dayFive,
+            //           style: const TextStyle(
+            //               fontWeight: FontWeight.bold, color: Colors.white),
+            //           textAlign: TextAlign.center,
+            //         ),
+            //       ),
+            //       for (var i in sixthDay)
+            //         Container(
+            //             padding: EdgeInsets.only(bottom: 5, top: 5),
+            //             child: Text(i.toString()))
+            //     ])),
+            // Container(
+            //     width: 200,
+            //     margin: EdgeInsets.only(top: 10, bottom: 15),
+            //     padding: EdgeInsets.only(bottom: 5),
+            //     decoration: BoxDecoration(
+            //         border: Border.all(width: 1.0, color: Colors.black)),
+            //     child: Column(children: [
+            //       Container(
+            //         //height: screenHeight,
+            //         //padding: const EdgeInsets.symmetric(horizontal: 14),
+            //         width: 200,
+            //         padding: EdgeInsets.only(top: 5, bottom: 5),
+            //         decoration: BoxDecoration(color: Colors.black),
+            //         child: Text(
+            //           daySix,
+            //           style: const TextStyle(
+            //               fontWeight: FontWeight.bold, color: Colors.white),
+            //           textAlign: TextAlign.center,
+            //         ),
+            //       ),
+            //       for (var i in seventhDay)
+            //         Container(
+            //             padding: EdgeInsets.only(bottom: 5, top: 5),
+            //             child: Text(i.toString()))
+            //     ]))
+          ],
+        )
 
     );
   }
