@@ -51,7 +51,7 @@ dependencies:
   flutter_local_notifications: ^16.1.0
   timezone: ^0.9.2
   fluttertoast: ^8.2.4
-
+  flutter_dotenv: ^5.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -79,6 +79,7 @@ flutter:
   assets:
     - assets/images/my_solar_logo.png
     - assets/images/empty_page.png
+    - keys.env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

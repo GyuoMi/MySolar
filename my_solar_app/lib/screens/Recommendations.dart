@@ -8,6 +8,7 @@ import '../../API\'s/LoadSheddingAPI.dart';
 import '../cloud_functions/database/database_api.dart';
 import '../cloud_functions/database/interfaces/database_functions_interface.dart';
 import '../widgets/drawer.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 
 enum RecommendationType {
@@ -306,7 +307,7 @@ class _RecommendationState extends State<Recommendation> {
 
   Future<Map<String, dynamic>> sendChatGPTRequest(String message) async {
     final String apiUrl = 'https://api.openai.com/v1/chat/completions';
-    final apikey = 'sk-KEY';
+    final apikey = dotenv.env['recommendations_key'] ;
 
     final response = await http.post(
       Uri.parse(apiUrl),
