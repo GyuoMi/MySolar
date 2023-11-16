@@ -107,8 +107,9 @@ class DatabaseApi
   }
 
   @override
-  Future createRecord(int id, String time, double minutes) async {
+  Future createRecord(int uid, int id, String time, double minutes) async {
     final recordData = {
+      userId: uid,
       deviceId: id,
       recordsTime: time,
       recordsMinutesUsed: minutes

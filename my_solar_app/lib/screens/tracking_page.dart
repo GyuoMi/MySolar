@@ -55,7 +55,8 @@ class TrackingPage extends StatelessWidget {
         ),
         body: Center(
           child: FutureBuilder(
-              future: devicesPageInstance.createDevicesList(LoggedInUser.getUserId()),
+              future: devicesPageInstance
+                  .createDevicesList(LoggedInUser.getUserId()),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return CircularProgressIndicator();
@@ -104,7 +105,7 @@ class TrackingPage extends StatelessWidget {
                             final device = devices[index];
 
                             _controllers!.add(TextEditingController());
-                            _controllers![index].text = "00";
+                            //_controllers![index].text = "00";
                             return Row(children: [
                               Expanded(
                                   flex: 3,
@@ -123,6 +124,8 @@ class TrackingPage extends StatelessWidget {
                                     textAlign: TextAlign.center,
                                     keyboardType: TextInputType.number,
                                     controller: _controllers![index],
+                                    decoration:
+                                        const InputDecoration(hintText: "0.00"),
                                   ),
                                 ),
                               ),
@@ -148,10 +151,15 @@ class TrackingPage extends StatelessWidget {
                                         index < devices.length;
                                         index++) {
                                       String value = _controllers![index].text;
-                                      recordPersistence.createRecord(
-                                          devices[index].id,
-                                          recentTime,
-                                          double.tryParse(value) ?? 00.00);
+                                      double minutes =
+                                          double.tryParse(value) ?? 00.00;
+                                      if (minutes > 0) {
+                                        recordPersistence.createRecord(
+                                            userId,
+                                            devices[index].id,
+                                            recentTime,
+                                            minutes);
+                                      }
                                     }
                                     showToastMessage();
                                   },
