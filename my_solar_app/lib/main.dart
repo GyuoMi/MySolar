@@ -18,10 +18,13 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:my_solar_app/utilities/notifications.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   dotenv.load(fileName: "keys.env");
+  requestPermissions();
   await Supabase.initialize(
     url: 'https://fsirbhoucrjtnkvchwuf.supabase.co',
     anonKey:
@@ -29,7 +32,26 @@ Future<void> main() async {
   );
   runApp(MyApp());
 }
+Future<void> requestPermissions() async {
+    // Request internet and notification permissions
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.notification,
+      Permission.location,
+    ].request();
 
+    // Check the status of each permission
+    print("Notification permission: ${statuses[Permission.notification]}");
+    print("Location permission: ${statuses[Permission.location]}");
+
+    // Check internet connection status
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      print("No internet connection");
+    } else {
+      print("Internet connection available");
+    }
+  }
+  
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
