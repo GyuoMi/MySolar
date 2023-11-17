@@ -2,7 +2,7 @@
 <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:label="MySolar"
-        android:name="${applicationName}"
+        android:name="MySolar"
         android:icon="@drawable/my_solar_logo">
 
         <activity
